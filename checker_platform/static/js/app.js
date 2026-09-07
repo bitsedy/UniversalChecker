@@ -160,10 +160,14 @@ async function submitOrder() {
   }
 }
 
+let currentPaystackKey = "";
+
 // Show MoMo USSD Prompt Screen
 function showPaymentPrompt(data) {
   document.getElementById("checkout_step_details").style.display = "none";
   document.getElementById("checkout_step_payment").style.display = "block";
+
+  currentPaystackKey = data.paystack_public_key || "";
 
   const promptInfo = data.payment_prompt;
   document.getElementById("momo_display_network").innerText = promptInfo.network;
@@ -172,6 +176,76 @@ function showPaymentPrompt(data) {
   document.getElementById("momo_display_order_ref").innerText = data.order.order_reference;
   document.getElementById("momo_prompt_instructions").innerText = promptInfo.prompt_text;
   document.getElementById("momo_manual_steps").innerText = promptInfo.manual_steps;
+}
+
+// Trigger Official Paystack Popup Modal (MoMo & Card)
+function payWithPaystack() {
+  if (!currentOrder) return;
+  if (!currentPaystackKey || currentPaystackKey.includes("sample")) {
+    alert("Paystack Notice:\nYou currently have default sample keys configured.\n\nTo accept live or test payments via Paystack popup:\n1. Go to /admin\n2. Paste your Paystack Public Key (pk_test_... or pk_live_...)\n3. Click 'Save Settings & Prices'\n\nFor now, you can click '⚡ Quick Sandbox Test' below to test the instant voucher delivery!");
+    return;
+  }
+  if (typeof PaystackPop === "undefined") {
+    alert("Paystack SDK is loading or unavailable. Please verify your internet connection.");
+    return;
+  }
+
+  const handler = PaystackPop.setup({
+    key: currentPaystackKey,
+    email: currentOrder.customer_email || `buyer_${currentOrder.order_reference.toLowerCase().replace(/[^a-z0-9]/g, "")}@checkerpay.gh`,
+    amount: Math.round(currentOrder.total_amount * 100),
+    currency: "GHS",
+    ref: currentOrder.order_reference,
+    channels: ["mobile_money", "card"],
+    metadata: {
+      custom_fields: [
+        { display_name: "Customer Phone", variable_name: "customer_phone", value: currentOrder.customer_phone },
+        { display_name: "Category", variable_name: "category", value: currentOrder.category }
+      ]
+    },
+    callback: function(response) {
+      verifyPaystackPayment(response.reference);
+    },
+    onClose: function() {
+      console.log("Paystack dialog closed.");
+    }
+  });
+  handler.openIframe();
+}
+
+async function verifyPaystackPayment(orderRef) {
+  const btn = document.getElementById("btn_paystack_pay");
+  if (btn) {
+    btn.innerText = "Confirming Paystack Payment...";
+    btn.disabled = true;
+  }
+
+  try {
+    const res = await fetch("/api/orders/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        order_reference: orderRef,
+        provider: "PAYSTACK"
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      alert(data.message || "Paystack payment verification failed.");
+      if (btn) {
+        btn.innerText = "💳 Pay via Paystack (MoMo & Cards)";
+        btn.disabled = false;
+      }
+      return;
+    }
+    showSuccessVouchers(data);
+  } catch (err) {
+    alert("Payment verification error: " + err.message);
+    if (btn) {
+      btn.innerText = "💳 Pay via Paystack (MoMo & Cards)";
+      btn.disabled = false;
+    }
+  }
 }
 
 // Complete / Simulate Approval
@@ -194,7 +268,7 @@ async function approveSimulatedPayment() {
     const data = await res.json();
     if (!res.ok || !data.success) {
       alert(data.message || "Verification failed.");
-      btn.innerText = "Approve & Complete (Test)";
+      btn.innerText = "⚡ Quick Sandbox Test (Simulate MoMo Approval)";
       btn.disabled = false;
       return;
     }
@@ -202,7 +276,7 @@ async function approveSimulatedPayment() {
     showSuccessVouchers(data);
   } catch (err) {
     alert("Verification error: " + err.message);
-    btn.innerText = "Approve & Complete (Test)";
+    btn.innerText = "⚡ Quick Sandbox Test (Simulate MoMo Approval)";
     btn.disabled = false;
   }
 }

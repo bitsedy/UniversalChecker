@@ -6,6 +6,8 @@ order lifecycle, and concurrency protection.
 
 import sqlite3
 import os
+import random
+import time
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 
@@ -99,6 +101,7 @@ def init_db():
             ("sms_sender_id", "CHECKER_GH"),
             ("support_phone", "+233 24 000 0000"),
             ("support_whatsapp", "+233240000000"),
+            ("inventory_mode", "BATCH"), # 'BATCH' or 'DEMO_GENERATE'
         ]
         for key, val in default_settings:
             cursor.execute("INSERT OR IGNORE INTO site_settings (key, value) VALUES (?, ?);", (key, val))
@@ -122,6 +125,35 @@ def update_setting(key: str, value: str):
         conn.execute("INSERT OR REPLACE INTO site_settings (key, value) VALUES (?, ?)", (key, value))
     finally:
         conn.close()
+
+def generate_dynamic_vouchers(category: str, count: int, order_ref: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Generates authentic-style vouchers with unique serial numbers and PINs for demo/testing."""
+    prefixes = {
+        "WASSCE": "WSC2026",
+        "BECE": "BEC2026",
+        "CSSPS": "CSS2026",
+        "CTVET": "CTV2026"
+    }
+    prefix = prefixes.get(category, "VCH2026")
+    vouchers = []
+    
+    for _ in range(count):
+        ts_part = str(int(time.time() * 1000))[-5:]
+        rand_part = random.randint(1000, 9999)
+        serial = f"{prefix}D{ts_part}{rand_part}"
+        
+        pin_len = 11 if category == "CSSPS" else 12
+        first = str(random.randint(1, 9))
+        rest = "".join([str(random.randint(0, 9)) for _ in range(pin_len - 1)])
+        pin = first + rest
+        
+        vouchers.append({
+            "category": category,
+            "serial_number": serial,
+            "pin": pin,
+            "order_reference": order_ref
+        })
+    return vouchers
 
 def get_product_catalog() -> Dict[str, Dict[str, Any]]:
     """Returns the current product catalog with real-time stock levels and prices."""
@@ -166,16 +198,25 @@ def get_product_catalog() -> Dict[str, Dict[str, Any]]:
             }
         }
 
+        mode_row = conn.execute("SELECT value FROM site_settings WHERE key = 'inventory_mode'").fetchone()
+        inventory_mode = mode_row["value"] if mode_row else "BATCH"
+
         # Query stock count and pricing
         for cat, data in categories.items():
             price_row = conn.execute("SELECT value FROM site_settings WHERE key = ?", (f"price_{cat}",)).fetchone()
             data["price"] = float(price_row["value"]) if price_row else 20.00
+            data["inventory_mode"] = inventory_mode
+            data["is_demo_mode"] = (inventory_mode == "DEMO_GENERATE")
             
             stock_row = conn.execute(
                 "SELECT COUNT(*) as count FROM vouchers WHERE category = ? AND status = 'UNSOLD'", 
                 (cat,)
             ).fetchone()
-            data["available_stock"] = stock_row["count"] if stock_row else 0
+            unsold_count = stock_row["count"] if stock_row else 0
+            if inventory_mode == "DEMO_GENERATE":
+                data["available_stock"] = unsold_count if unsold_count > 0 else 999
+            else:
+                data["available_stock"] = unsold_count
             
         return categories
     finally:
@@ -184,6 +225,8 @@ def get_product_catalog() -> Dict[str, Dict[str, Any]]:
 def reserve_vouchers(category: str, quantity: int, order_ref: str, hold_minutes: int = 10) -> Optional[List[Dict[str, Any]]]:
     """
     Safely and atomically reserves vouchers under high concurrency.
+    In DEMO_GENERATE mode, on-the-fly generates fresh authentic-style vouchers.
+    In BATCH mode, strictly draws from pre-uploaded inventory batches.
     Uses SQLite BEGIN IMMEDIATE to lock the database and avoid race conditions.
     """
     conn = get_db_connection()
@@ -191,7 +234,30 @@ def reserve_vouchers(category: str, quantity: int, order_ref: str, hold_minutes:
         # Acquire immediate write lock
         conn.execute("BEGIN IMMEDIATE;")
         
-        # Select available vouchers
+        mode_row = conn.execute("SELECT value FROM site_settings WHERE key = 'inventory_mode'").fetchone()
+        inventory_mode = mode_row["value"] if mode_row else "BATCH"
+
+        if inventory_mode == "DEMO_GENERATE":
+            # Dynamic demo generator: mint unique authentic codes on demand
+            dynamic_items = generate_dynamic_vouchers(category, quantity, order_ref=order_ref)
+            res_list = []
+            for item in dynamic_items:
+                cursor = conn.execute(
+                    """
+                    INSERT INTO vouchers (category, serial_number, pin, status, order_reference, reserved_at)
+                    VALUES (?, ?, ?, 'RESERVED', ?, datetime('now'))
+                    """,
+                    (category, item["serial_number"], item["pin"], order_ref)
+                )
+                res_list.append({
+                    "id": cursor.lastrowid,
+                    "serial_number": item["serial_number"],
+                    "pin": item["pin"]
+                })
+            conn.execute("COMMIT;")
+            return res_list
+
+        # Strict Batch Mode: Select available vouchers from existing database inventory
         rows = conn.execute(
             """
             SELECT id, serial_number, pin 

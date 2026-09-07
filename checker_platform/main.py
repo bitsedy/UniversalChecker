@@ -29,7 +29,8 @@ from .database import (
     bulk_insert_vouchers,
     get_admin_metrics,
     get_setting,
-    update_setting
+    update_setting,
+    generate_dynamic_vouchers
 )
 from .services.payment import (
     GhanaMoMoSimulator,
@@ -138,7 +139,10 @@ async def admin_page(request: Request):
         "price_BECE": get_setting("price_BECE", "18.00"),
         "price_CSSPS": get_setting("price_CSSPS", "15.00"),
         "price_CTVET": get_setting("price_CTVET", "25.00"),
-        "sms_sender_id": get_setting("sms_sender_id", "CHECKER_GH")
+        "sms_sender_id": get_setting("sms_sender_id", "CHECKER_GH"),
+        "paystack_public_key": get_setting("paystack_public_key", "pk_test_sample_ghana_waec"),
+        "paystack_secret_key": get_setting("paystack_secret_key", "sk_test_sample_ghana_waec"),
+        "inventory_mode": get_setting("inventory_mode", "BATCH")
     }
     return templates.TemplateResponse(
         request=request,
@@ -171,6 +175,13 @@ class SettingsUpdateRequest(BaseModel):
     price_CSSPS: str
     price_CTVET: str
     sms_sender_id: str
+    paystack_public_key: Optional[str] = None
+    paystack_secret_key: Optional[str] = None
+    inventory_mode: Optional[str] = "BATCH"
+
+class GenerateBatchRequest(BaseModel):
+    category: str = "ALL"
+    count: int = Field(50, ge=1, le=500)
 
 @app.get("/api/catalog")
 async def api_get_catalog():
@@ -235,7 +246,8 @@ async def api_create_order(req: OrderCreateRequest):
     return {
         "success": True,
         "order": order,
-        "payment_prompt": prompt_info
+        "payment_prompt": prompt_info,
+        "paystack_public_key": get_setting("paystack_public_key")
     }
 
 @app.post("/api/orders/verify")
@@ -247,6 +259,14 @@ async def api_verify_order(req: OrderVerifyRequest, background_tasks: Background
     order = get_order_details(req.order_reference)
     if not order:
         raise HTTPException(status_code=404, detail="Order reference not found")
+
+    # In live/real test mode with Paystack, verify status against Paystack API
+    secret_key = get_setting("paystack_secret_key", "")
+    if req.provider == "PAYSTACK" and secret_key and not secret_key.startswith("sk_test_sample"):
+        verify_res = PaystackProvider.verify_transaction(req.order_reference)
+        if not verify_res.get("status") or verify_res.get("data", {}).get("status") != "success":
+            err_msg = verify_res.get("message") or "Payment has not been confirmed by Paystack."
+            raise HTTPException(status_code=400, detail=err_msg)
 
     # Complete voucher sale atomically
     sold_vouchers = complete_voucher_sale(req.order_reference)
@@ -359,4 +379,32 @@ async def api_admin_save_settings(req: SettingsUpdateRequest):
     update_setting("price_CSSPS", str(req.price_CSSPS))
     update_setting("price_CTVET", str(req.price_CTVET))
     update_setting("sms_sender_id", req.sms_sender_id)
+    if req.paystack_public_key:
+        update_setting("paystack_public_key", req.paystack_public_key.strip())
+    if req.paystack_secret_key:
+        update_setting("paystack_secret_key", req.paystack_secret_key.strip())
+    if req.inventory_mode:
+        update_setting("inventory_mode", req.inventory_mode.strip())
     return {"success": True}
+
+@app.post("/api/admin/inventory/generate-demo")
+async def api_admin_generate_demo_batch(req: GenerateBatchRequest):
+    """Generates random authentic-style vouchers directly into inventory."""
+    clean_cat = req.category.strip().upper()
+    categories = ["WASSCE", "BECE", "CSSPS", "CTVET"] if clean_cat == "ALL" else [clean_cat]
+    total_inserted = 0
+    breakdown = {}
+    
+    for cat in categories:
+        items = generate_dynamic_vouchers(cat, req.count)
+        db_items = [{"serial_number": v["serial_number"], "pin": v["pin"]} for v in items]
+        res = bulk_insert_vouchers(cat, db_items)
+        total_inserted += res["inserted"]
+        breakdown[cat] = res["inserted"]
+        
+    return {
+        "success": True,
+        "total_inserted": total_inserted,
+        "breakdown": breakdown,
+        "message": f"Successfully generated and inserted {total_inserted} test vouchers into inventory."
+    }

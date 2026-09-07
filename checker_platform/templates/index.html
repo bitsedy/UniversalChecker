@@ -63,7 +63,13 @@
           </span>
           <div class="stock-indicator">
             <span class="stock-bullet" style="background-color: {% if cat.available_stock > 5 %}var(--ghana-green){% else %}var(--ghana-gold){% endif %};"></span>
-            <span>{{ cat.available_stock }} In Stock</span>
+            <span>
+              {% if cat.is_demo_mode %}
+                Demo Mode (Active)
+              {% else %}
+                {{ cat.available_stock }} In Stock
+              {% endif %}
+            </span>
           </div>
         </div>
 
@@ -255,8 +261,11 @@
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-        <button id="btn_approve_payment" class="btn-buy" onclick="approveSimulatedPayment()">
-          ✓ Simulate MoMo Approval & Reveal PIN
+        <button id="btn_paystack_pay" class="btn-buy" style="background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%); font-weight: 800;" onclick="payWithPaystack()">
+          💳 Pay via Paystack (MoMo & Cards)
+        </button>
+        <button id="btn_approve_payment" class="btn-safety-guide" style="text-align: center; cursor: pointer; font-size: 0.85rem;" onclick="approveSimulatedPayment()">
+          ⚡ Quick Sandbox Test (Simulate MoMo Approval)
         </button>
         <button class="btn-print" onclick="document.getElementById('checkout_step_payment').style.display='none'; document.getElementById('checkout_step_details').style.display='block';">
           &larr; Back to Order Details

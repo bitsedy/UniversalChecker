@@ -74,20 +74,115 @@
     </div>
   </div>
 
+  <!-- INVENTORY FULFILLMENT MODE SELECTOR -->
+  <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+      <div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <span>⚙️</span> Voucher Generation & Inventory Mode
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+          Choose whether the store dynamically mints unique random codes on every sale (demo mode) or strictly dispenses pre-loaded wholesale inventory.
+        </p>
+      </div>
+      <span class="card-badge {% if settings.inventory_mode == 'DEMO_GENERATE' %}card-badge-popular{% else %}card-badge-demand{% endif %}" style="font-size: 0.85rem; padding: 0.4rem 0.85rem;">
+        Active: {% if settings.inventory_mode == 'DEMO_GENERATE' %}⚡ Dynamic Demo Generator{% else %}📦 Strict Wholesale Batch{% endif %}
+      </span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
+      <!-- Option 1: Dynamic Demo Generator -->
+      <label style="background: rgba(0,0,0,0.3); border: 2px solid {% if settings.inventory_mode == 'DEMO_GENERATE' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_demo">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <input type="radio" name="cfg_inventory_mode" id="mode_demo" value="DEMO_GENERATE" {% if settings.inventory_mode == 'DEMO_GENERATE' %}checked{% endif %} onchange="updateModeSelection('DEMO_GENERATE')">
+          <div>
+            <div style="font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <span>⚡</span> Dynamic Demo Generator Mode
+            </div>
+            <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">
+              Generates fresh, unique authentic codes (serials & PINs) on each purchase. Perfect for live presentations, client demos, and continuous testing without manual replenishment. Stock never runs out.
+            </div>
+          </div>
+        </div>
+      </label>
+
+      <!-- Option 2: Strict Batch Upload -->
+      <label style="background: rgba(0,0,0,0.3); border: 2px solid {% if settings.inventory_mode == 'BATCH' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_batch">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <input type="radio" name="cfg_inventory_mode" id="mode_batch" value="BATCH" {% if settings.inventory_mode == 'BATCH' %}checked{% endif %} onchange="updateModeSelection('BATCH')">
+          <div>
+            <div style="font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <span>📦</span> Strict Wholesale Batch Mode
+            </div>
+            <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">
+              Strictly allocates vouchers from existing pre-uploaded batches below. Blocks purchases and flags "Out of Stock" when inventory runs out. Recommended for live production with real merchant vouchers.
+            </div>
+          </div>
+        </div>
+      </label>
+    </div>
+
+    <button type="button" id="btn_save_mode" class="btn-buy" style="font-size: 0.85rem; padding: 0.65rem 1.5rem; width: auto; cursor: pointer;" onclick="saveInventoryModeOnly()">
+      💾 Save Inventory Mode Setting
+    </button>
+  </div>
+
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; margin-bottom: 2.5rem;">
-    <!-- BULK PIN IMPORTER -->
+    <!-- BULK PIN IMPORTER & DEMO GENERATOR -->
     <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem;">
       <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--ghana-gold);">
-        📥 Bulk Voucher Stock Importer
+        📦 Inventory Management & Importer
       </h3>
-      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
-        Paste wholesale voucher lists. Accepted format: <code>SERIAL, PIN</code> or <code>SERIAL PIN</code> (one per line).
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Generate authentic test batches on demand or paste existing wholesale vouchers.
+      </p>
+
+      <!-- 1-CLICK TEST BATCH GENERATOR -->
+      <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+        <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 6px;">
+          <span>⚡</span> 1-Click Test Batch Generator
+        </h4>
+        <p style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.85rem;">
+          Generate batches of different authentic-format codes and checkers directly into inventory:
+        </p>
+
+        <form onsubmit="handleGenerateDemoBatch(event)" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-end;">
+          <div style="flex: 1; min-width: 140px;">
+            <label class="form-label" style="font-size: 0.75rem;">Category</label>
+            <select id="gen_category" class="form-input" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
+              <option value="ALL">All Categories (4x)</option>
+              <option value="WASSCE">WAEC WASSCE</option>
+              <option value="BECE">WAEC BECE</option>
+              <option value="CSSPS">CSSPS Placement</option>
+              <option value="CTVET">CTVET / NABPTEX</option>
+            </select>
+          </div>
+          <div style="width: 85px;">
+            <label class="form-label" style="font-size: 0.75rem;">Count</label>
+            <select id="gen_count" class="form-input" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
+              <option value="25">25</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <button type="submit" id="btn_gen_demo" class="btn-safety-guide" style="font-size: 0.85rem; padding: 0.55rem 1rem; cursor: pointer; white-space: nowrap;">
+            ⚡ Inject Batch
+          </button>
+        </form>
+      </div>
+
+      <!-- EXISTING BATCH UPLOADER -->
+      <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 6px;">
+        <span>📥</span> Upload Pre-Existing Wholesale Batch
+      </h4>
+      <p style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        Paste existing voucher lists. Format: <code>SERIAL, PIN</code> (one per line).
       </p>
 
       <form id="bulk_import_form" onsubmit="handleBulkImport(event)">
         <div class="form-group">
-          <label class="form-label">Select Target Category</label>
-          <select id="import_category" class="form-input">
+          <label class="form-label" style="font-size: 0.75rem;">Target Category</label>
+          <select id="import_category" class="form-input" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
             <option value="WASSCE">WAEC WASSCE</option>
             <option value="BECE">WAEC BECE</option>
             <option value="CSSPS">CSSPS Placement</option>
@@ -96,11 +191,11 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Batch Data</label>
-          <textarea id="import_data" class="form-input" rows="6" placeholder="WSC2026881901, 847192847192&#10;WSC2026881902, 381928471920" style="font-family: monospace; font-size: 0.85rem;" required></textarea>
+          <label class="form-label" style="font-size: 0.75rem;">Batch Data</label>
+          <textarea id="import_data" class="form-input" rows="5" placeholder="WSC2026881901, 847192847192&#10;WSC2026881902, 381928471920" style="font-family: monospace; font-size: 0.82rem;" required></textarea>
         </div>
 
-        <button type="submit" id="btn_import" class="btn-buy" style="font-size: 0.9rem;">
+        <button type="submit" id="btn_import" class="btn-buy" style="font-size: 0.85rem; padding: 0.65rem 1rem;">
           Load Batch Into Inventory
         </button>
       </form>
@@ -141,6 +236,16 @@
         <div class="form-group">
           <label class="form-label">SMS Sender ID</label>
           <input type="text" id="cfg_sms_sender_id" value="{{ settings.sms_sender_id }}" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Paystack Public Key (pk_test_... or pk_live_...)</label>
+          <input type="text" id="cfg_paystack_public_key" value="{{ settings.paystack_public_key }}" class="form-input" placeholder="pk_test_...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Paystack Secret Key (sk_test_... or sk_live_...)</label>
+          <input type="password" id="cfg_paystack_secret_key" value="{{ settings.paystack_secret_key }}" class="form-input" placeholder="sk_test_...">
         </div>
 
         <button type="submit" id="btn_save_settings" class="btn-safety-guide" style="width: 100%; text-align: center; cursor: pointer;">
@@ -192,6 +297,86 @@
 </div>
 
 <script>
+function updateModeSelection(mode) {
+  const labelDemo = document.getElementById("label_mode_demo");
+  const labelBatch = document.getElementById("label_mode_batch");
+  if (mode === "DEMO_GENERATE") {
+    labelDemo.style.borderColor = "var(--ghana-gold)";
+    labelBatch.style.borderColor = "var(--border-subtle)";
+  } else {
+    labelBatch.style.borderColor = "var(--ghana-gold)";
+    labelDemo.style.borderColor = "var(--border-subtle)";
+  }
+}
+
+async function saveInventoryModeOnly() {
+  const selectedMode = document.querySelector('input[name="cfg_inventory_mode"]:checked')?.value || "BATCH";
+  const btn = document.getElementById("btn_save_mode");
+  btn.innerText = "Saving Mode...";
+  btn.disabled = true;
+
+  try {
+    const res = await fetch("/api/admin/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        price_WASSCE: document.getElementById("cfg_price_WASSCE").value,
+        price_BECE: document.getElementById("cfg_price_BECE").value,
+        price_CSSPS: document.getElementById("cfg_price_CSSPS").value,
+        price_CTVET: document.getElementById("cfg_price_CTVET").value,
+        sms_sender_id: document.getElementById("cfg_sms_sender_id").value,
+        paystack_public_key: document.getElementById("cfg_paystack_public_key").value,
+        paystack_secret_key: document.getElementById("cfg_paystack_secret_key").value,
+        inventory_mode: selectedMode
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert(`Success! Inventory mode updated to: ${selectedMode === 'DEMO_GENERATE' ? 'Dynamic Demo Generator' : 'Strict Wholesale Batch'}.`);
+      window.location.reload();
+    } else {
+      alert("Error saving inventory mode.");
+      btn.innerText = "💾 Save Inventory Mode Setting";
+      btn.disabled = false;
+    }
+  } catch (err) {
+    alert("Network error: " + err.message);
+    btn.innerText = "💾 Save Inventory Mode Setting";
+    btn.disabled = false;
+  }
+}
+
+async function handleGenerateDemoBatch(e) {
+  e.preventDefault();
+  const category = document.getElementById("gen_category").value;
+  const count = parseInt(document.getElementById("gen_count").value, 10);
+  const btn = document.getElementById("btn_gen_demo");
+
+  btn.innerText = "Injecting Batch...";
+  btn.disabled = true;
+
+  try {
+    const res = await fetch("/api/admin/inventory/generate-demo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category, count })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert(`Success! Generated and inserted ${data.total_inserted} test vouchers into inventory.`);
+      window.location.reload();
+    } else {
+      alert("Error: " + (data.message || "Failed to generate batch"));
+      btn.innerText = "⚡ Inject Batch";
+      btn.disabled = false;
+    }
+  } catch (err) {
+    alert("Network error: " + err.message);
+    btn.innerText = "⚡ Inject Batch";
+    btn.disabled = false;
+  }
+}
+
 async function handleBulkImport(e) {
   e.preventDefault();
   const category = document.getElementById("import_category").value;
@@ -225,12 +410,16 @@ async function handleBulkImport(e) {
 
 async function handleSaveSettings(e) {
   e.preventDefault();
+  const selectedMode = document.querySelector('input[name="cfg_inventory_mode"]:checked')?.value || "BATCH";
   const settings = {
     price_WASSCE: document.getElementById("cfg_price_WASSCE").value,
     price_BECE: document.getElementById("cfg_price_BECE").value,
     price_CSSPS: document.getElementById("cfg_price_CSSPS").value,
     price_CTVET: document.getElementById("cfg_price_CTVET").value,
-    sms_sender_id: document.getElementById("cfg_sms_sender_id").value
+    sms_sender_id: document.getElementById("cfg_sms_sender_id").value,
+    paystack_public_key: document.getElementById("cfg_paystack_public_key").value,
+    paystack_secret_key: document.getElementById("cfg_paystack_secret_key").value,
+    inventory_mode: selectedMode
   };
 
   try {

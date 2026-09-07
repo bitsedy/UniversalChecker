@@ -137,5 +137,65 @@ class TestApiEndpoints(unittest.TestCase):
         self.assertEqual(f["portal_url"], "https://cssps.gov.gh")
         self.assertIn("CSSPS", f["portal_name"])
 
+    def test_demo_batch_generate_api(self):
+        # Test 1-click batch generation endpoint
+        res = self.client.post("/api/admin/inventory/generate-demo", json={
+            "category": "WASSCE",
+            "count": 5
+        })
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data["success"])
+        self.assertEqual(data["total_inserted"], 5)
+
+    def test_dynamic_demo_generation_mode(self):
+        # Switch mode to DEMO_GENERATE
+        res = self.client.post("/api/admin/settings", json={
+            "price_WASSCE": "22.00",
+            "price_BECE": "18.00",
+            "price_CSSPS": "15.00",
+            "price_CTVET": "25.00",
+            "sms_sender_id": "CHECKER_GH",
+            "inventory_mode": "DEMO_GENERATE"
+        })
+        self.assertEqual(res.status_code, 200)
+        
+        # Verify catalog reflects demo mode
+        cat_res = self.client.get("/api/catalog")
+        self.assertTrue(cat_res.json()["WASSCE"]["is_demo_mode"])
+
+        # Order should succeed and mint unique random vouchers dynamically
+        order_res = self.client.post("/api/orders/create", json={
+            "category": "WASSCE",
+            "quantity": 2,
+            "customer_phone": "055 777 6655",
+            "payment_method": "MOMO_MTN"
+        })
+        self.assertEqual(order_res.status_code, 200)
+        order_data = order_res.json()
+        self.assertTrue(order_data["success"])
+        
+        # Verify and complete purchase
+        order_ref = order_data["order"]["order_reference"]
+        verify = self.client.post("/api/orders/verify", json={
+            "order_reference": order_ref,
+            "provider": "MOMO_SIMULATOR"
+        })
+        cards = verify.json()["fulfillment"]["cards"]
+        self.assertEqual(len(cards), 2)
+        # Serials must be distinct
+        self.assertNotEqual(cards[0]["serial_number"], cards[1]["serial_number"])
+        self.assertTrue(cards[0]["serial_number"].startswith("WSC2026D"))
+
+        # Switch back to BATCH mode
+        self.client.post("/api/admin/settings", json={
+            "price_WASSCE": "22.00",
+            "price_BECE": "18.00",
+            "price_CSSPS": "15.00",
+            "price_CTVET": "25.00",
+            "sms_sender_id": "CHECKER_GH",
+            "inventory_mode": "BATCH"
+        })
+
 if __name__ == "__main__":
     unittest.main()
