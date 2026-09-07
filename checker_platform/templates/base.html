@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Ghana Result Checkers & eVoucher Gateway | Instant WAEC, CSSPS, CTVET{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Authentic Ghanaian Kente Accent Ribbon -->
+  <div class="kente-ribbon"></div>
+
+  <!-- Navbar -->
+  <header style="border-bottom: 1px solid var(--border-subtle); background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 40;">
+    <nav class="navbar">
+      <a href="/" class="brand-link">
+        <div class="brand-badge-star">
+          <!-- Stylized Black Star Motif with Ghana Gold -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#f59e0b" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+        <div class="brand-title">Checker<span>Pay</span> Ghana</div>
+      </a>
+
+      <div class="nav-links">
+        <a href="/" class="nav-link {% if active_page == 'home' %}active{% endif %}">Home</a>
+        <a href="/guides" class="nav-link {% if active_page == 'guides' %}active{% endif %}">Portal Guides & Rules</a>
+        <a href="/lookup" class="btn-nav-lookup">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Retrieve My Voucher
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div>
+          <div style="font-weight: 800; font-size: 1.1rem; color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
+            <span>🇬🇭</span> CheckerPay Ghana Digital Services
+          </div>
+          <p class="footer-legal" style="max-width: 550px;">
+            Authorized digital distributor of authentic WAEC, CSSPS, and CTVET verification vouchers. 
+            All result checking occurs on the respective official government examination portals. Compliant with Ghana Data Protection Act, 2012 (Act 843).
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+          <div>
+            <div style="font-weight: 700; color: #fff; font-size: 0.85rem; margin-bottom: 0.5rem; text-transform: uppercase;">Official Portals</div>
+            <ul style="list-style: none; font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px;">
+              <li><a href="https://ghana.waecdirect.org" target="_blank" style="color: var(--text-muted); text-decoration: none;">WAEC Direct Ghana ↗</a></li>
+              <li><a href="https://cssps.gov.gh" target="_blank" style="color: var(--text-muted); text-decoration: none;">CSSPS Placement Portal ↗</a></li>
+              <li><a href="https://ctvet.gov.gh" target="_blank" style="color: var(--text-muted); text-decoration: none;">CTVET Examination Portal ↗</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <div style="font-weight: 700; color: #fff; font-size: 0.85rem; margin-bottom: 0.5rem; text-transform: uppercase;">Navigation</div>
+            <ul style="list-style: none; font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px;">
+              <li><a href="/guides" style="color: var(--text-muted); text-decoration: none;">Avoid Voucher Burn Guide</a></li>
+              <li><a href="/lookup" style="color: var(--text-muted); text-decoration: none;">Find Lost Serial & PIN</a></li>
+              <li><a href="/admin" style="color: var(--text-dim); text-decoration: none;">Admin Inventory</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.775rem; color: var(--text-dim);">
+        <div>&copy; 2026 CheckerPay Ghana. All Rights Reserved.</div>
+        <div>Fast, Concurrency-Safe Voucher Distribution</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

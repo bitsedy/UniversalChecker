@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-pill">
+      <span class="pulse-dot"></span>
+      <span>Official Portal Batch 2026 Ready &bull; Instant Delivery</span>
+    </div>
+
+    <h1 class="hero-title">
+      Buy Authentic <span class="gradient-text">Result Checkers & Placement Vouchers</span> in Seconds
+    </h1>
+    
+    <p class="hero-subtitle">
+      Instant delivery via on-screen reveal, SMS, and WhatsApp. Pay securely with MTN MoMo, Telecel Cash, or AT Money with zero double-allocation risk.
+    </p>
+
+    <!-- Telco Support Banner -->
+    <div class="telco-banner">
+      <span class="telco-label">Supported Payments:</span>
+      <div class="telco-item telco-mtn">
+        <span>🟡 MTN MoMo (*170#)</span>
+      </div>
+      <div class="telco-item telco-telecel">
+        <span>🔴 Telecel Cash (*110#)</span>
+      </div>
+      <div class="telco-item telco-at">
+        <span>🔵 AT Money (*110#)</span>
+      </div>
+      <div class="telco-item telco-card">
+        <span>💳 Visa / Mastercard</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trap Prevention Notice Banner -->
+  <div class="safety-banner">
+    <div class="safety-icon">🛡️</div>
+    <div class="safety-content">
+      <h3>Avoid Portal Pitfalls & Voucher Burn</h3>
+      <p>
+        WAEC strictly burns an attempt on every page load (3-check limit), and CSSPS requires appending your 2-digit completion year (12 digits total). Check our guide before entering your credentials on official portals.
+      </p>
+    </div>
+    <a href="/guides" class="btn-safety-guide">Read Portal Instructions &rarr;</a>
+  </div>
+
+  <!-- Products Section -->
+  <section style="margin-bottom: 3.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 800;">Select Result Checker</h2>
+      <span style="font-size: 0.85rem; color: var(--text-dim);">Live Stock Updated Automatically</span>
+    </div>
+
+    <div class="products-grid">
+      {% for cat_key, cat in products.items() %}
+      <div class="product-card">
+        <div class="card-top">
+          <span class="card-badge {% if cat_key == 'WASSCE' or cat_key == 'CSSPS' %}card-badge-popular{% else %}card-badge-demand{% endif %}">
+            {{ cat.badge }}
+          </span>
+          <div class="stock-indicator">
+            <span class="stock-bullet" style="background-color: {% if cat.available_stock > 5 %}var(--ghana-green){% else %}var(--ghana-gold){% endif %};"></span>
+            <span>{{ cat.available_stock }} In Stock</span>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h3 class="product-name" style="margin-bottom: 0;">{{ cat.name }}</h3>
+          <a href="{{ cat.official_url }}" target="_blank" rel="noopener noreferrer" style="font-size: 0.75rem; color: var(--ghana-gold); text-decoration: none; font-weight: 600; white-space: nowrap; margin-left: 8px;">Portal ↗</a>
+        </div>
+        <p class="product-desc">{{ cat.description }}</p>
+
+        <div class="rules-preview">
+          <div class="rule-item">
+            <span>ℹ️</span>
+            <span><strong>Check Limit:</strong> {% if cat.check_limit == 999 %}Unlimited checks for same candidate{% else %}Strictly {{ cat.check_limit }} checks{% endif %}</span>
+          </div>
+          <div class="rule-item">
+            <span>ℹ️</span>
+            <span><strong>Index:</strong> {{ cat.index_format }}</span>
+          </div>
+        </div>
+
+        <div class="price-row">
+          <span class="price-currency">Price per Checker</span>
+          <span class="price-amount">GH₵ {{ "%.2f"|format(cat.price) }}</span>
+        </div>
+
+        <button class="btn-buy" onclick="openBuyModal('{{ cat_key }}', '{{ cat.name }}', '{{ cat.price }}', {{ cat.available_stock }})">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          Buy Now
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Value Propositions / Trust Grid -->
+  <section style="margin-bottom: 5rem; padding: 2.5rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);">
+    <h2 style="text-align: center; font-size: 1.6rem; font-weight: 800; margin-bottom: 2rem;">
+      Engineered for Speed & Reliability During National Release Spikes
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem;">
+      <div>
+        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">⚡</div>
+        <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Instant On-Screen Reveal</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Never wait for SMS delays during national exam rushes. Your Serial Number and PIN appear immediately upon Mobile Money approval.
+        </p>
+      </div>
+
+      <div>
+        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🔒</div>
+        <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Zero Double-Allocation</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Our concurrency-safe locking engine reserves your voucher for 10 minutes, ensuring no two buyers are ever sold the same PIN.
+        </p>
+      </div>
+
+      <div>
+        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📱</div>
+        <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Multi-Channel Delivery</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Download a printable digital receipt card or share the card directly to your WhatsApp with official checking portal links.
+        </p>
+      </div>
+
+      <div>
+        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🔍</div>
+        <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">24/7 Self-Service Recovery</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Misplaced your phone or closed your browser? Enter your phone number anytime in the "Retrieve My Voucher" portal to view all past PINs.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ========================================================================= -->
+<!-- CHECKOUT & VOUCHER REVEAL MODAL -->
+<!-- ========================================================================= -->
+<div id="checkout_modal" class="modal-overlay">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+
+    <!-- STEP 1: DETAILS FORM -->
+    <div id="checkout_step_details">
+      <div class="modal-header">
+        <h2 id="modal_product_title">Checkout</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Instant voucher delivery via MoMo & On-Screen</p>
+      </div>
+
+      <input type="hidden" id="modal_category" value="WASSCE">
+
+      <div class="form-group">
+        <label class="form-label">Quantity</label>
+        <select id="order_quantity" class="form-input">
+          <option value="1" selected>1 Voucher</option>
+          <option value="2">2 Vouchers</option>
+          <option value="3">3 Vouchers</option>
+          <option value="5">5 Vouchers</option>
+          <option value="10">10 Vouchers (Bulk)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Mobile Money Phone Number (Ghana)</label>
+        <input type="tel" id="customer_phone" class="form-input" placeholder="e.g. 024 123 4567 or 050 000 0000" required>
+        <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
+          Network will be detected automatically based on prefix (024, 020, 027, etc.)
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select Mobile Money Network</label>
+        <div class="telco-radios">
+          <label class="telco-radio-card">
+            <input type="radio" name="payment_network" id="radio_mtn" value="MOMO_MTN" checked>
+            <div class="telco-radio-box" id="box_mtn">
+              <span style="color: #ffcc00; display: block; font-size: 1.1rem; margin-bottom: 2px;">🟡</span>
+              MTN MoMo
+            </div>
+          </label>
+
+          <label class="telco-radio-card">
+            <input type="radio" name="payment_network" id="radio_telecel" value="MOMO_TELECEL">
+            <div class="telco-radio-box" id="box_telecel">
+              <span style="color: #ef4444; display: block; font-size: 1.1rem; margin-bottom: 2px;">🔴</span>
+              Telecel Cash
+            </div>
+          </label>
+
+          <label class="telco-radio-card">
+            <input type="radio" name="payment_network" id="radio_at" value="MOMO_AT">
+            <div class="telco-radio-box" id="box_at">
+              <span style="color: #38bdf8; display: block; font-size: 1.1rem; margin-bottom: 2px;">🔵</span>
+              AT Money
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address (Optional, for backup receipt)</label>
+        <input type="email" id="customer_email" class="form-input" placeholder="candidate@example.com">
+      </div>
+
+      <div style="background: rgba(0, 0, 0, 0.25); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">
+          <span>Unit Price:</span>
+          <span id="modal_unit_price" data-price="22.00">GHS 22.00</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; color: #fff;">
+          <span>Total Payable:</span>
+          <span id="modal_total_price" style="color: var(--ghana-gold);">GHS 22.00</span>
+        </div>
+      </div>
+
+      <button id="btn_submit_order" class="btn-buy" onclick="submitOrder()">
+        Proceed to Mobile Money Payment &rarr;
+      </button>
+    </div>
+
+    <!-- STEP 2: USSD PROMPT / PAYMENT INSTRUCTIONS -->
+    <div id="checkout_step_payment" style="display: none;">
+      <div class="modal-header">
+        <h2>Approve Payment</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Please check your mobile phone for authorization</p>
+      </div>
+
+      <div class="momo-ussd-box">
+        <div style="font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Network / Recipient</div>
+        <div id="momo_display_network" style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem;">MTN Mobile Money</div>
+        <div id="momo_display_phone" style="font-size: 0.9rem; color: var(--text-muted);">024 000 0000</div>
+
+        <div style="margin: 1rem 0; padding: 0.75rem; background: rgba(0,0,0,0.4); border-radius: 8px;">
+          <div style="font-size: 0.8rem; color: var(--text-dim);">Amount to Authorize:</div>
+          <div id="momo_display_amount" style="font-size: 1.5rem; font-weight: 900; color: var(--ghana-gold);">GHS 22.00</div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">Order Ref: <span id="momo_display_order_ref">ORD-12345</span></div>
+        </div>
+
+        <div style="font-size: 0.85rem; color: #fff; font-weight: 600; margin-bottom: 0.5rem;" id="momo_prompt_instructions">
+          Prompt sent to your phone!
+        </div>
+        <div style="font-size: 0.78rem; color: var(--text-muted);" id="momo_manual_steps">
+          If prompt did not appear automatically, check approvals on your phone.
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <button id="btn_approve_payment" class="btn-buy" onclick="approveSimulatedPayment()">
+          ✓ Simulate MoMo Approval & Reveal PIN
+        </button>
+        <button class="btn-print" onclick="document.getElementById('checkout_step_payment').style.display='none'; document.getElementById('checkout_step_details').style.display='block';">
+          &larr; Back to Order Details
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: VOUCHER REVEALED -->
+    <div id="checkout_step_success" style="display: none;">
+      <div style="text-align: center; margin-bottom: 1.25rem;">
+        <div style="font-size: 2.2rem; color: var(--ghana-green); margin-bottom: 0.15rem;">✓</div>
+        <h2 style="font-size: 1.35rem; font-weight: 800; color: #fff;">Payment Successful!</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Order Reference: <strong id="success_order_ref" style="color: var(--ghana-gold);"></strong>
+        </p>
+      </div>
+
+      <!-- AUTO-REDIRECT COUNTDOWN BOX -->
+      <div id="redirect_countdown_box" class="redirect-countdown-box">
+        <div class="redirect-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="pulse-dot" style="background-color: var(--ghana-gold);"></span>
+            <span style="font-weight: 700; color: #fff; font-size: 0.875rem;">
+              Redirecting to <span id="redirect_portal_name" style="color: var(--ghana-gold);">Official Portal</span> in <strong id="redirect_countdown_num" style="font-size: 1.15rem; color: #fff;">6</strong>s
+            </span>
+          </div>
+          <button id="btn_cancel_redirect" class="btn-cancel-redirect" onclick="toggleAutoRedirect()">
+            Pause Redirect
+          </button>
+        </div>
+
+        <div class="redirect-progress-track">
+          <div id="redirect_progress_bar" class="redirect-progress-fill" style="width: 100%;"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 0.775rem;">
+          <span style="color: var(--text-dim);">Portal: <a id="redirect_direct_link" href="#" target="_blank" rel="noopener noreferrer" style="color: var(--ghana-gold); text-decoration: underline; font-weight: 600;"></a></span>
+          <a id="btn_go_now" href="#" target="_blank" rel="noopener noreferrer" class="btn-go-now">
+            Go Now ↗
+          </a>
+        </div>
+      </div>
+
+      <div id="vouchers_container">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.8rem; color: #fca5a5;">
+        ⚠️ <strong>Important:</strong> Do not share your PIN with unauthorized parties. Take a screenshot or click "Save / Print Receipt" below.
+      </div>
+
+      <div class="btn-action-group">
+        <a id="btn_launch_portal" href="#" target="_blank" rel="noopener noreferrer" class="btn-portal-launch">
+          Check on Official Portal &rarr;
+        </a>
+        <button class="btn-print" onclick="window.print()">
+          🖨️ Print / Save Slip
+        </button>
+      </div>
+
+      <div style="margin-top: 1rem; text-align: center;">
+        <a id="btn_share_whatsapp" href="#" target="_blank" style="font-size: 0.85rem; color: var(--ghana-green); text-decoration: none; font-weight: 600;">
+          📲 Share Voucher to WhatsApp &rarr;
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

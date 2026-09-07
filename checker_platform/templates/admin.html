@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Management & Inventory Control | CheckerPay Ghana{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 900;">Merchant Inventory & Operations</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Manage stock batches, sales velocity, and payment settings.</p>
+    </div>
+    <span class="card-badge card-badge-popular" style="padding: 6px 14px; font-size: 0.85rem;">
+      High-Concurrency Mode Active (WAL)
+    </span>
+  </div>
+
+  <!-- METRICS SUMMARY -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+      <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Total Revenue</div>
+      <div style="font-size: 1.9rem; font-weight: 900; color: var(--ghana-gold);">GH₵ {{ "%.2f"|format(metrics.total_revenue) }}</div>
+      <div style="font-size: 0.75rem; color: var(--ghana-green); font-weight: 600; margin-top: 4px;">Verified Settlements</div>
+    </div>
+
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+      <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Total Orders Fulfilled</div>
+      <div style="font-size: 1.9rem; font-weight: 900; color: #fff;">{{ metrics.total_orders }}</div>
+      <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px;">Zero duplicate sales</div>
+    </div>
+
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+      <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Active Categories</div>
+      <div style="font-size: 1.9rem; font-weight: 900; color: #fff;">4 Portals</div>
+      <div style="font-size: 0.75rem; color: var(--ghana-green); margin-top: 4px;">WASSCE, BECE, CSSPS, CTVET</div>
+    </div>
+  </div>
+
+  <!-- INVENTORY LEVELS -->
+  <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2.5rem;">
+    <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1.25rem;">Live Inventory Stock By Category</h3>
+    
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-dim);">
+            <th style="padding: 0.75rem 1rem;">Category</th>
+            <th style="padding: 0.75rem 1rem;">Unsold (Available)</th>
+            <th style="padding: 0.75rem 1rem;">Reserved (In Checkout)</th>
+            <th style="padding: 0.75rem 1rem;">Sold (Delivered)</th>
+            <th style="padding: 0.75rem 1rem;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in metrics.stock %}
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <td style="padding: 0.85rem 1rem; font-weight: 700; color: #fff;">{{ s.category }}</td>
+            <td style="padding: 0.85rem 1rem; color: var(--ghana-gold); font-weight: 800;">{{ s.unsold }}</td>
+            <td style="padding: 0.85rem 1rem; color: var(--text-muted);">{{ s.reserved }}</td>
+            <td style="padding: 0.85rem 1rem; color: var(--ghana-green); font-weight: 700;">{{ s.sold }}</td>
+            <td style="padding: 0.85rem 1rem;">
+              {% if s.unsold > 10 %}
+                <span style="color: var(--ghana-green); font-size: 0.8rem; font-weight: 700;">Healthy</span>
+              {% elif s.unsold > 0 %}
+                <span style="color: var(--ghana-gold); font-size: 0.8rem; font-weight: 700;">Low Stock</span>
+              {% else %}
+                <span style="color: var(--ghana-red); font-size: 0.8rem; font-weight: 700;">Out of Stock</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; margin-bottom: 2.5rem;">
+    <!-- BULK PIN IMPORTER -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--ghana-gold);">
+        📥 Bulk Voucher Stock Importer
+      </h3>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Paste wholesale voucher lists. Accepted format: <code>SERIAL, PIN</code> or <code>SERIAL PIN</code> (one per line).
+      </p>
+
+      <form id="bulk_import_form" onsubmit="handleBulkImport(event)">
+        <div class="form-group">
+          <label class="form-label">Select Target Category</label>
+          <select id="import_category" class="form-input">
+            <option value="WASSCE">WAEC WASSCE</option>
+            <option value="BECE">WAEC BECE</option>
+            <option value="CSSPS">CSSPS Placement</option>
+            <option value="CTVET">CTVET / NABPTEX</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Batch Data</label>
+          <textarea id="import_data" class="form-input" rows="6" placeholder="WSC2026881901, 847192847192&#10;WSC2026881902, 381928471920" style="font-family: monospace; font-size: 0.85rem;" required></textarea>
+        </div>
+
+        <button type="submit" id="btn_import" class="btn-buy" style="font-size: 0.9rem;">
+          Load Batch Into Inventory
+        </button>
+      </form>
+    </div>
+
+    <!-- PRICING & CONFIGURATION -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem;">
+        ⚙️ Pricing & Gateway Settings
+      </h3>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Adjust retail unit pricing in GHS (Ghanaian Cedis) and gateway keys.
+      </p>
+
+      <form id="settings_form" onsubmit="handleSaveSettings(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+          <div>
+            <label class="form-label">WASSCE Price (GH₵)</label>
+            <input type="number" step="0.5" id="cfg_price_WASSCE" value="{{ settings.price_WASSCE }}" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">BECE Price (GH₵)</label>
+            <input type="number" step="0.5" id="cfg_price_BECE" value="{{ settings.price_BECE }}" class="form-input" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <label class="form-label">CSSPS Price (GH₵)</label>
+            <input type="number" step="0.5" id="cfg_price_CSSPS" value="{{ settings.price_CSSPS }}" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">CTVET Price (GH₵)</label>
+            <input type="number" step="0.5" id="cfg_price_CTVET" value="{{ settings.price_CTVET }}" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">SMS Sender ID</label>
+          <input type="text" id="cfg_sms_sender_id" value="{{ settings.sms_sender_id }}" class="form-input">
+        </div>
+
+        <button type="submit" id="btn_save_settings" class="btn-safety-guide" style="width: 100%; text-align: center; cursor: pointer;">
+          Save Settings & Prices
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- RECENT ORDERS -->
+  <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem;">
+    <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1.25rem;">Recent Order Transactions</h3>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-dim);">
+            <th style="padding: 0.75rem;">Order Ref</th>
+            <th style="padding: 0.75rem;">Category</th>
+            <th style="padding: 0.75rem;">Qty</th>
+            <th style="padding: 0.75rem;">Amount</th>
+            <th style="padding: 0.75rem;">Customer Phone</th>
+            <th style="padding: 0.75rem;">Payment</th>
+            <th style="padding: 0.75rem;">Status</th>
+            <th style="padding: 0.75rem;">Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ord in metrics.recent_orders %}
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <td style="padding: 0.75rem; font-weight: 700; color: var(--ghana-gold);">{{ ord.order_reference }}</td>
+            <td style="padding: 0.75rem;">{{ ord.category }}</td>
+            <td style="padding: 0.75rem;">{{ ord.quantity }}</td>
+            <td style="padding: 0.75rem; font-weight: 700;">GH₵ {{ "%.2f"|format(ord.total_amount) }}</td>
+            <td style="padding: 0.75rem;">{{ ord.customer_phone }}</td>
+            <td style="padding: 0.75rem; color: var(--text-dim);">{{ ord.payment_method }}</td>
+            <td style="padding: 0.75rem;">
+              <span class="card-badge {% if ord.payment_status == 'PAID' %}card-badge-demand{% else %}card-badge-popular{% endif %}">
+                {{ ord.payment_status }}
+              </span>
+            </td>
+            <td style="padding: 0.75rem; color: var(--text-dim);">{{ ord.created_at }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+async function handleBulkImport(e) {
+  e.preventDefault();
+  const category = document.getElementById("import_category").value;
+  const rawData = document.getElementById("import_data").value;
+  const btn = document.getElementById("btn_import");
+
+  btn.innerText = "Importing...";
+  btn.disabled = true;
+
+  try {
+    const res = await fetch("/api/admin/inventory/bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category, raw_data: rawData })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert(`Success: Inserted ${data.inserted} new vouchers (${data.duplicates} duplicates skipped).`);
+      window.location.reload();
+    } else {
+      alert("Error: " + (data.message || "Failed to import"));
+      btn.innerText = "Load Batch Into Inventory";
+      btn.disabled = false;
+    }
+  } catch (err) {
+    alert("Network error: " + err.message);
+    btn.innerText = "Load Batch Into Inventory";
+    btn.disabled = false;
+  }
+}
+
+async function handleSaveSettings(e) {
+  e.preventDefault();
+  const settings = {
+    price_WASSCE: document.getElementById("cfg_price_WASSCE").value,
+    price_BECE: document.getElementById("cfg_price_BECE").value,
+    price_CSSPS: document.getElementById("cfg_price_CSSPS").value,
+    price_CTVET: document.getElementById("cfg_price_CTVET").value,
+    sms_sender_id: document.getElementById("cfg_sms_sender_id").value
+  };
+
+  try {
+    const res = await fetch("/api/admin/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(settings)
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      alert("Settings and prices updated successfully!");
+      window.location.reload();
+    } else {
+      alert("Error updating settings.");
+    }
+  } catch (err) {
+    alert("Network error: " + err.message);
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Retrieve My Voucher | CheckerPay Ghana{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 800px;">
+  <div style="text-align: center; margin-bottom: 2.5rem;">
+    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</div>
+    <h1 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem;">Retrieve Lost Result Checker</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">
+      Did your phone battery die or did your browser close? Enter your Mobile Money number or Order Reference below to view and reprint your Serial & PIN.
+    </p>
+  </div>
+
+  <!-- Search Card -->
+  <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-gold); margin-bottom: 2.5rem;">
+    <form method="GET" action="/lookup" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <input 
+        type="text" 
+        name="q" 
+        value="{{ query or '' }}" 
+        placeholder="Enter Phone Number (e.g. 024 123 4567) or Order Ref (ORD-...)" 
+        class="form-input" 
+        style="flex: 1; min-width: 260px;" 
+        required
+      >
+      <button type="submit" class="btn-buy" style="width: auto; padding: 0.85rem 1.75rem;">
+        Search Records
+      </button>
+    </form>
+  </div>
+
+  <!-- Results Section -->
+  {% if query %}
+    {% if orders and orders|length > 0 %}
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1.25rem;">
+        Found {{ orders|length }} Order(s) for "{{ query }}"
+      </h3>
+
+      {% for ord in orders %}
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Order Reference</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: var(--ghana-gold);">{{ ord.order_reference }}</div>
+          </div>
+          <div style="text-align: right;">
+            <span class="card-badge {% if ord.payment_status == 'PAID' %}card-badge-demand{% else %}card-badge-popular{% endif %}">
+              {{ ord.payment_status }}
+            </span>
+            <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;">{{ ord.created_at }}</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; padding: 1rem; background: rgba(0,0,0,0.25); border-radius: var(--radius-md);">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-dim);">Product</div>
+            <div style="font-weight: 700;">{{ ord.category }} Checker</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-dim);">Quantity</div>
+            <div style="font-weight: 700;">{{ ord.quantity }} Voucher(s)</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-dim);">Amount Paid</div>
+            <div style="font-weight: 700; color: var(--ghana-gold);">GH₵ {{ "%.2f"|format(ord.total_amount) }}</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-dim);">Customer Phone</div>
+            <div style="font-weight: 700;">{{ ord.customer_phone }}</div>
+          </div>
+        </div>
+
+        {% if ord.payment_status == 'PAID' and ord.vouchers %}
+          <div style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
+            Your Active Voucher Credentials:
+          </div>
+
+          {% for v in ord.vouchers %}
+          <div class="voucher-reveal-card" style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--ghana-gold);">Voucher #{{ loop.index }} ({{ ord.category }})</span>
+              <span style="font-size: 0.75rem; color: var(--ghana-green); font-weight: 700;">PAID & VERIFIED</span>
+            </div>
+
+            <div class="voucher-field">
+              <div>
+                <div class="voucher-field-label">Serial Number</div>
+                <div class="voucher-val">{{ v.serial_number }}</div>
+              </div>
+              <button class="btn-copy" onclick="copyText('{{ v.serial_number }}', this)">Copy Serial</button>
+            </div>
+
+            <div class="voucher-field">
+              <div>
+                <div class="voucher-field-label">Voucher PIN</div>
+                <div class="voucher-val">{{ v.pin }}</div>
+              </div>
+              <button class="btn-copy" onclick="copyText('{{ v.pin }}', this)">Copy PIN</button>
+            </div>
+          </div>
+          {% endfor %}
+
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            {% if ord.category == 'CSSPS' %}
+              <a href="https://cssps.gov.gh" target="_blank" class="btn-portal-launch" style="flex: 1;">
+                Open CSSPS Placement Portal &rarr;
+              </a>
+            {% elif ord.category == 'CTVET' %}
+              <a href="https://ctvet.gov.gh" target="_blank" class="btn-portal-launch" style="flex: 1;">
+                Open CTVET Portal &rarr;
+              </a>
+            {% else %}
+              <a href="https://ghana.waecdirect.org" target="_blank" class="btn-portal-launch" style="flex: 1;">
+                Open Official WAEC Portal &rarr;
+              </a>
+            {% endif %}
+            <button class="btn-print" onclick="window.print()">Print Slip</button>
+          </div>
+
+        {% else %}
+          <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-md); padding: 1rem; color: var(--ghana-gold); font-size: 0.85rem;">
+            This order is currently <strong>{{ ord.payment_status }}</strong>. Vouchers are only displayed after successful Mobile Money payment completion.
+          </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+    {% else %}
+      <div style="text-align: center; padding: 3rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">No Records Found</h3>
+        <p style="color: var(--text-muted); font-size: 0.875rem; max-width: 450px; margin: 0 auto;">
+          We could not find any paid orders matching "{{ query }}". Please verify the phone number or order reference used during checkout.
+        </p>
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}
