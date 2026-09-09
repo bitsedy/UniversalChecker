@@ -79,6 +79,18 @@ Free tiers on Render and Koyeb spin down into a sleep state after 15 minutes of 
 
 ---
 
+## 🔒 Securing the Admin Dashboard (`/admin`)
+
+The admin panel and operations endpoints are protected with HTTP Basic Authentication. To set your personal admin credentials in production:
+
+In your Render / Koyeb Web Service dashboard &rarr; **Environment** tab, add:
+* `ADMIN_USERNAME`: `your_chosen_username` (Default: `admin`)
+* `ADMIN_PASSWORD`: `your_strong_secret_password` (Default: `ghana2026`)
+
+When you or anyone visits `https://<YOUR-APP-URL>/admin`, the browser natively prompts for this username and password before granting access.
+
+---
+
 ## 🔑 Adding Live Paystack Credentials in the Cloud
 
 When you are ready to accept real Ghanaian Mobile Money and Card payments:

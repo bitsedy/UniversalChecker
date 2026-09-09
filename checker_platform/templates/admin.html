@@ -10,10 +10,36 @@
       <h1 style="font-size: 2rem; font-weight: 900;">Merchant Inventory & Operations</h1>
       <p style="color: var(--text-muted); font-size: 0.9rem;">Manage stock batches, sales velocity, and payment settings.</p>
     </div>
-    <span class="card-badge card-badge-popular" style="padding: 6px 14px; font-size: 0.85rem;">
-      High-Concurrency Mode Active (WAL)
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span class="card-badge card-badge-popular" style="padding: 6px 14px; font-size: 0.85rem;">
+        High-Concurrency Mode Active (WAL)
+      </span>
+      <a href="/admin/logout" style="background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); padding: 6px 14px; border-radius: var(--radius-sm); text-decoration: none; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
+        <span>🔒</span> Sign Out
+      </a>
+    </div>
+  </div>
+
+  <!-- SECURITY WARNING IF DEFAULT PASSWORD ACTIVE -->
+  {% if settings.is_default_password %}
+  <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid var(--ghana-red); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; margin-bottom: 2rem; display: flex; align-items: flex-start; gap: 14px;">
+    <span style="font-size: 1.6rem; line-height: 1;">⚠️</span>
+    <div>
+      <div style="font-weight: 800; color: #fca5a5; font-size: 1rem; margin-bottom: 4px;">SECURITY WARNING: Default Admin Password Active!</div>
+      <div style="font-size: 0.875rem; color: #e2e8f0; line-height: 1.5;">
+        Your platform is currently protected only by the factory default password (<code>ghana2026</code>). 
+        To secure your platform, scroll down to <strong>Admin Access Credentials</strong> to set a new password (min. 8 chars), or define the <code>ADMIN_PASSWORD</code> environment variable in your cloud hosting settings.
+      </div>
+    </div>
+  </div>
+  {% elif settings.env_password_override %}
+  <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid var(--ghana-green); border-radius: var(--radius-md); padding: 0.85rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px;">
+    <span style="font-size: 1.2rem;">🛡️</span>
+    <span style="font-size: 0.85rem; color: #a7f3d0;">
+      Admin password is encrypted and securely locked via the <code>ADMIN_PASSWORD</code> environment variable.
     </span>
   </div>
+  {% endif %}
 
   <!-- METRICS SUMMARY -->
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
@@ -245,11 +271,36 @@
 
         <div class="form-group">
           <label class="form-label">Paystack Secret Key (sk_test_... or sk_live_...)</label>
-          <input type="password" id="cfg_paystack_secret_key" value="{{ settings.paystack_secret_key }}" class="form-input" placeholder="sk_test_...">
+          <input type="password" id="cfg_paystack_secret_key" class="form-input" placeholder="{% if settings.has_paystack_secret_key %}•••••••••••••••• (Leave blank to keep current){% else %}sk_test_... or sk_live_...{% endif %}">
+          {% if settings.masked_paystack_secret_key %}
+          <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
+            Configured: <code>{{ settings.masked_paystack_secret_key }}</code> (Never exposed in plaintext)
+          </span>
+          {% endif %}
         </div>
 
-        <button type="submit" id="btn_save_settings" class="btn-safety-guide" style="width: 100%; text-align: center; cursor: pointer;">
-          Save Settings & Prices
+        <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle);">
+          <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 6px;">
+            <span>🔒</span> Admin Access Credentials
+          </h4>
+          <p style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.85rem;">
+            Secures this dashboard and API routes against unauthorized public access.
+          </p>
+          <div class="form-group">
+            <label class="form-label">Admin Username</label>
+            <input type="text" id="cfg_admin_username" value="{{ settings.admin_username }}" class="form-input" placeholder="admin">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Change Admin Password</label>
+            <input type="password" id="cfg_admin_password" class="form-input" placeholder="Leave blank to keep current password (Min. 8 characters)" minlength="8">
+            <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
+              Protected with salted PBKDF2-HMAC-SHA256 encryption. Can also be set on Render/Koyeb via <code>ADMIN_PASSWORD</code>.
+            </span>
+          </div>
+        </div>
+
+        <button type="submit" id="btn_save_settings" class="btn-safety-guide" style="width: 100%; text-align: center; cursor: pointer; margin-top: 0.5rem;">
+          Save Settings, Keys & Credentials
         </button>
       </form>
     </div>
@@ -316,26 +367,27 @@ async function saveInventoryModeOnly() {
   btn.disabled = true;
 
   try {
+    const payload = {
+      price_WASSCE: document.getElementById("cfg_price_WASSCE").value,
+      price_BECE: document.getElementById("cfg_price_BECE").value,
+      price_CSSPS: document.getElementById("cfg_price_CSSPS").value,
+      price_CTVET: document.getElementById("cfg_price_CTVET").value,
+      sms_sender_id: document.getElementById("cfg_sms_sender_id").value,
+      paystack_public_key: document.getElementById("cfg_paystack_public_key").value,
+      inventory_mode: selectedMode
+    };
+
     const res = await fetch("/api/admin/settings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        price_WASSCE: document.getElementById("cfg_price_WASSCE").value,
-        price_BECE: document.getElementById("cfg_price_BECE").value,
-        price_CSSPS: document.getElementById("cfg_price_CSSPS").value,
-        price_CTVET: document.getElementById("cfg_price_CTVET").value,
-        sms_sender_id: document.getElementById("cfg_sms_sender_id").value,
-        paystack_public_key: document.getElementById("cfg_paystack_public_key").value,
-        paystack_secret_key: document.getElementById("cfg_paystack_secret_key").value,
-        inventory_mode: selectedMode
-      })
+      body: JSON.stringify(payload)
     });
     const data = await res.json();
     if (res.ok && data.success) {
       alert(`Success! Inventory mode updated to: ${selectedMode === 'DEMO_GENERATE' ? 'Dynamic Demo Generator' : 'Strict Wholesale Batch'}.`);
       window.location.reload();
     } else {
-      alert("Error saving inventory mode.");
+      alert("Error: " + (data.message || "Error saving inventory mode."));
       btn.innerText = "💾 Save Inventory Mode Setting";
       btn.disabled = false;
     }
@@ -418,9 +470,30 @@ async function handleSaveSettings(e) {
     price_CTVET: document.getElementById("cfg_price_CTVET").value,
     sms_sender_id: document.getElementById("cfg_sms_sender_id").value,
     paystack_public_key: document.getElementById("cfg_paystack_public_key").value,
-    paystack_secret_key: document.getElementById("cfg_paystack_secret_key").value,
     inventory_mode: selectedMode
   };
+
+  const secretKey = document.getElementById("cfg_paystack_secret_key")?.value?.trim();
+  if (secretKey) {
+    settings.paystack_secret_key = secretKey;
+  }
+
+  const adminUser = document.getElementById("cfg_admin_username")?.value?.trim();
+  const adminPass = document.getElementById("cfg_admin_password")?.value?.trim();
+  if (adminUser) {
+    if (adminUser.length < 3) {
+      alert("Security Error: Admin username must be at least 3 characters long.");
+      return;
+    }
+    settings.admin_username = adminUser;
+  }
+  if (adminPass) {
+    if (adminPass.length < 8) {
+      alert("Security Error: Admin password must be at least 8 characters long.");
+      return;
+    }
+    settings.admin_password = adminPass;
+  }
 
   try {
     const res = await fetch("/api/admin/settings", {
@@ -430,10 +503,10 @@ async function handleSaveSettings(e) {
     });
     const data = await res.json();
     if (res.ok && data.success) {
-      alert("Settings and prices updated successfully!");
+      alert("Settings and credentials updated successfully!");
       window.location.reload();
     } else {
-      alert("Error updating settings.");
+      alert("Error: " + (data.message || "Failed to update settings."));
     }
   } catch (err) {
     alert("Network error: " + err.message);

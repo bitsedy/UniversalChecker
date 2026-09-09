@@ -102,6 +102,8 @@ def init_db():
             ("support_phone", "+233 24 000 0000"),
             ("support_whatsapp", "+233240000000"),
             ("inventory_mode", "BATCH"), # 'BATCH' or 'DEMO_GENERATE'
+            ("admin_username", "admin"),
+            ("admin_password", "ghana2026"),
         ]
         for key, val in default_settings:
             cursor.execute("INSERT OR IGNORE INTO site_settings (key, value) VALUES (?, ?);", (key, val))

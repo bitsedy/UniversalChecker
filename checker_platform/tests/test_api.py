@@ -50,8 +50,12 @@ class TestApiEndpoints(unittest.TestCase):
         self.assertIn("The 10 vs 12-Digit Index Rule", response.text)
         self.assertIn("The 3-Check Limit & Index Binding", response.text)
 
-    def test_admin_page_get(self):
+    def test_admin_page_unauthorized(self):
         response = self.client.get("/admin")
+        self.assertEqual(response.status_code, 401)
+
+    def test_admin_page_authorized(self):
+        response = self.client.get("/admin", auth=("admin", "ghana2026"))
         self.assertEqual(response.status_code, 200)
         self.assertIn("Merchant Inventory & Operations", response.text)
 
@@ -138,18 +142,22 @@ class TestApiEndpoints(unittest.TestCase):
         self.assertIn("CSSPS", f["portal_name"])
 
     def test_demo_batch_generate_api(self):
-        # Test 1-click batch generation endpoint
+        # Without auth should fail
+        unauth = self.client.post("/api/admin/inventory/generate-demo", json={"category": "WASSCE", "count": 5})
+        self.assertEqual(unauth.status_code, 401)
+
+        # With auth should succeed
         res = self.client.post("/api/admin/inventory/generate-demo", json={
             "category": "WASSCE",
             "count": 5
-        })
+        }, auth=("admin", "ghana2026"))
         self.assertEqual(res.status_code, 200)
         data = res.json()
         self.assertTrue(data["success"])
         self.assertEqual(data["total_inserted"], 5)
 
     def test_dynamic_demo_generation_mode(self):
-        # Switch mode to DEMO_GENERATE
+        # Switch mode to DEMO_GENERATE with auth
         res = self.client.post("/api/admin/settings", json={
             "price_WASSCE": "22.00",
             "price_BECE": "18.00",
@@ -157,7 +165,7 @@ class TestApiEndpoints(unittest.TestCase):
             "price_CTVET": "25.00",
             "sms_sender_id": "CHECKER_GH",
             "inventory_mode": "DEMO_GENERATE"
-        })
+        }, auth=("admin", "ghana2026"))
         self.assertEqual(res.status_code, 200)
         
         # Verify catalog reflects demo mode
@@ -195,7 +203,84 @@ class TestApiEndpoints(unittest.TestCase):
             "price_CTVET": "25.00",
             "sms_sender_id": "CHECKER_GH",
             "inventory_mode": "BATCH"
-        })
+        }, auth=("admin", "ghana2026"))
+
+    def test_admin_logout(self):
+        """Verifies that the /admin/logout endpoint issues 401 with a fresh realm to discard cached auth."""
+        res = self.client.get("/admin/logout")
+        self.assertEqual(res.status_code, 401)
+        self.assertIn("Logged Out", res.headers.get("WWW-Authenticate", ""))
+        self.assertIn("Logged Out Successfully", res.text)
+
+    def test_admin_security_headers(self):
+        """Verifies that security headers are applied to prevent caching, sniffing, and clickjacking."""
+        res = self.client.get("/admin", auth=("admin", "ghana2026"))
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.headers.get("X-Frame-Options"), "DENY")
+        self.assertEqual(res.headers.get("X-Content-Type-Options"), "nosniff")
+        self.assertIn("no-store", res.headers.get("Cache-Control", ""))
+
+    def test_admin_password_hash_and_validation(self):
+        """Verifies password length validation and PBKDF2 salted hashing."""
+        from checker_platform.database import get_setting
+
+        # 1. Reject password under 8 characters
+        res_short = self.client.post("/api/admin/settings", json={
+            "price_WASSCE": "22.00",
+            "price_BECE": "18.00",
+            "price_CSSPS": "15.00",
+            "price_CTVET": "25.00",
+            "sms_sender_id": "CHECKER_GH",
+            "admin_password": "short"
+        }, auth=("admin", "ghana2026"))
+        self.assertEqual(res_short.status_code, 400)
+        self.assertIn("8 characters", res_short.json()["message"])
+
+        # 2. Accept strong password and verify salted PBKDF2 hash stored
+        strong_pass = "GhanaSecretPass2026!"
+        res_ok = self.client.post("/api/admin/settings", json={
+            "price_WASSCE": "22.00",
+            "price_BECE": "18.00",
+            "price_CSSPS": "15.00",
+            "price_CTVET": "25.00",
+            "sms_sender_id": "CHECKER_GH",
+            "admin_password": strong_pass
+        }, auth=("admin", "ghana2026"))
+        self.assertEqual(res_ok.status_code, 200)
+
+        stored = get_setting("admin_password")
+        self.assertTrue(stored.startswith("pbkdf2:sha256:100000$"))
+
+        # 3. Verify login succeeds with new password
+        res_login = self.client.get("/admin", auth=("admin", strong_pass))
+        self.assertEqual(res_login.status_code, 200)
+
+        # 4. Restore test suite password
+        from checker_platform.main import hash_password
+        from checker_platform.database import update_setting
+        update_setting("admin_password", "ghana2026")
+
+    def test_admin_rate_limiter_lockout(self):
+        """Verifies that 5 failed login attempts trigger a 429 Too Many Requests lockout."""
+        from checker_platform.main import AdminSecurityManager
+        AdminSecurityManager.reset()
+
+        # 4 failed attempts should yield 401
+        for i in range(4):
+            res = self.client.get("/admin", auth=("admin", f"wrong_pass_{i}"))
+            self.assertEqual(res.status_code, 401)
+
+        # 5th failed attempt should trigger 401 and lock out
+        res5 = self.client.get("/admin", auth=("admin", "wrong_pass_5"))
+        self.assertEqual(res5.status_code, 401)
+
+        # 6th attempt should now be blocked with 429 Too Many Requests
+        res_locked = self.client.get("/admin", auth=("admin", "ghana2026"))
+        self.assertEqual(res_locked.status_code, 429)
+        self.assertIn("Too many failed login attempts", res_locked.json()["detail"])
+
+        # Reset for subsequent tests
+        AdminSecurityManager.reset()
 
 if __name__ == "__main__":
     unittest.main()
