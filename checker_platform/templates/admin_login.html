@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Merchant Admin Sign-In | CheckerPay Ghana{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3.5rem; padding-bottom: 5rem; display: flex; justify-content: center; align-items: center; min-height: 70vh;">
+  
+  <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 2.5rem; width: 100%; max-width: 440px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); position: relative; overflow: hidden;">
+    
+    <!-- Top gold accent line -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--ghana-red), var(--ghana-gold), var(--ghana-green));"></div>
+
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 16px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); margin-bottom: 1rem;">
+        <span style="font-size: 2rem;">🔒</span>
+      </div>
+      <h1 style="font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 0.35rem;">Merchant Admin Sign-In</h1>
+      <p style="color: var(--text-muted); font-size: 0.875rem;">Enter your credentials to access inventory and operations.</p>
+    </div>
+
+    <!-- Logged out notification -->
+    {% if logged_out %}
+    <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid var(--ghana-green); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 1.2rem;">✅</span>
+      <div style="font-size: 0.85rem; color: #a7f3d0; font-weight: 600;">
+        You have been signed out. Enter credentials to sign in again.
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Error notification -->
+    {% if error %}
+    <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid var(--ghana-red); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 1.2rem;">⚠️</span>
+      <div style="font-size: 0.85rem; color: #fca5a5; font-weight: 600;">
+        {{ error }}
+      </div>
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/admin/login" id="admin_login_form">
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label class="form-label" for="admin_user">Admin Username</label>
+        <div style="position: relative;">
+          <input type="text" id="admin_user" name="username" class="form-input" placeholder="e.g. admin" value="{{ entered_username or '' }}" required autofocus autocomplete="username">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label" for="admin_pass">Password</label>
+        <div style="position: relative;">
+          <input type="password" id="admin_pass" name="password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
+        </div>
+      </div>
+
+      <button type="submit" id="btn_login" class="btn-safety-guide" style="width: 100%; text-align: center; cursor: pointer; padding: 0.85rem; font-size: 0.95rem; font-weight: 800; justify-content: center;">
+        Sign In to Dashboard &rarr;
+      </button>
+    </form>
+
+    <div style="margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); text-align: center;">
+      <div style="font-size: 0.775rem; color: var(--text-dim); margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <span>🛡️</span> 30-min auto-logout &bull; Salted PBKDF2 Encryption
+      </div>
+      <a href="/" style="color: var(--text-muted); font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s;" onmouseover="this.style.color='var(--ghana-gold)'" onmouseout="this.style.color='var(--text-muted)'">
+        &larr; Return to Storefront
+      </a>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

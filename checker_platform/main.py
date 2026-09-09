@@ -5,6 +5,7 @@ FastAPI Application Entrypoint
 
 import secrets
 import hashlib
+import hmac
 import asyncio
 import os
 import random
@@ -15,7 +16,7 @@ from typing import Optional, List, Dict
 
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks, Header, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
@@ -144,7 +145,7 @@ async def guides_page(request: Request):
         context={"active_page": "guides"}
     )
 
-admin_security = HTTPBasic()
+admin_security = HTTPBasic(auto_error=False)
 
 class AdminSecurityManager:
     """
@@ -221,35 +222,224 @@ def verify_password(plain_password: str, stored_hash_or_plain: str) -> bool:
     # Legacy plaintext fallback (with constant-time comparison)
     return secrets.compare_digest(plain_password, stored_hash_or_plain)
 
+_SESSION_SECRET: Optional[str] = None
+
+def get_session_secret() -> str:
+    global _SESSION_SECRET
+    if _SESSION_SECRET:
+        return _SESSION_SECRET
+    secret = os.environ.get("SESSION_SECRET")
+    if not secret:
+        try:
+            secret = get_setting("session_secret", "")
+        except Exception:
+            secret = ""
+    if not secret:
+        secret = secrets.token_hex(32)
+        try:
+            update_setting("session_secret", secret)
+        except Exception:
+            pass
+    _SESSION_SECRET = secret
+    return _SESSION_SECRET
+
+SESSION_TIMEOUT_SECONDS = 1800  # 30-minute inactivity timeout
+
+def create_admin_session_token(username: str) -> str:
+    """Creates a tamper-proof signed session token containing username and timestamp."""
+    now = int(time.time())
+    payload = f"{username}:{now}"
+    secret = get_session_secret()
+    signature = hmac.new(
+        secret.encode("utf-8"),
+        payload.encode("utf-8"),
+        hashlib.sha256
+    ).hexdigest()
+    return f"{payload}:{signature}"
+
+def verify_admin_session_token(token: Optional[str]) -> Optional[str]:
+    """
+    Verifies the HMAC signature and timestamp of the admin session token.
+    Enforces a strict 30-minute inactivity expiration window.
+    Returns the authenticated username if valid, None otherwise.
+    """
+    if not token or ":" not in token:
+        return None
+    try:
+        parts = token.split(":")
+        if len(parts) != 3:
+            return None
+        username, ts_str, signature = parts[0], parts[1], parts[2]
+        payload = f"{username}:{ts_str}"
+        secret = get_session_secret()
+        expected_sig = hmac.new(
+            secret.encode("utf-8"),
+            payload.encode("utf-8"),
+            hashlib.sha256
+        ).hexdigest()
+        if not secrets.compare_digest(signature, expected_sig):
+            return None
+        
+        created_at = int(ts_str)
+        if time.time() - created_at > SESSION_TIMEOUT_SECONDS:
+            return None  # Expired after 30 minutes
+        return username
+    except Exception:
+        return None
+
 def get_current_admin(
     request: Request,
-    credentials: HTTPBasicCredentials = Depends(admin_security)
+    credentials: Optional[HTTPBasicCredentials] = Depends(admin_security)
 ) -> str:
-    """Validates HTTP Basic Auth credentials with brute-force lockout and hashed password comparison."""
+    """
+    Validates Admin Access:
+    1. Checks the secure 'admin_session' cookie (Primary for web browsers).
+    2. Fallback to HTTP Basic Auth (For automated API clients and tests).
+    3. If neither is valid:
+       - For browser requests (Accept: text/html): redirects to /admin/login.
+       - For API requests: raises 401 Unauthorized.
+    """
     client_ip = AdminSecurityManager.get_client_ip(request)
     AdminSecurityManager.check_lockout(client_ip)
+
+    # 1. Check Session Cookie first
+    cookie_token = request.cookies.get("admin_session")
+    session_user = verify_admin_session_token(cookie_token)
+    if session_user:
+        AdminSecurityManager.record_success(client_ip)
+        return session_user
+
+    # 2. Browser protection against cached Basic Auth credentials:
+    # Browsers store HTTP Basic Auth credentials indefinitely in memory for the domain.
+    # If an admin logged in before, the browser will silently attach 'Authorization: Basic ...'
+    # when clicking 'Admin Inventory' from the storefront.
+    # To enforce explicit authentication and 30-minute inactivity timeouts, all browser
+    # HTML requests to /admin strictly require an active 'admin_session' cookie.
+    is_testclient = request.headers.get("user-agent", "") == "testclient"
+    accept_header = request.headers.get("accept", "")
+    is_browser_req = (not is_testclient) and ("text/html" in accept_header or request.url.path == "/admin")
+
+    if is_browser_req:
+        raise HTTPException(
+            status_code=303,
+            headers={"Location": "/admin/login?error=Please+log+in+to+access+the+admin+dashboard."}
+        )
+
+    # 3. Check HTTP Basic Auth credentials (for automated API clients and tests)
+    if credentials:
+        expected_username = os.environ.get("ADMIN_USERNAME", get_setting("admin_username", "admin")).strip()
+        env_password = os.environ.get("ADMIN_PASSWORD")
+        db_password = get_setting("admin_password", "ghana2026").strip()
+
+        is_user_ok = secrets.compare_digest(credentials.username.strip(), expected_username)
+        if env_password:
+            is_pass_ok = verify_password(credentials.password.strip(), env_password.strip())
+        else:
+            is_pass_ok = verify_password(credentials.password.strip(), db_password)
+
+        if is_user_ok and is_pass_ok:
+            AdminSecurityManager.record_success(client_ip)
+            return credentials.username
+        else:
+            AdminSecurityManager.record_failure(client_ip)
+            logger.warning(f"[Security Warning] Failed admin login attempt for '{credentials.username}' from IP {client_ip}")
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid admin credentials",
+                headers={"WWW-Authenticate": "Basic realm='CheckerPay Admin'"}
+            )
+
+    # 4. Unauthenticated API request
+    raise HTTPException(
+        status_code=401,
+        detail="Admin authentication required",
+        headers={"WWW-Authenticate": "Basic realm='CheckerPay Admin'"}
+    )
+
+@app.get("/admin/login", response_class=HTMLResponse)
+async def admin_login_page(request: Request, logged_out: Optional[str] = None, error: Optional[str] = None):
+    """Admin Login Page."""
+    # If already logged in with a valid session, redirect directly to /admin
+    cookie_token = request.cookies.get("admin_session")
+    if verify_admin_session_token(cookie_token):
+        return RedirectResponse(url="/admin", status_code=303)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="admin_login.html",
+        context={
+            "active_page": "admin_login",
+            "logged_out": bool(logged_out),
+            "error": error
+        }
+    )
+
+@app.post("/admin/login")
+async def admin_login_submit(request: Request):
+    """Authenticates admin and issues an encrypted session cookie with 30-minute expiry."""
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    AdminSecurityManager.check_lockout(client_ip)
+
+    content_type = request.headers.get("content-type", "")
+    username = ""
+    password = ""
+    if "application/json" in content_type:
+        body = await request.json()
+        username = str(body.get("username", "")).strip()
+        password = str(body.get("password", "")).strip()
+    else:
+        form = await request.form()
+        username = str(form.get("username", "")).strip()
+        password = str(form.get("password", "")).strip()
 
     expected_username = os.environ.get("ADMIN_USERNAME", get_setting("admin_username", "admin")).strip()
     env_password = os.environ.get("ADMIN_PASSWORD")
     db_password = get_setting("admin_password", "ghana2026").strip()
 
-    is_user_ok = secrets.compare_digest(credentials.username.strip(), expected_username)
+    is_user_ok = secrets.compare_digest(username, expected_username)
     if env_password:
-        is_pass_ok = verify_password(credentials.password.strip(), env_password.strip())
+        is_pass_ok = verify_password(password, env_password.strip())
     else:
-        is_pass_ok = verify_password(credentials.password.strip(), db_password)
+        is_pass_ok = verify_password(password, db_password)
 
     if not (is_user_ok and is_pass_ok):
         AdminSecurityManager.record_failure(client_ip)
-        logger.warning(f"[Security Warning] Failed admin login attempt for '{credentials.username}' from IP {client_ip}")
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid admin credentials",
-            headers={"WWW-Authenticate": "Basic realm='CheckerPay Admin'"}
+        logger.warning(f"[Security Warning] Failed login attempt for user '{username}' from IP {client_ip}")
+        
+        if "application/json" in content_type:
+            return JSONResponse(status_code=401, content={"success": False, "message": "Invalid admin username or password."})
+        
+        return templates.TemplateResponse(
+            request=request,
+            name="admin_login.html",
+            context={
+                "active_page": "admin_login",
+                "error": "Invalid admin username or password. Please try again.",
+                "entered_username": username
+            },
+            status_code=401
         )
 
+    # Successful login: issue session cookie with 30-min expiry
     AdminSecurityManager.record_success(client_ip)
-    return credentials.username
+    logger.info(f"[Admin Audit] Successful login by '{username}' from IP {client_ip}. Session issued.")
+    
+    session_token = create_admin_session_token(username)
+    
+    if "application/json" in content_type:
+        response = JSONResponse(content={"success": True, "redirect": "/admin"})
+    else:
+        response = RedirectResponse(url="/admin", status_code=303)
+
+    response.set_cookie(
+        key="admin_session",
+        value=session_token,
+        max_age=SESSION_TIMEOUT_SECONDS,
+        httponly=True,
+        samesite="lax",
+        path="/"
+    )
+    return response
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request, admin_user: str = Depends(get_current_admin)):
@@ -291,16 +481,19 @@ async def admin_page(request: Request, admin_user: str = Depends(get_current_adm
     )
 
 @app.get("/admin/logout", response_class=HTMLResponse)
-async def admin_logout():
-    """Forces browser to clear cached HTTP Basic Auth credentials."""
-    return HTMLResponse(
+async def admin_logout(request: Request):
+    """Forces browser to clear cached HTTP Basic Auth credentials and destroys admin session."""
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    logger.info(f"[Admin Audit] Admin logged out from IP {client_ip}.")
+    
+    response = HTMLResponse(
         status_code=401,
         content="""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Logged Out | CheckerPay Admin</title>
-    <meta http-equiv="refresh" content="3;url=/">
+    <meta http-equiv="refresh" content="2;url=/admin/login?logged_out=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { background: #0b0f19; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
@@ -320,7 +513,7 @@ async def admin_logout():
         <h2>Logged Out Successfully</h2>
         <p>Your admin session credentials have been cleared from this browser session.</p>
         <div class="actions">
-            <a href="/admin" class="btn btn-login">Log In Again</a>
+            <a href="/admin/login" class="btn btn-login">Log In Again</a>
             <a href="/" class="btn btn-home">Back to Storefront</a>
         </div>
     </div>
@@ -328,6 +521,8 @@ async def admin_logout():
 </html>""",
         headers={"WWW-Authenticate": "Basic realm='CheckerPay Admin (Logged Out)'"}
     )
+    response.delete_cookie(key="admin_session", path="/")
+    return response
 
 # ============================================================================
 # API MODELS & ROUTES

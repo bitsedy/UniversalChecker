@@ -282,5 +282,104 @@ class TestApiEndpoints(unittest.TestCase):
         # Reset for subsequent tests
         AdminSecurityManager.reset()
 
+    def test_browser_storefront_admin_click_redirects_to_login(self):
+        """
+        Verifies the user-reported issue:
+        When a browser user clicks 'Admin Inventory' from the storefront, even if the browser
+        still holds a cached HTTP Basic Auth header from a previous admin session on this device,
+        they MUST NOT be automatically admitted to /admin. They must be redirected to /admin/login.
+        """
+        browser_headers = {
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        }
+        # Request with cached Basic Auth header, simulating previous login in browser memory
+        res = self.client.get("/admin", headers=browser_headers, auth=("admin", "ghana2026"), follow_redirects=False)
+        self.assertEqual(res.status_code, 303)
+        self.assertIn("/admin/login", res.headers.get("location", ""))
+
+    def test_admin_login_page_renders(self):
+        """Verifies the GET /admin/login page renders with sign-in form."""
+        res = self.client.get("/admin/login")
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("Merchant Admin Sign-In", res.text)
+        self.assertIn("admin_login_form", res.text)
+        self.assertIn("30-min auto-logout", res.text)
+
+    def test_admin_login_submit_invalid_credentials(self):
+        """Verifies failed login attempt returns 401 and error message."""
+        res = self.client.post("/admin/login", data={"username": "admin", "password": "wrongpassword"})
+        self.assertEqual(res.status_code, 401)
+        self.assertIn("Invalid admin username or password", res.text)
+
+    def test_admin_login_submit_valid_and_cookie_session_access(self):
+        """
+        Verifies successful login sets the admin_session cookie,
+        and subsequent browser requests with that cookie can access /admin without Basic Auth.
+        """
+        browser_headers = {
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        }
+        # 1. Submit login form
+        res_login = self.client.post(
+            "/admin/login",
+            data={"username": "admin", "password": "ghana2026"},
+            headers=browser_headers,
+            follow_redirects=False
+        )
+        self.assertEqual(res_login.status_code, 303)
+        self.assertEqual(res_login.headers.get("location"), "/admin")
+        
+        # Verify admin_session cookie is set
+        session_cookie = res_login.cookies.get("admin_session")
+        self.assertIsNotNone(session_cookie)
+
+        # 2. Access /admin using the session cookie in browser (NO auth parameter!)
+        res_admin = self.client.get(
+            "/admin",
+            headers=browser_headers,
+            cookies={"admin_session": session_cookie}
+        )
+        self.assertEqual(res_admin.status_code, 200)
+        self.assertIn("Merchant Inventory & Operations", res_admin.text)
+
+    def test_admin_logout_flow(self):
+        """Verifies GET /admin/logout clears the session cookie and directs user to login."""
+        from checker_platform.main import create_admin_session_token
+        valid_token = create_admin_session_token("admin")
+        
+        res = self.client.get("/admin/logout", cookies={"admin_session": valid_token})
+        self.assertEqual(res.status_code, 401)
+        self.assertIn("Logged Out Successfully", res.text)
+        # Cookie deletion header should be present
+        self.assertIn('admin_session=""', res.headers.get("set-cookie", ""))
+
+    def test_admin_expired_and_tampered_session_cookies(self):
+        """Verifies that expired (>30 min) or forged session cookies are rejected."""
+        browser_headers = {
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "accept": "text/html"
+        }
+        import time, hmac, hashlib
+        from checker_platform.main import get_session_secret
+
+        # 1. Expired session token (31 minutes ago)
+        old_time = int(time.time()) - 1900
+        payload = f"admin:{old_time}"
+        secret = get_session_secret()
+        sig = hmac.new(secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).hexdigest()
+        expired_token = f"{payload}:{sig}"
+
+        res_expired = self.client.get("/admin", headers=browser_headers, cookies={"admin_session": expired_token}, follow_redirects=False)
+        self.assertEqual(res_expired.status_code, 303)
+        self.assertIn("/admin/login", res_expired.headers.get("location", ""))
+
+        # 2. Forged/tampered token
+        tampered_token = "admin:9999999999:fake_forged_signature_hex"
+        res_tampered = self.client.get("/admin", headers=browser_headers, cookies={"admin_session": tampered_token}, follow_redirects=False)
+        self.assertEqual(res_tampered.status_code, 303)
+        self.assertIn("/admin/login", res_tampered.headers.get("location", ""))
+
 if __name__ == "__main__":
     unittest.main()

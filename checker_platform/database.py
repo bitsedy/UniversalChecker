@@ -117,6 +117,8 @@ def get_setting(key: str, default: str = "") -> str:
     try:
         row = conn.execute("SELECT value FROM site_settings WHERE key = ?", (key,)).fetchone()
         return row["value"] if row else default
+    except sqlite3.OperationalError:
+        return default
     finally:
         conn.close()
 
@@ -125,6 +127,9 @@ def update_setting(key: str, value: str):
     conn = get_db_connection()
     try:
         conn.execute("INSERT OR REPLACE INTO site_settings (key, value) VALUES (?, ?)", (key, value))
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
     finally:
         conn.close()
 
