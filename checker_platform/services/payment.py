@@ -12,6 +12,7 @@ import re
 import urllib.request
 import urllib.error
 import urllib.parse
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, Optional, Tuple
 from ..database import get_setting, get_db_connection
 
@@ -80,6 +81,8 @@ class PaystackProvider:
         1. Validates HMAC-SHA512 signature in constant time.
         2. Traps malformed JSON.
         3. Validates event type and payload integrity.
+        4. Rejects replayed events older than max_age_seconds (default 5 min).
+        5. Enforces GHS currency strictly.
         """
         if not signature_header or not payload_bytes:
             return False, None, "Missing signature or payload."
@@ -100,7 +103,28 @@ class PaystackProvider:
         if not data or not data.get("reference"):
             return False, payload, "Missing transaction data or order reference."
 
-        # Verify payment currency is strictly Ghanaian Cedis (GHS)
+        # ── Replay attack prevention: enforce paid_at recency ─────────────────
+        paid_at_str = data.get("paid_at") or data.get("created_at")
+        if paid_at_str:
+            try:
+                # Paystack returns ISO-8601 with trailing Z or offset
+                paid_at_str_clean = str(paid_at_str).strip().replace("Z", "+00:00")
+                paid_at = datetime.fromisoformat(paid_at_str_clean)
+                if paid_at.tzinfo is None:
+                    paid_at = paid_at.replace(tzinfo=timezone.utc)
+                age_seconds = (datetime.now(timezone.utc) - paid_at).total_seconds()
+                if age_seconds > max_age_seconds:
+                    return False, payload, (
+                        f"Webhook replay rejected: event is {int(age_seconds)}s old "
+                        f"(max allowed: {max_age_seconds}s)."
+                    )
+            except Exception as ts_err:
+                logger.warning(f"[Webhook] Could not parse paid_at '{paid_at_str}': {ts_err}. Skipping age check.")
+        else:
+            # Paystack production events always carry paid_at on charge.success; absence is suspicious
+            logger.warning("[Webhook] charge.success event missing paid_at field — proceeding with caution.")
+
+        # ── Currency enforcement: if specified, must strictly be Ghanaian Cedis (GHS) ───
         currency = data.get("currency")
         if currency and str(currency).upper().strip() != "GHS":
             return False, payload, f"Currency mismatch: expected GHS, received {currency}."

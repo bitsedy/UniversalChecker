@@ -1073,23 +1073,59 @@ function updateChartsData(data) {
     charts.disciplines.update();
   }
 
-  // Update Merkle Blocks
+  // Update Merkle Blocks — XSS-safe via DOM API (no innerHTML for server-supplied data)
   const stream = document.getElementById("merkle_blocks_stream");
   if (stream && data.security.recent_ledger_blocks) {
-    stream.innerHTML = data.security.recent_ledger_blocks.map(blk => `
-      <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); padding: 8px 12px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
-        <div>
-          <span style="color: var(--ghana-gold); font-weight: 800;">Block #${blk.block_index}</span>
-          <span style="color: #38bdf8; margin-left: 8px;">${blk.action_type}</span>
-          <span style="color: var(--text-dim); margin-left: 8px;">by ${blk.actor}</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="color: #cbd5e1;">Hash: <code>${blk.hash_snippet}</code></span>
-          <span style="color: var(--text-dim); font-size: 0.7rem;">${blk.timestamp_str}</span>
-          <span style="color: #34d399; font-weight: 700; font-size: 0.7rem;">✓</span>
-        </div>
-      </div>
-    `).join("");
+    stream.replaceChildren();
+    data.security.recent_ledger_blocks.forEach(blk => {
+      const row = document.createElement("div");
+      row.style.cssText = "background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;";
+
+      const left = document.createElement("div");
+
+      const blockNum = document.createElement("span");
+      blockNum.style.cssText = "color:var(--ghana-gold);font-weight:800;";
+      blockNum.textContent = `Block #${blk.block_index}`;
+
+      const actionType = document.createElement("span");
+      actionType.style.cssText = "color:#38bdf8;margin-left:8px;";
+      actionType.textContent = blk.action_type;
+
+      const actor = document.createElement("span");
+      actor.style.cssText = "color:var(--text-dim);margin-left:8px;";
+      actor.textContent = `by ${blk.actor}`;
+
+      left.appendChild(blockNum);
+      left.appendChild(actionType);
+      left.appendChild(actor);
+
+      const right = document.createElement("div");
+      right.style.cssText = "display:flex;align-items:center;gap:10px;";
+
+      const hashSpan = document.createElement("span");
+      hashSpan.style.cssText = "color:#cbd5e1;";
+      const hashLabel = document.createTextNode("Hash: ");
+      const hashCode = document.createElement("code");
+      hashCode.textContent = blk.hash_snippet;
+      hashSpan.appendChild(hashLabel);
+      hashSpan.appendChild(hashCode);
+
+      const tsSpan = document.createElement("span");
+      tsSpan.style.cssText = "color:var(--text-dim);font-size:0.7rem;";
+      tsSpan.textContent = blk.timestamp_str;
+
+      const checkmark = document.createElement("span");
+      checkmark.style.cssText = "color:#34d399;font-weight:700;font-size:0.7rem;";
+      checkmark.textContent = "✓";
+
+      right.appendChild(hashSpan);
+      right.appendChild(tsSpan);
+      right.appendChild(checkmark);
+
+      row.appendChild(left);
+      row.appendChild(right);
+      stream.appendChild(row);
+    });
   }
 }
 

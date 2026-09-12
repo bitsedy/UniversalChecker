@@ -907,7 +907,7 @@ async def api_create_order(req: OrderCreateRequest, request: Request):
             status_code=400,
             content={
                 "success": False, 
-                "message": f"Sorry, not enough available stock for {product['name']}. Current stock: {product['available_stock']}."
+                "message": f"Sorry, {product['name']} is currently out of stock. Please check back shortly."
             }
         )
 

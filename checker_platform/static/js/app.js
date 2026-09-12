@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupQuantityListeners();
   initLiveSocialProof();
   initScrollEngine();
+  setupVoucherCopyDelegation();
 });
 
 // Auto-detect Ghanaian network from phone number
@@ -283,43 +284,101 @@ async function approveSimulatedPayment() {
   }
 }
 
-// Render Sold Vouchers on Screen
+// Render Sold Vouchers on Screen — XSS-safe via DOM API (no innerHTML for user data)
+function _esc(val) {
+  // Returns a text node-safe string — used exclusively with textContent, never innerHTML
+  return String(val == null ? "" : val);
+}
+
+function _makeCopyBtn(label, valueToCopy) {
+  const btn = document.createElement("button");
+  btn.className = "btn-copy";
+  btn.textContent = label;
+  // Store the value in a data attribute so no JS runs from inline handlers
+  btn.dataset.copyValue = valueToCopy;
+  return btn;
+}
+
+// Single delegated listener on the vouchers container (set up once in DOMContentLoaded)
+function setupVoucherCopyDelegation() {
+  const container = document.getElementById("vouchers_container");
+  if (!container) return;
+  container.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-copy-value]");
+    if (!btn) return;
+    copyText(btn.dataset.copyValue, btn);
+  });
+}
+
 function showSuccessVouchers(data) {
   document.getElementById("checkout_step_payment").style.display = "none";
   document.getElementById("checkout_step_success").style.display = "block";
 
   const container = document.getElementById("vouchers_container");
-  container.innerHTML = "";
+  // Clear container using replaceChildren (safe — no HTML parsing)
+  container.replaceChildren();
 
   const fulfillment = data.fulfillment;
-  document.getElementById("success_order_ref").innerText = fulfillment.order_reference;
+  document.getElementById("success_order_ref").innerText = _esc(fulfillment.order_reference);
 
   fulfillment.cards.forEach((c) => {
-    const cardHtml = `
-      <div class="voucher-reveal-card">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
-          <span style="font-weight: 700; color: var(--ghana-gold);">${fulfillment.category_title} (Card #${c.item_number})</span>
-          <span style="font-size: 0.8rem; color: var(--ghana-green); font-weight: 700;">ACTIVE / VALID</span>
-        </div>
-        
-        <div class="voucher-field">
-          <div>
-            <div class="voucher-field-label">Serial Number</div>
-            <div class="voucher-val" id="serial_${c.item_number}">${c.serial_number}</div>
-          </div>
-          <button class="btn-copy" onclick="copyText('${c.serial_number}', this)">Copy Serial</button>
-        </div>
+    // ── Card wrapper ──────────────────────────────────────────────
+    const card = document.createElement("div");
+    card.className = "voucher-reveal-card";
 
-        <div class="voucher-field">
-          <div>
-            <div class="voucher-field-label">Voucher PIN</div>
-            <div class="voucher-val" id="pin_${c.item_number}">${c.pin}</div>
-          </div>
-          <button class="btn-copy" onclick="copyText('${c.pin}', this)">Copy PIN</button>
-        </div>
-      </div>
-    `;
-    container.innerHTML += cardHtml;
+    // ── Header row ──────────────────────────────────────────────
+    const header = document.createElement("div");
+    header.style.cssText = "display:flex;justify-content:space-between;margin-bottom:0.75rem;";
+
+    const titleSpan = document.createElement("span");
+    titleSpan.style.cssText = "font-weight:700;color:var(--ghana-gold);";
+    titleSpan.textContent = `${_esc(fulfillment.category_title)} (Card #${_esc(c.item_number)})`;
+
+    const statusSpan = document.createElement("span");
+    statusSpan.style.cssText = "font-size:0.8rem;color:var(--ghana-green);font-weight:700;";
+    statusSpan.textContent = "ACTIVE / VALID";
+
+    header.appendChild(titleSpan);
+    header.appendChild(statusSpan);
+    card.appendChild(header);
+
+    // ── Serial field ──────────────────────────────────────────────
+    const serialField = document.createElement("div");
+    serialField.className = "voucher-field";
+
+    const serialInfo = document.createElement("div");
+    const serialLabel = document.createElement("div");
+    serialLabel.className = "voucher-field-label";
+    serialLabel.textContent = "Serial Number";
+    const serialVal = document.createElement("div");
+    serialVal.className = "voucher-val";
+    serialVal.id = `serial_${_esc(c.item_number)}`;
+    serialVal.textContent = _esc(c.serial_number);
+    serialInfo.appendChild(serialLabel);
+    serialInfo.appendChild(serialVal);
+    serialField.appendChild(serialInfo);
+    serialField.appendChild(_makeCopyBtn("Copy Serial", _esc(c.serial_number)));
+    card.appendChild(serialField);
+
+    // ── PIN field ──────────────────────────────────────────────
+    const pinField = document.createElement("div");
+    pinField.className = "voucher-field";
+
+    const pinInfo = document.createElement("div");
+    const pinLabel = document.createElement("div");
+    pinLabel.className = "voucher-field-label";
+    pinLabel.textContent = "Voucher PIN";
+    const pinVal = document.createElement("div");
+    pinVal.className = "voucher-val";
+    pinVal.id = `pin_${_esc(c.item_number)}`;
+    pinVal.textContent = _esc(c.pin);
+    pinInfo.appendChild(pinLabel);
+    pinInfo.appendChild(pinVal);
+    pinField.appendChild(pinInfo);
+    pinField.appendChild(_makeCopyBtn("Copy PIN", _esc(c.pin)));
+    card.appendChild(pinField);
+
+    container.appendChild(card);
   });
 
   // Setup Portal Link & Dynamic Auto-Redirect
