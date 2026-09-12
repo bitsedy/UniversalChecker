@@ -153,6 +153,55 @@
     </button>
   </div>
 
+  <!-- LIVE ADMISSION & CUT-OFF SCRAPER ENGINE -->
+  <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+      <div>
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--ghana-gold); margin-bottom: 0.25rem; display: flex; align-items: center; gap: 8px;">
+          <span>🌐</span> Live Admission Data, Cut-Offs & Deadlines Scraper
+        </h3>
+        <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0;">
+          Scrapes and synchronizes official admission portals (UG Legon, KNUST, UCC, UPSA, ATU, CSSPS) to power the Placement Advisor.
+        </p>
+      </div>
+      <button type="button" id="btn_sync_scraper" class="btn-safety-guide" style="padding: 0.65rem 1.25rem; font-size: 0.85rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" onclick="triggerLiveScrape()">
+        <span>🔄</span> Trigger Live Scrape & Sync Now
+      </button>
+    </div>
+
+    <!-- Scraper Stats Row -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Tracked Programmes</div>
+        <div id="stat_total_programmes" style="font-size: 1.5rem; font-weight: 900; color: #fff; margin-top: 4px;">
+          {{ admissions_metrics.total_programmes or 0 }}
+        </div>
+      </div>
+      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Open Admissions</div>
+        <div id="stat_open_admissions" style="font-size: 1.5rem; font-weight: 900; color: #34d399; margin-top: 4px;">
+          {{ admissions_metrics.open_admissions or 0 }}
+        </div>
+      </div>
+      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Institutions Monitored</div>
+        <div id="stat_institutions" style="font-size: 1.5rem; font-weight: 900; color: var(--ghana-gold); margin-top: 4px;">
+          {{ admissions_metrics.institutions_tracked or 0 }}
+        </div>
+      </div>
+      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Scraper Engine Status</div>
+        <div id="scraper_status_badge" style="font-size: 0.85rem; font-weight: 800; color: #38bdf8; margin-top: 8px;">
+          Active & Synced
+        </div>
+      </div>
+    </div>
+
+    <!-- Scrape output log area -->
+    <div id="scrape_log_box" style="display: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; font-family: monospace; font-size: 0.8rem; color: #cbd5e1; max-height: 160px; overflow-y: auto;">
+    </div>
+  </div>
+
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; margin-bottom: 2.5rem;">
     <!-- BULK PIN IMPORTER & DEMO GENERATOR -->
     <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem;">
@@ -295,6 +344,25 @@
             <input type="password" id="cfg_admin_password" class="form-input" placeholder="Leave blank to keep current password (Min. 8 characters)" minlength="8">
             <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
               Protected with salted PBKDF2-HMAC-SHA256 encryption. Can also be set on Render/Koyeb via <code>ADMIN_PASSWORD</code>.
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+              <span>Stealth Gate Key (?gate=...)</span>
+              <span class="card-badge card-badge-demand" style="font-size: 0.65rem;">Stealth 404</span>
+            </label>
+            <input type="text" id="cfg_admin_gate_key" value="{{ settings.admin_gate_key }}" class="form-input" placeholder="ghana2026_gate">
+            <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
+              Accessing `/admin?gate={{ settings.admin_gate_key }}` unlocks access from any remote device. All unauthorized probes receive an authentic <strong>404 Not Found</strong>.
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Allowed IP Addresses (Comma-Separated)</label>
+            <input type="text" id="cfg_admin_allowed_ips" value="{{ settings.admin_allowed_ips }}" class="form-input" placeholder="127.0.0.1,::1">
+            <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
+              Direct access without gate key. Defaults to <code>127.0.0.1,::1</code> (localhost). Set to <code>*</code> to permit all IPs.
             </span>
           </div>
         </div>
@@ -495,6 +563,15 @@ async function handleSaveSettings(e) {
     settings.admin_password = adminPass;
   }
 
+  const gateKey = document.getElementById("cfg_admin_gate_key")?.value?.trim();
+  if (gateKey) {
+    settings.admin_gate_key = gateKey;
+  }
+  const allowedIps = document.getElementById("cfg_admin_allowed_ips")?.value?.trim();
+  if (allowedIps !== undefined) {
+    settings.admin_allowed_ips = allowedIps;
+  }
+
   try {
     const res = await fetch("/api/admin/settings", {
       method: "POST",
@@ -510,6 +587,47 @@ async function handleSaveSettings(e) {
     }
   } catch (err) {
     alert("Network error: " + err.message);
+  }
+}
+
+async function triggerLiveScrape() {
+  const btn = document.getElementById("btn_sync_scraper");
+  const logBox = document.getElementById("scrape_log_box");
+  btn.innerHTML = "<span>⏳</span> Scraping Admissions Portals...";
+  btn.disabled = true;
+  logBox.style.display = "block";
+  logBox.innerText = "Connecting to Ghanaian university admissions gateways (UG, KNUST, UCC, UPSA, ATU, CSSPS)...";
+
+  try {
+    const res = await fetch("/api/admin/scraper/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      const summary = data.summary;
+      const metrics = data.metrics;
+      document.getElementById("stat_total_programmes").innerText = metrics.total_programmes;
+      document.getElementById("stat_open_admissions").innerText = metrics.open_admissions;
+      document.getElementById("stat_institutions").innerText = metrics.institutions_tracked;
+      
+      let lines = `✅ Scrape completed in ${summary.duration_seconds}s.\n`;
+      lines += `Probed: ${summary.institutions_probed} institutions | Active Benchmarks: ${summary.total_programmes_indexed}\n`;
+      for (const [code, info] of Object.entries(summary.details || {})) {
+        lines += `• [${code}] ${info.target_url}: ${info.status} (${info.latency_ms}ms) -> ${info.notes}\n`;
+      }
+      logBox.innerText = lines;
+      alert(`Scraper Sync Completed! Verified ${summary.total_programmes_indexed} cut-offs, criteria, and deadlines across Ghana.`);
+    } else {
+      logBox.innerText = "Error: " + (data.message || "Scraper failed.");
+      alert("Scraper error: " + (data.message || "Failed"));
+    }
+  } catch (err) {
+    logBox.innerText = "Network failure: " + err.message;
+    alert("Network error during scrape: " + err.message);
+  } finally {
+    btn.innerHTML = "<span>🔄</span> Trigger Live Scrape & Sync Now";
+    btn.disabled = false;
   }
 }
 </script>

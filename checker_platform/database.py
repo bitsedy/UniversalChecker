@@ -83,12 +83,37 @@ def init_db():
             );
         """)
 
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS admission_benchmarks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                institution_code TEXT NOT NULL,
+                institution_name TEXT NOT NULL,
+                institution_type TEXT NOT NULL,
+                programme_name TEXT NOT NULL,
+                faculty_category TEXT NOT NULL,
+                cutoff_aggregate INTEGER NOT NULL,
+                cutoff_range_min INTEGER DEFAULT 6,
+                cutoff_range_max INTEGER DEFAULT 12,
+                mandatory_requirements TEXT NOT NULL,
+                application_deadline TEXT,
+                admission_status TEXT DEFAULT 'OPEN',
+                voucher_cost_ghs REAL DEFAULT 220.0,
+                portal_url TEXT NOT NULL,
+                source_url TEXT,
+                last_synced_at REAL NOT NULL,
+                UNIQUE(institution_code, programme_name)
+            );
+        """)
+
         # Performance and concurrency indexes
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vouchers_cat_status ON vouchers(category, status);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vouchers_order_ref ON vouchers(order_reference);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_orders_ref ON orders(order_reference);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_orders_phone ON orders(customer_phone);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vouchers_reserved_at ON vouchers(reserved_at);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_adm_type ON admission_benchmarks(institution_type);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_adm_faculty ON admission_benchmarks(faculty_category);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_adm_code ON admission_benchmarks(institution_code);")
 
         # Default pricing in GHS (Ghanaian Cedis)
         default_settings = [
@@ -104,6 +129,8 @@ def init_db():
             ("inventory_mode", "BATCH"), # 'BATCH' or 'DEMO_GENERATE'
             ("admin_username", "admin"),
             ("admin_password", "ghana2026"),
+            ("admin_gate_key", "ghana2026_gate"),
+            ("admin_allowed_ips", "127.0.0.1,::1"),
         ]
         for key, val in default_settings:
             cursor.execute("INSERT OR IGNORE INTO site_settings (key, value) VALUES (?, ?);", (key, val))
@@ -573,3 +600,176 @@ def get_admin_metrics() -> Dict[str, Any]:
         }
     finally:
         conn.close()
+
+def get_admission_benchmarks(
+    institution_type: Optional[str] = None,
+    faculty_category: Optional[str] = None,
+    institution_code: Optional[str] = None,
+    search: Optional[str] = None,
+    search_query: Optional[str] = None,
+    limit: int = 150
+) -> List[Dict[str, Any]]:
+    """Retrieves live admission benchmarks, cut-off points, and deadlines."""
+    active_search = search or search_query
+    conn = get_db_connection()
+    try:
+        query = "SELECT * FROM admission_benchmarks WHERE 1=1"
+        params: List[Any] = []
+        if institution_type:
+            query += " AND institution_type = ?"
+            params.append(institution_type)
+        if faculty_category:
+            query += " AND faculty_category = ?"
+            params.append(faculty_category)
+        if institution_code:
+            query += " AND institution_code = ?"
+            params.append(institution_code)
+        if active_search:
+            query += " AND (programme_name LIKE ? OR institution_name LIKE ? OR mandatory_requirements LIKE ?)"
+            s_param = f"%{active_search.strip()}%"
+            params.extend([s_param, s_param, s_param])
+        query += " ORDER BY cutoff_aggregate ASC, institution_name ASC LIMIT ?"
+        params.append(limit)
+        
+        rows = conn.execute(query, params).fetchall()
+        return [dict(r) for r in rows]
+    except sqlite3.OperationalError:
+        return []
+    finally:
+        conn.close()
+
+def upsert_admission_benchmark(benchmark_data: Optional[Dict[str, Any]] = None, **kwargs):
+    """Inserts or updates a single admission benchmark record."""
+    data = dict(benchmark_data) if benchmark_data else dict(kwargs)
+    conn = get_db_connection()
+    try:
+        conn.execute(
+            """
+            INSERT INTO admission_benchmarks (
+                institution_code, institution_name, institution_type,
+                programme_name, faculty_category, cutoff_aggregate,
+                cutoff_range_min, cutoff_range_max, mandatory_requirements,
+                application_deadline, admission_status, voucher_cost_ghs,
+                portal_url, source_url, last_synced_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(institution_code, programme_name) DO UPDATE SET
+                institution_name = excluded.institution_name,
+                institution_type = excluded.institution_type,
+                faculty_category = excluded.faculty_category,
+                cutoff_aggregate = excluded.cutoff_aggregate,
+                cutoff_range_min = excluded.cutoff_range_min,
+                cutoff_range_max = excluded.cutoff_range_max,
+                mandatory_requirements = excluded.mandatory_requirements,
+                application_deadline = excluded.application_deadline,
+                admission_status = excluded.admission_status,
+                voucher_cost_ghs = excluded.voucher_cost_ghs,
+                portal_url = excluded.portal_url,
+                source_url = excluded.source_url,
+                last_synced_at = excluded.last_synced_at;
+            """,
+            (
+                data["institution_code"],
+                data["institution_name"],
+                data["institution_type"],
+                data["programme_name"],
+                data["faculty_category"],
+                data["cutoff_aggregate"],
+                data.get("cutoff_range_min", 6),
+                data.get("cutoff_range_max", 12),
+                data["mandatory_requirements"],
+                data.get("application_deadline"),
+                data.get("admission_status", "OPEN"),
+                data.get("voucher_cost_ghs", 220.0),
+                data["portal_url"],
+                data.get("source_url"),
+                data.get("last_synced_at", time.time())
+            )
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+def bulk_upsert_admission_benchmarks(benchmarks: List[Dict[str, Any]]) -> int:
+    """Inserts or updates multiple admission benchmark records in a single transaction."""
+    if not benchmarks:
+        return 0
+    conn = get_db_connection()
+    try:
+        now = time.time()
+        for b in benchmarks:
+            conn.execute(
+                """
+                INSERT INTO admission_benchmarks (
+                    institution_code, institution_name, institution_type,
+                    programme_name, faculty_category, cutoff_aggregate,
+                    cutoff_range_min, cutoff_range_max, mandatory_requirements,
+                    application_deadline, admission_status, voucher_cost_ghs,
+                    portal_url, source_url, last_synced_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(institution_code, programme_name) DO UPDATE SET
+                    institution_name = excluded.institution_name,
+                    institution_type = excluded.institution_type,
+                    faculty_category = excluded.faculty_category,
+                    cutoff_aggregate = excluded.cutoff_aggregate,
+                    cutoff_range_min = excluded.cutoff_range_min,
+                    cutoff_range_max = excluded.cutoff_range_max,
+                    mandatory_requirements = excluded.mandatory_requirements,
+                    application_deadline = excluded.application_deadline,
+                    admission_status = excluded.admission_status,
+                    voucher_cost_ghs = excluded.voucher_cost_ghs,
+                    portal_url = excluded.portal_url,
+                    source_url = excluded.source_url,
+                    last_synced_at = excluded.last_synced_at;
+                """,
+                (
+                    b["institution_code"],
+                    b["institution_name"],
+                    b["institution_type"],
+                    b["programme_name"],
+                    b["faculty_category"],
+                    b["cutoff_aggregate"],
+                    b.get("cutoff_range_min", 6),
+                    b.get("cutoff_range_max", 12),
+                    b["mandatory_requirements"],
+                    b.get("application_deadline"),
+                    b.get("admission_status", "OPEN"),
+                    b.get("voucher_cost_ghs", 220.0),
+                    b["portal_url"],
+                    b.get("source_url"),
+                    b.get("last_synced_at", now)
+                )
+            )
+        conn.commit()
+        return len(benchmarks)
+    finally:
+        conn.close()
+
+def get_admissions_summary_metrics() -> Dict[str, Any]:
+    """Returns summary statistics of the admissions benchmark database."""
+    conn = get_db_connection()
+    try:
+        total = conn.execute("SELECT COUNT(*) as c FROM admission_benchmarks;").fetchone()["c"]
+        open_count = conn.execute("SELECT COUNT(*) as c FROM admission_benchmarks WHERE admission_status IN ('OPEN', 'CLOSING_SOON');").fetchone()["c"]
+        institutions = conn.execute("SELECT COUNT(DISTINCT institution_code) as c FROM admission_benchmarks;").fetchone()["c"]
+        last_sync_row = conn.execute("SELECT MAX(last_synced_at) as m FROM admission_benchmarks;").fetchone()
+        last_sync = last_sync_row["m"] if last_sync_row and last_sync_row["m"] else 0
+        return {
+            "total_programmes": total,
+            "open_admissions": open_count,
+            "institutions_tracked": institutions,
+            "total_institutions": institutions,
+            "last_synced_at": last_sync,
+            "latest_scrape": last_sync
+        }
+    except sqlite3.OperationalError:
+        return {
+            "total_programmes": 0,
+            "open_admissions": 0,
+            "institutions_tracked": 0,
+            "total_institutions": 0,
+            "last_synced_at": 0,
+            "latest_scrape": 0
+        }
+    finally:
+        conn.close()
+

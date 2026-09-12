@@ -12,7 +12,7 @@ import random
 import time
 import logging
 from contextlib import asynccontextmanager
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks, Header, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -34,7 +34,9 @@ from .database import (
     get_admin_metrics,
     get_setting,
     update_setting,
-    generate_dynamic_vouchers
+    generate_dynamic_vouchers,
+    get_admission_benchmarks,
+    get_admissions_summary_metrics
 )
 from .services.payment import (
     GhanaMoMoSimulator,
@@ -44,6 +46,14 @@ from .services.payment import (
     record_transaction
 )
 from .services.dispatch import DispatchManager
+from .services.advisory import (
+    evaluate_bece_results,
+    evaluate_wassce_results,
+    BECE_CORE_SUBJECTS,
+    BECE_ELECTIVE_SUBJECTS,
+    WASSCE_GRADE_VALUES,
+)
+from .services.scraper import AdmissionScraperEngine
 from .seed_data import run_seed
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -71,6 +81,7 @@ async def expired_reservation_cleaner():
 async def lifespan(app: FastAPI):
     # Startup: ensure DB exists and has initial stock
     init_db()
+    AdmissionScraperEngine.seed_benchmarks_if_empty()
     catalog = get_product_catalog()
     total_stock = sum(c["available_stock"] for c in catalog.values())
     if total_stock == 0:
@@ -287,18 +298,51 @@ def verify_admin_session_token(token: Optional[str]) -> Optional[str]:
     except Exception:
         return None
 
+def verify_admin_stealth_access(request: Request) -> bool:
+    """
+    Stealth 404 access control for Admin portal.
+    Unauthorized IPs and users receive a 404 Not Found response, completely concealing
+    the presence of the admin portal from port scanners, bots, and curious visitors.
+    Access is granted if:
+    1. Request carries an active, valid 'admin_session' cookie, OR
+    2. Request supplies the secret gate token (?gate=... or X-Admin-Gate header), OR
+    3. Request IP matches the configured allowed IPs (defaults to localhost).
+    """
+    # 1. Check Session Cookie
+    cookie_token = request.cookies.get("admin_session")
+    if verify_admin_session_token(cookie_token):
+        return True
+
+    # 2. Check Gate Key (?gate=... or X-Admin-Gate)
+    gate_param = request.query_params.get("gate") or request.headers.get("X-Admin-Gate")
+    expected_gate = os.environ.get("ADMIN_GATE_KEY", get_setting("admin_gate_key", "ghana2026_gate")).strip()
+    if gate_param and expected_gate and secrets.compare_digest(gate_param.strip(), expected_gate):
+        return True
+
+    # 3. Check Allowed IPs
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    allowed_ips_str = os.environ.get("ADMIN_ALLOWED_IPS", get_setting("admin_allowed_ips", "127.0.0.1,::1"))
+    allowed_ips = [ip.strip() for ip in allowed_ips_str.split(",") if ip.strip()]
+    if client_ip in allowed_ips or "*" in allowed_ips or client_ip in ("testclient", "localhost"):
+        return True
+
+    logger.warning(f"[Stealth 404] Concealed admin route '{request.url.path}' from unauthorized probe by IP '{client_ip}'")
+    raise HTTPException(status_code=404, detail="Not Found")
+
 def get_current_admin(
     request: Request,
     credentials: Optional[HTTPBasicCredentials] = Depends(admin_security)
 ) -> str:
     """
     Validates Admin Access:
-    1. Checks the secure 'admin_session' cookie (Primary for web browsers).
-    2. Fallback to HTTP Basic Auth (For automated API clients and tests).
-    3. If neither is valid:
+    1. Verifies stealth 404 access first (IP whitelist, gate key, or active session).
+    2. Checks the secure 'admin_session' cookie (Primary for web browsers).
+    3. Fallback to HTTP Basic Auth (For automated API clients and tests).
+    4. If neither is valid:
        - For browser requests (Accept: text/html): redirects to /admin/login.
        - For API requests: raises 401 Unauthorized.
     """
+    verify_admin_stealth_access(request)
     client_ip = AdminSecurityManager.get_client_ip(request)
     AdminSecurityManager.check_lockout(client_ip)
 
@@ -319,10 +363,13 @@ def get_current_admin(
     accept_header = request.headers.get("accept", "")
     is_browser_req = (not is_testclient) and ("text/html" in accept_header or request.url.path == "/admin")
 
+    gate_param = request.query_params.get("gate")
+    gate_query = f"&gate={gate_param}" if gate_param else ""
+
     if is_browser_req:
         raise HTTPException(
             status_code=303,
-            headers={"Location": "/admin/login?error=Please+log+in+to+access+the+admin+dashboard."}
+            headers={"Location": f"/admin/login?error=Please+log+in+to+access+the+admin+dashboard.{gate_query}"}
         )
 
     # 3. Check HTTP Basic Auth credentials (for automated API clients and tests)
@@ -356,25 +403,27 @@ def get_current_admin(
         headers={"WWW-Authenticate": "Basic realm='CheckerPay Admin'"}
     )
 
-@app.get("/admin/login", response_class=HTMLResponse)
-async def admin_login_page(request: Request, logged_out: Optional[str] = None, error: Optional[str] = None):
+@app.get("/admin/login", response_class=HTMLResponse, dependencies=[Depends(verify_admin_stealth_access)])
+async def admin_login_page(request: Request, logged_out: Optional[str] = None, error: Optional[str] = None, gate: Optional[str] = None):
     """Admin Login Page."""
     # If already logged in with a valid session, redirect directly to /admin
     cookie_token = request.cookies.get("admin_session")
     if verify_admin_session_token(cookie_token):
         return RedirectResponse(url="/admin", status_code=303)
 
+    gate_val = gate or request.query_params.get("gate", "")
     return templates.TemplateResponse(
         request=request,
         name="admin_login.html",
         context={
             "active_page": "admin_login",
             "logged_out": bool(logged_out),
-            "error": error
+            "error": error,
+            "gate": gate_val
         }
     )
 
-@app.post("/admin/login")
+@app.post("/admin/login", dependencies=[Depends(verify_admin_stealth_access)])
 async def admin_login_submit(request: Request):
     """Authenticates admin and issues an encrypted session cookie with 30-minute expiry."""
     client_ip = AdminSecurityManager.get_client_ip(request)
@@ -472,15 +521,24 @@ async def admin_page(request: Request, admin_user: str = Depends(get_current_adm
         "inventory_mode": get_setting("inventory_mode", "BATCH"),
         "admin_username": get_setting("admin_username", "admin"),
         "is_default_password": is_default_password,
-        "env_password_override": bool(env_password)
+        "env_password_override": bool(env_password),
+        "admin_gate_key": get_setting("admin_gate_key", "ghana2026_gate"),
+        "admin_allowed_ips": get_setting("admin_allowed_ips", "127.0.0.1,::1"),
     }
+    admissions_metrics = get_admissions_summary_metrics()
     return templates.TemplateResponse(
         request=request,
         name="admin.html",
-        context={"active_page": "admin", "metrics": metrics, "settings": settings, "admin_user": admin_user}
+        context={
+            "active_page": "admin",
+            "metrics": metrics,
+            "settings": settings,
+            "admin_user": admin_user,
+            "admissions_metrics": admissions_metrics
+        }
     )
 
-@app.get("/admin/logout", response_class=HTMLResponse)
+@app.get("/admin/logout", response_class=HTMLResponse, dependencies=[Depends(verify_admin_stealth_access)])
 async def admin_logout(request: Request):
     """Forces browser to clear cached HTTP Basic Auth credentials and destroys admin session."""
     client_ip = AdminSecurityManager.get_client_ip(request)
@@ -554,6 +612,8 @@ class SettingsUpdateRequest(BaseModel):
     inventory_mode: Optional[str] = "BATCH"
     admin_username: Optional[str] = None
     admin_password: Optional[str] = None
+    admin_gate_key: Optional[str] = None
+    admin_allowed_ips: Optional[str] = None
 
 class GenerateBatchRequest(BaseModel):
     category: str = "ALL"
@@ -786,6 +846,14 @@ async def api_admin_save_settings(req: SettingsUpdateRequest, request: Request, 
         update_setting("admin_password", hashed_pass)
         logger.info(f"[Admin Audit] Admin password securely changed and hashed by '{admin_user}' ({client_ip}).")
 
+    if req.admin_gate_key and req.admin_gate_key.strip():
+        update_setting("admin_gate_key", req.admin_gate_key.strip())
+        logger.info(f"[Admin Audit] Admin gate key updated by '{admin_user}' ({client_ip}).")
+
+    if req.admin_allowed_ips is not None:
+        update_setting("admin_allowed_ips", req.admin_allowed_ips.strip())
+        logger.info(f"[Admin Audit] Admin allowed IPs updated by '{admin_user}' ({client_ip}).")
+
     return {"success": True}
 
 @app.post("/api/admin/inventory/generate-demo")
@@ -811,3 +879,127 @@ async def api_admin_generate_demo_batch(req: GenerateBatchRequest, request: Requ
         "breakdown": breakdown,
         "message": f"Successfully generated and inserted {total_inserted} test vouchers into inventory."
     }
+
+# ============================================================================
+# EDUCATIONAL PLACEMENT & PATHWAY ADVISOR (GHANA ACT 843 COMPLIANT)
+# ============================================================================
+
+class AdvisoryRequest(BaseModel):
+    exam_type: str = Field(..., description="'BECE' or 'WASSCE'")
+    consent_given: bool = Field(False, description="Consent mandated by Ghana Data Protection Act, 2012 (Act 843)")
+    cores: Dict[str, Any] = Field(default_factory=dict)
+    electives: Dict[str, Any] = Field(default_factory=dict)
+    programme: Optional[str] = None
+
+@app.get("/advisor", response_class=HTMLResponse)
+async def advisor_page(request: Request):
+    """
+    Educational Placement & Pathway Advisory Portal.
+    Compliant with Ghana Data Protection Act, 2012 (Act 843).
+    """
+    return templates.TemplateResponse(
+        request=request,
+        name="advisor.html",
+        context={
+            "active_page": "advisor",
+            "bece_cores": BECE_CORE_SUBJECTS,
+            "bece_electives": BECE_ELECTIVE_SUBJECTS,
+            "wassce_grades": list(WASSCE_GRADE_VALUES.keys())
+        }
+    )
+
+@app.post("/api/advisor/analyze")
+async def api_advisor_analyze(req: AdvisoryRequest):
+    """
+    Ghana Data Protection Act, 2012 (Act 843) Compliant Analysis:
+    - Explicit consent verification (Section 20).
+    - Ephemeral in-memory calculation; zero database records written.
+    - Expert, realistic, non-bluffing school placement & tertiary pathway guidance.
+    """
+    if not req.consent_given:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "success": False,
+                "message": "Consent is required under the Ghana Data Protection Act, 2012 (Act 843). Please accept the data processing terms to proceed."
+            }
+        )
+
+    exam = req.exam_type.strip().upper()
+    if exam == "BECE":
+        clean_cores = {}
+        for k, v in req.cores.items():
+            try:
+                clean_cores[k] = int(v)
+            except (ValueError, TypeError):
+                clean_cores[k] = 9
+        clean_electives = {}
+        for k, v in req.electives.items():
+            try:
+                clean_electives[k] = int(v)
+            except (ValueError, TypeError):
+                clean_electives[k] = 9
+        analysis = evaluate_bece_results(clean_cores, clean_electives, req.programme or "General Science")
+    elif exam == "WASSCE":
+        clean_cores = {k: str(v).strip().upper() for k, v in req.cores.items()}
+        clean_electives = {k: str(v).strip().upper() for k, v in req.electives.items()}
+        analysis = evaluate_wassce_results(clean_cores, clean_electives, req.programme or "Computer Science & Engineering")
+    else:
+        raise HTTPException(status_code=400, detail="Invalid exam type. Must be 'BECE' or 'WASSCE'.")
+
+    return {
+        "success": True,
+        "analysis": analysis,
+        "compliance": {
+            "act": "Ghana Data Protection Act, 2012 (Act 843)",
+            "retention": "Zero Persistence (Ephemeral In-Memory Analysis)",
+            "consent_verified": True
+        }
+    }
+
+@app.get("/api/admissions/live")
+async def api_get_live_admissions(
+    institution_type: Optional[str] = None,
+    faculty: Optional[str] = None,
+    institution_code: Optional[str] = None,
+    q: Optional[str] = None,
+    limit: int = 150
+):
+    """
+    Public admissions intelligence endpoint:
+    Returns live scraped cut-off points, active admission deadlines, criteria,
+    and official portal application links across Ghanaian educational institutions.
+    """
+    AdmissionScraperEngine.seed_benchmarks_if_empty()
+    benchmarks = get_admission_benchmarks(
+        institution_type=institution_type,
+        faculty_category=faculty,
+        institution_code=institution_code,
+        search=q,
+        limit=limit
+    )
+    metrics = get_admissions_summary_metrics()
+    return {
+        "success": True,
+        "count": len(benchmarks),
+        "total": len(benchmarks),
+        "metrics": metrics,
+        "benchmarks": benchmarks
+    }
+
+@app.post("/api/admin/scraper/sync")
+async def api_admin_scraper_sync(request: Request, admin_user: str = Depends(get_current_admin)):
+    """
+    Admin on-demand trigger to run the live admission scraper and synchronization engine
+    across all Ghanaian universities, technical institutes, and CSSPS portals.
+    """
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    logger.info(f"[Admin Audit] Live admission scraper triggered by '{admin_user}' ({client_ip}).")
+    sync_summary = await AdmissionScraperEngine.sync_all_institutions()
+    metrics = get_admissions_summary_metrics()
+    return {
+        "success": True,
+        "summary": sync_summary,
+        "metrics": metrics
+    }
+

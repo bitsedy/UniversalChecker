@@ -29,6 +29,9 @@
 
       <div class="nav-links">
         <a href="/" class="nav-link {% if active_page == 'home' %}active{% endif %}">Home</a>
+        <a href="/advisor" class="nav-link {% if active_page == 'advisor' %}active{% endif %}" style="display: inline-flex; align-items: center; gap: 5px;">
+          <span>🎓</span> Placement & Pathway Advisor
+        </a>
         <a href="/guides" class="nav-link {% if active_page == 'guides' %}active{% endif %}">Portal Guides & Rules</a>
         <a href="/lookup" class="btn-nav-lookup">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -73,9 +76,9 @@
           <div>
             <div style="font-weight: 700; color: #fff; font-size: 0.85rem; margin-bottom: 0.5rem; text-transform: uppercase;">Navigation</div>
             <ul style="list-style: none; font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px;">
+              <li><a href="/advisor" style="color: var(--text-muted); text-decoration: none;">🎓 Placement & Pathway Advisor</a></li>
               <li><a href="/guides" style="color: var(--text-muted); text-decoration: none;">Avoid Voucher Burn Guide</a></li>
               <li><a href="/lookup" style="color: var(--text-muted); text-decoration: none;">Find Lost Serial & PIN</a></li>
-              <li><a href="/admin" style="color: var(--text-dim); text-decoration: none;">Admin Inventory</a></li>
             </ul>
           </div>
         </div>

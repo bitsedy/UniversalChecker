@@ -1,0 +1,917 @@
+{% extends "base.html" %}
+
+{% block title %}Educational Placement & Pathway Advisor | CheckerPay Ghana{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
+
+  <!-- Hero Header -->
+  <div style="text-align: center; max-width: 820px; margin: 0 auto 2.5rem auto;">
+    <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--border-gold); padding: 0.35rem 1rem; border-radius: 999px; margin-bottom: 1rem;">
+      <span>🇬🇭</span>
+      <span style="font-size: 0.8rem; font-weight: 700; color: var(--ghana-gold); text-transform: uppercase; letter-spacing: 0.05em;">
+        Official Ghana Placement & Tertiary Advisor
+      </span>
+    </div>
+    <h1 style="font-size: 2.3rem; font-weight: 900; line-height: 1.2; margin-bottom: 1rem; color: #fff;">
+      Know Your Real Placement Chances & Tertiary Pathways
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.6;">
+      No bluffing or false promises. Expert-level evaluations strictly grounded in 
+      <strong>GES CSSPS Senior High School guidelines</strong> and 
+      <strong>GTEC University cut-off standards</strong>.
+    </p>
+  </div>
+
+  <!-- Ghana Data Protection Act 843 Consent Box -->
+  <div style="background: rgba(19, 27, 46, 0.9); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+      <div style="font-size: 1.8rem; line-height: 1;">🛡️</div>
+      <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.4rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+            Ghana Data Protection Act, 2012 (Act 843) Privacy Mandate
+          </h3>
+          <span class="card-badge card-badge-fast" style="font-size: 0.7rem;">In-Memory Zero Persistence</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 0.85rem;">
+          Under <strong>Section 20 of Act 843</strong>, your express consent is required to evaluate your examination grades. 
+          <strong>Privacy Guarantee:</strong> We do NOT save, log, or persist your examination grades or index numbers to any database. 
+          Calculations are executed purely ephemerally in server memory and discarded instantly after response.
+        </p>
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+          <input type="checkbox" id="consent_checkbox" style="width: 18px; height: 18px; accent-color: var(--ghana-gold); cursor: pointer;" onchange="toggleConsent()">
+          <span style="font-size: 0.875rem; font-weight: 700; color: #f8fafc;">
+            I give explicit consent to ephemerally analyze my examination grades for educational placement advice.
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Locked State / Warning if consent not yet checked -->
+  <div id="consent_overlay_msg" style="text-align: center; padding: 2rem; background: rgba(255,255,255,0.02); border: 1px dashed var(--border-subtle); border-radius: var(--radius-lg); margin-bottom: 2rem; display: block;">
+    <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🔒</span>
+    <h4 style="font-size: 1.1rem; color: #fff; margin-bottom: 0.35rem;">Advisory Portal Locked</h4>
+    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.75rem;">
+      Please check the Data Protection Act (Act 843) consent box above to unlock the personalized grade evaluator.
+    </p>
+    <div style="font-size: 0.85rem; color: var(--ghana-gold);">
+      Want to check public university cut-off points without entering grades? 
+      <a href="javascript:void(0)" onclick="openExplorerDirectly()" style="color: var(--ghana-gold); text-decoration: underline; font-weight: 700; margin-left: 4px;">
+        Open Live Admissions &amp; Cut-Offs Explorer &rarr;
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Advisory Panel (Hidden until consent) -->
+  <div id="advisor_main_panel" style="display: none;">
+
+    <!-- Exam Selector Tabs -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; flex-wrap: wrap;">
+      <button id="tab_bece" onclick="switchExamTab('BECE')" style="background: none; border: none; font-size: 1.05rem; font-weight: 800; color: var(--ghana-gold); border-bottom: 3px solid var(--ghana-gold); padding: 0.5rem 1.25rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+        <span>🏫</span> BECE &rarr; CSSPS Senior High Placement
+      </button>
+      <button id="tab_wassce" onclick="switchExamTab('WASSCE')" style="background: none; border: none; font-size: 1.05rem; font-weight: 800; color: var(--text-muted); padding: 0.5rem 1.25rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+        <span>🏛️</span> WASSCE &rarr; University & Tertiary Pathways
+      </button>
+      <button id="tab_explorer" onclick="switchExamTab('EXPLORER')" style="background: none; border: none; font-size: 1.05rem; font-weight: 800; color: var(--text-muted); padding: 0.5rem 1.25rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+        <span>🌐</span> Live Admissions &amp; Cut-Offs Explorer
+      </button>
+    </div>
+
+    <!-- BECE FORM -->
+    <div id="form_bece_container">
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2.5rem;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem;">
+              BECE Results Evaluator (Stanine Grades 1 to 9)
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">
+              Best 4 Core Subjects + Best 2 Electives. Scale: 1 (Highest / Distinction) to 9 (Lowest).
+            </p>
+          </div>
+          <div style="text-align: right;">
+            <label class="form-label" style="font-size: 0.8rem; margin-bottom: 4px;">Target SHS Programme</label>
+            <select id="bece_programme" class="form-input" style="font-size: 0.85rem; padding: 0.45rem 0.85rem; width: auto;">
+              <option value="General Science">General Science</option>
+              <option value="General Arts">General Arts</option>
+              <option value="Business">Business</option>
+              <option value="Visual Arts">Visual Arts</option>
+              <option value="Home Economics">Home Economics</option>
+              <option value="Technical / CTVET">Technical / CTVET</option>
+              <option value="General Agriculture">General Agriculture</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Cores Section -->
+        <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
+          <span>📌</span> 4 Compulsory Core Subjects
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
+          {% for core in bece_cores %}
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
+            <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">{{ core }}</label>
+            <select id="bece_core_{{ loop.index0 }}" class="form-input bece-grade-input" onchange="calculateLiveBeceAggregate()">
+              {% for g in range(1, 10) %}
+              <option value="{{ g }}" {% if g == 2 %}selected{% endif %}>Grade {{ g }} {% if g <= 2 %}(Distinction){% elif g <= 6 %}(Credit){% elif g <= 8 %}(Pass){% else %}(Fail){% endif %}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Electives Section -->
+        <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
+          <span>📚</span> Elective Subjects (Best 2 Count Automatically)
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+          {% for elect in bece_electives %}
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
+            <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">{{ elect }}</label>
+            <select id="bece_elect_{{ loop.index0 }}" class="form-input bece-grade-input" onchange="calculateLiveBeceAggregate()">
+              {% for g in range(1, 10) %}
+              <option value="{{ g }}" {% if g == 3 %}selected{% endif %}>Grade {{ g }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Aggregate Preview Banner -->
+        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid var(--border-gold); border-radius: var(--radius-md); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Live Estimated BECE Aggregate</div>
+            <div id="bece_live_agg" style="font-size: 1.8rem; font-weight: 900; color: var(--ghana-gold);">Aggregate 14</div>
+          </div>
+          <button type="button" onclick="submitBeceAnalysis()" id="btn_analyze_bece" class="btn-safety-guide" style="padding: 0.8rem 1.75rem; font-size: 0.95rem; font-weight: 800; cursor: pointer;">
+            Run Expert Placement Analysis &rarr;
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- WASSCE FORM -->
+    <div id="form_wassce_container" style="display: none;">
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2.5rem;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <h2 style="font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem;">
+              WASSCE Tertiary Admission & Pathway Evaluator
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">
+              Evaluates under official <strong>Ghana Tertiary Education Commission (GTEC)</strong> degree admission rules.
+            </p>
+          </div>
+          <div style="text-align: right;">
+            <label class="form-label" style="font-size: 0.8rem; margin-bottom: 4px;">Area of Interest</label>
+            <select id="wassce_programme" class="form-input" style="font-size: 0.85rem; padding: 0.45rem 0.85rem; width: auto;">
+              <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+              <option value="Medicine & Health Sciences">Medicine & Health Sciences</option>
+              <option value="Business, Finance & Law">Business, Finance & Law</option>
+              <option value="Nursing & Allied Health">Nursing & Allied Health</option>
+              <option value="Arts, Humanities & Social Sciences">Arts, Humanities & Social Sciences</option>
+              <option value="Education & Teaching">Education & Teaching</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 4 WASSCE Cores -->
+        <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
+          <span>📌</span> 4 Core Subjects (English & Core Math are compulsory for degrees)
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
+            <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">English Language</label>
+            <select id="w_core_eng" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
+              {% for g in wassce_grades %}
+              <option value="{{ g }}" {% if g == 'B3' %}selected{% endif %}>{{ g }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
+            <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Core Mathematics</label>
+            <select id="w_core_math" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
+              {% for g in wassce_grades %}
+              <option value="{{ g }}" {% if g == 'B2' %}selected{% endif %}>{{ g }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
+            <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Integrated Science</label>
+            <select id="w_core_sci" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
+              {% for g in wassce_grades %}
+              <option value="{{ g }}" {% if g == 'B3' %}selected{% endif %}>{{ g }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
+            <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Social Studies</label>
+            <select id="w_core_soc" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
+              {% for g in wassce_grades %}
+              <option value="{{ g }}" {% if g == 'C4' %}selected{% endif %}>{{ g }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Elective Subjects -->
+        <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
+          <span>📚</span> Elective Subjects (Best 3 Count Automatically)
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
+            <input type="text" id="w_elect_name_0" class="form-input" value="Elective Mathematics" style="margin-bottom: 6px; font-size: 0.8rem;">
+            <select id="w_elect_val_0" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
+              {% for g in wassce_grades %}
+              <option value="{{ g }}" {% if g == 'B3' %}selected{% endif %}>{{ g }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
+            <input type="text" id="w_elect_name_1" class="form-input" value="Physics" style="margin-bottom: 6px; font-size: 0.8rem;">
+            <select id="w_elect_val_1" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
+              {% for g in wassce_grades %}
+              <option value="{{ g }}" {% if g == 'C4' %}selected{% endif %}>{{ g }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
+            <input type="text" id="w_elect_name_2" class="form-input" value="Chemistry" style="margin-bottom: 6px; font-size: 0.8rem;">
+            <select id="w_elect_val_2" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
+              {% for g in wassce_grades %}
+              <option value="{{ g }}" {% if g == 'B3' %}selected{% endif %}>{{ g }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
+            <input type="text" id="w_elect_name_3" class="form-input" value="Biology / ICT" style="margin-bottom: 6px; font-size: 0.8rem;">
+            <select id="w_elect_val_3" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
+              {% for g in wassce_grades %}
+              <option value="{{ g }}" {% if g == 'C5' %}selected{% endif %}>{{ g }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Live Aggregate Preview Banner -->
+        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid var(--border-gold); border-radius: var(--radius-md); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Live Estimated WASSCE Aggregate</div>
+            <div id="wassce_live_agg" style="font-size: 1.8rem; font-weight: 900; color: var(--ghana-gold);">Aggregate 17</div>
+          </div>
+          <button type="button" onclick="submitWassceAnalysis()" id="btn_analyze_wassce" class="btn-safety-guide" style="padding: 0.8rem 1.75rem; font-size: 0.95rem; font-weight: 800; cursor: pointer;">
+            Run Degree & Tertiary Analysis &rarr;
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LIVE ADMISSIONS & CUT-OFFS EXPLORER (Public Benchmark Browser) -->
+    <div id="form_explorer_container" style="display: none;">
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2.5rem;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.25rem 0.75rem; border-radius: 999px; margin-bottom: 0.5rem;">
+              <span style="display: inline-block; width: 7px; height: 7px; background: #10b981; border-radius: 50%;"></span>
+              <span style="font-size: 0.75rem; font-weight: 700; color: #34d399;">Live University &amp; High School Admission Tracker</span>
+            </div>
+            <h2 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem;">
+              Ghana Tertiary Cut-Off Points, Deadlines &amp; Requirements Explorer
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">
+              Continuously synchronized admission benchmarks across UG Legon, KNUST, UCC, UPSA, Technical Universities, Colleges of Education (PRINCOF), and Nursing Training Colleges (NMTC).
+            </p>
+          </div>
+          <button type="button" onclick="loadExplorerAdmissions(true)" class="btn-lookup" style="padding: 0.5rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
+            <span>🔄</span> Refresh Benchmarks
+          </button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+          <div>
+            <label class="form-label" style="font-size: 0.8rem; margin-bottom: 4px;">Search Programme or Keyword</label>
+            <input type="text" id="explorer_search_input" class="form-input" placeholder="e.g. Computer Science, Medicine, Law, Nursing..." oninput="filterExplorer()" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem; margin-bottom: 4px;">Institution Category</label>
+            <select id="explorer_type_filter" class="form-input" onchange="filterExplorer()" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
+              <option value="ALL">All Institutions (All Tiers)</option>
+              <option value="PUBLIC_DEGREE">Traditional Public Universities (UG, KNUST, UCC, UPSA, UMaT)</option>
+              <option value="TECHNICAL_UNIVERSITY">Technical Universities (ATU, KsTU, TTU)</option>
+              <option value="COLLEGE_OF_EDUCATION">Colleges of Education (PRINCOF)</option>
+              <option value="NURSING_COLLEGE">Nursing &amp; Midwifery Training Colleges (MOH)</option>
+              <option value="BASIC_SHS">Senior High Schools (CSSPS)</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem; margin-bottom: 4px;">Faculty / Discipline</label>
+            <select id="explorer_faculty_filter" class="form-input" onchange="filterExplorer()" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
+              <option value="ALL">All Disciplines / Faculties</option>
+              <option value="Computer Science & ICT">Computing &amp; ICT</option>
+              <option value="Engineering & Technology">Engineering &amp; Technology</option>
+              <option value="Medicine & Health Sciences">Health &amp; Medical Sciences</option>
+              <option value="Nursing & Midwifery">Nursing &amp; Midwifery</option>
+              <option value="Business, Finance & Law">Business, Finance &amp; Law</option>
+              <option value="Arts, Humanities & Social Sciences">Arts &amp; Humanities</option>
+              <option value="Education & Teaching">Education &amp; Teaching</option>
+              <option value="Applied Sciences & Technology">Applied Sciences</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Metrics Count Strip -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+          <span id="explorer_count_badge">Loading admissions benchmarks...</span>
+          <span style="color: var(--ghana-gold);">Verified GTEC &amp; University Standards</span>
+        </div>
+
+        <!-- Cards Grid -->
+        <div id="explorer_cards_grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+          <!-- Injected via JavaScript -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="explorer_empty_state" style="display: none; text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+          <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🔍</span>
+          <h4 style="font-size: 1.05rem; color: #fff; margin-bottom: 0.25rem;">No matching programmes found</h4>
+          <p style="font-size: 0.85rem;">Try adjusting your search query or changing the institution category.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ANALYSIS RESULTS SECTION (Rendered dynamically) -->
+    <div id="results_section" style="display: none; animation: fadeIn 0.4s ease-in-out;">
+      <div style="background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: var(--radius-lg); padding: 2.25rem; margin-bottom: 2.5rem; position: relative;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle);">
+          <div>
+            <span id="res_exam_badge" class="card-badge card-badge-popular" style="margin-bottom: 0.5rem; display: inline-block;">EXAM</span>
+            <h2 id="res_aggregate_title" style="font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 0.25rem;">Aggregate Evaluation</h2>
+            <p id="res_breakdown" style="color: var(--text-muted); font-size: 0.875rem;"></p>
+          </div>
+          <button onclick="window.print()" class="btn-lookup" style="padding: 0.55rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
+            <span>🖨️</span> Print / Save Briefing
+          </button>
+        </div>
+
+        <!-- Reality Checks / Bottleneck Warnings -->
+        <div id="reality_checks_container" style="margin-bottom: 1.75rem;"></div>
+
+        <!-- Tier / Pathway Matches -->
+        <div style="margin-bottom: 2rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+            <span>🎯</span> Recommended Institutions & Placements
+          </h3>
+          <div id="tiers_container" style="display: grid; gap: 1.25rem;"></div>
+        </div>
+
+        <!-- Step-by-Step Action Roadmap -->
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+            <span>🧭</span> Actionable Next Steps (No-Agent Safe Protocol)
+          </h3>
+          <div id="roadmap_container" style="display: grid; gap: 0.85rem;"></div>
+        </div>
+
+        <!-- Data Protection Ephemeral Stamp -->
+        <div style="padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-dim); flex-wrap: wrap; gap: 8px;">
+          <div>🛡️ Evaluated under Ghana Data Protection Act, 2012 (Act 843)</div>
+          <div>In-Memory Ephemeral Engine &bull; Zero DB Records Retained</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+let currentExamTab = "BECE";
+let allExplorerBenchmarks = [];
+let explorerLoaded = false;
+const BECE_CORE_NAMES = {{ bece_cores|tojson }};
+const BECE_ELECT_NAMES = {{ bece_electives|tojson }};
+const WASSCE_VALS = {
+  "A1": 1, "B2": 2, "B3": 3, "C4": 4, "C5": 5, "C6": 6, "D7": 7, "E8": 8, "F9": 9
+};
+
+function toggleConsent() {
+  const isChecked = document.getElementById("consent_checkbox").checked;
+  const overlay = document.getElementById("consent_overlay_msg");
+  const panel = document.getElementById("advisor_main_panel");
+  if (isChecked) {
+    overlay.style.display = "none";
+    panel.style.display = "block";
+    calculateLiveBeceAggregate();
+    calculateLiveWassceAggregate();
+  } else {
+    overlay.style.display = "block";
+    panel.style.display = "none";
+    document.getElementById("results_section").style.display = "none";
+  }
+}
+
+function openExplorerDirectly() {
+  document.getElementById("consent_checkbox").checked = true;
+  toggleConsent();
+  switchExamTab("EXPLORER");
+}
+
+function switchExamTab(tab) {
+  currentExamTab = tab;
+  const btnBece = document.getElementById("tab_bece");
+  const btnWassce = document.getElementById("tab_wassce");
+  const btnExplorer = document.getElementById("tab_explorer");
+  const formBece = document.getElementById("form_bece_container");
+  const formWassce = document.getElementById("form_wassce_container");
+  const formExplorer = document.getElementById("form_explorer_container");
+  const results = document.getElementById("results_section");
+  if (results) results.style.display = "none";
+
+  [btnBece, btnWassce, btnExplorer].forEach(b => {
+    if (b) {
+      b.style.color = "var(--text-muted)";
+      b.style.borderBottom = "none";
+    }
+  });
+
+  if (formBece) formBece.style.display = "none";
+  if (formWassce) formWassce.style.display = "none";
+  if (formExplorer) formExplorer.style.display = "none";
+
+  if (tab === "BECE") {
+    if (btnBece) {
+      btnBece.style.color = "var(--ghana-gold)";
+      btnBece.style.borderBottom = "3px solid var(--ghana-gold)";
+    }
+    if (formBece) formBece.style.display = "block";
+  } else if (tab === "WASSCE") {
+    if (btnWassce) {
+      btnWassce.style.color = "var(--ghana-gold)";
+      btnWassce.style.borderBottom = "3px solid var(--ghana-gold)";
+    }
+    if (formWassce) formWassce.style.display = "block";
+  } else if (tab === "EXPLORER") {
+    if (btnExplorer) {
+      btnExplorer.style.color = "var(--ghana-gold)";
+      btnExplorer.style.borderBottom = "3px solid var(--ghana-gold)";
+    }
+    if (formExplorer) formExplorer.style.display = "block";
+    if (!explorerLoaded) {
+      loadExplorerAdmissions();
+    }
+  }
+}
+
+async function loadExplorerAdmissions(forceReload = false) {
+  const badge = document.getElementById("explorer_count_badge");
+  if (badge) badge.innerText = "Synchronizing live benchmarks from database...";
+  
+  try {
+    const res = await fetch("/api/admissions/live?limit=300");
+    const data = await res.json();
+    if (res.ok && data.success) {
+      allExplorerBenchmarks = data.benchmarks || [];
+      explorerLoaded = true;
+      filterExplorer();
+    } else {
+      if (badge) badge.innerText = "Error loading admission benchmarks.";
+    }
+  } catch (err) {
+    if (badge) badge.innerText = "Network error loading benchmarks: " + err.message;
+  }
+}
+
+function filterExplorer() {
+  const query = (document.getElementById("explorer_search_input")?.value || "").toLowerCase().trim();
+  const typeFilter = document.getElementById("explorer_type_filter")?.value || "ALL";
+  const facultyFilter = document.getElementById("explorer_faculty_filter")?.value || "ALL";
+  const grid = document.getElementById("explorer_cards_grid");
+  const empty = document.getElementById("explorer_empty_state");
+  const badge = document.getElementById("explorer_count_badge");
+
+  const filtered = allExplorerBenchmarks.filter(item => {
+    if (typeFilter !== "ALL" && item.institution_type !== typeFilter) {
+      return false;
+    }
+    if (facultyFilter !== "ALL" && item.faculty_category !== facultyFilter) {
+      return false;
+    }
+    if (query) {
+      const targetStr = `${item.programme_name} ${item.institution_name} ${item.institution_code} ${item.faculty_category} ${item.mandatory_requirements}`.toLowerCase();
+      if (!targetStr.includes(query)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  if (badge) {
+    badge.innerText = `Showing ${filtered.length} of ${allExplorerBenchmarks.length} accredited programmes across Ghana`;
+  }
+
+  if (!grid) return;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = "";
+    if (empty) empty.style.display = "block";
+    return;
+  }
+
+  if (empty) empty.style.display = "none";
+  grid.innerHTML = filtered.map(row => {
+    let statusClass = row.admission_status.includes("OPEN") 
+      ? "background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #10b981;" 
+      : "background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid #f59e0b;";
+
+    let typeLabel = row.institution_type === "PUBLIC_DEGREE" ? "Traditional University" :
+                    (row.institution_type === "TECHNICAL_UNIVERSITY" ? "Technical University" :
+                    (row.institution_type === "COLLEGE_OF_EDUCATION" ? "College of Education" :
+                    (row.institution_type === "NURSING_COLLEGE" ? "Nursing College" : "SHS Placement")));
+
+    let voucherDisplay = Number(row.voucher_cost_ghs) > 0 
+      ? `GH₵ ${Number(row.voucher_cost_ghs).toFixed(2)}` 
+      : "Free / Standard";
+
+    return `
+      <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, border-color 0.2s;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">${typeLabel}</span>
+            <span style="font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; ${statusClass}">${row.admission_status}</span>
+          </div>
+
+          <h4 style="font-size: 1.025rem; font-weight: 800; color: #fff; margin: 0 0 4px 0; line-height: 1.3;">
+            ${row.programme_name}
+          </h4>
+          <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0.75rem;">
+            🏛️ ${row.institution_name} <strong style="color: var(--ghana-gold);">(${row.institution_code})</strong>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem; flex-wrap: wrap;">
+            <span style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--ghana-gold); font-weight: 900; font-size: 0.8rem; padding: 3px 8px; border-radius: 4px;">
+              Cut-Off: Aggregate ${row.cutoff_aggregate}
+            </span>
+            <span style="background: rgba(255,255,255,0.05); color: #cbd5e1; font-size: 0.75rem; padding: 3px 8px; border-radius: 4px;">
+              ${row.faculty_category}
+            </span>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.02); border-left: 2px solid var(--border-gold); padding: 0.5rem 0.75rem; border-radius: 0 4px 4px 0; margin-bottom: 0.85rem; font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+            <strong style="color: #fff;">Criteria:</strong> ${row.mandatory_requirements}
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.75rem; margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <div style="color: var(--text-dim);">📅 Deadline: <strong style="color: #cbd5e1;">${row.application_deadline}</strong></div>
+            <div style="color: var(--text-dim); margin-top: 2px;">💳 Voucher: <strong style="color: #cbd5e1;">${voucherDisplay}</strong></div>
+          </div>
+          <a href="${row.portal_url}" target="_blank" rel="noopener noreferrer" class="btn-lookup" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: 700;">
+            Apply ↗
+          </a>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function calculateLiveBeceAggregate() {
+  let coreSum = 0;
+  for (let i = 0; i < BECE_CORE_NAMES.length; i++) {
+    const el = document.getElementById(`bece_core_${i}`);
+    if (el) coreSum += parseInt(el.value, 10);
+  }
+  let electives = [];
+  for (let i = 0; i < BECE_ELECT_NAMES.length; i++) {
+    const el = document.getElementById(`bece_elect_${i}`);
+    if (el) electives.push(parseInt(el.value, 10));
+  }
+  electives.sort((a, b) => a - b);
+  const best2Electives = (electives[0] || 9) + (electives[1] || 9);
+  const total = coreSum + best2Electives;
+  document.getElementById("bece_live_agg").innerText = `Aggregate ${total < 10 ? '0' + total : total}`;
+}
+
+function calculateLiveWassceAggregate() {
+  const eng = WASSCE_VALS[document.getElementById("w_core_eng")?.value] || 9;
+  const math = WASSCE_VALS[document.getElementById("w_core_math")?.value] || 9;
+  const sci = WASSCE_VALS[document.getElementById("w_core_sci")?.value] || 9;
+  const soc = WASSCE_VALS[document.getElementById("w_core_soc")?.value] || 9;
+
+  const bestOtherCore = Math.min(sci, soc);
+  const coreTotal = eng + math + bestOtherCore;
+
+  let electives = [];
+  for (let i = 0; i < 4; i++) {
+    const grade = document.getElementById(`w_elect_val_${i}`)?.value;
+    if (grade) electives.push(WASSCE_VALS[grade] || 9);
+  }
+  electives.sort((a, b) => a - b);
+  const best3Electives = (electives[0] || 9) + (electives[1] || 9) + (electives[2] || 9);
+  const total = coreTotal + best3Electives;
+  document.getElementById("wassce_live_agg").innerText = `Aggregate ${total < 10 ? '0' + total : total}`;
+}
+
+async function submitBeceAnalysis() {
+  const consent = document.getElementById("consent_checkbox").checked;
+  if (!consent) {
+    alert("Please check the Act 843 consent box before submitting.");
+    return;
+  }
+  const btn = document.getElementById("btn_analyze_bece");
+  btn.innerText = "Analyzing...";
+  btn.disabled = true;
+
+  const cores = {};
+  for (let i = 0; i < BECE_CORE_NAMES.length; i++) {
+    cores[BECE_CORE_NAMES[i]] = parseInt(document.getElementById(`bece_core_${i}`).value, 10);
+  }
+  const electives = {};
+  for (let i = 0; i < BECE_ELECT_NAMES.length; i++) {
+    electives[BECE_ELECT_NAMES[i]] = parseInt(document.getElementById(`bece_elect_${i}`).value, 10);
+  }
+  const programme = document.getElementById("bece_programme").value;
+
+  try {
+    const res = await fetch("/api/advisor/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        exam_type: "BECE",
+        consent_given: true,
+        cores: cores,
+        electives: electives,
+        programme: programme
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      renderBeceResults(data.analysis);
+    } else {
+      alert("Analysis error: " + (data.message || "Failed to analyze grades."));
+    }
+  } catch (err) {
+    alert("Network error: " + err.message);
+  } finally {
+    btn.innerText = "Run Expert Placement Analysis →";
+    btn.disabled = false;
+  }
+}
+
+async function submitWassceAnalysis() {
+  const consent = document.getElementById("consent_checkbox").checked;
+  if (!consent) {
+    alert("Please check the Act 843 consent box before submitting.");
+    return;
+  }
+  const btn = document.getElementById("btn_analyze_wassce");
+  btn.innerText = "Analyzing...";
+  btn.disabled = true;
+
+  const cores = {
+    "English Language": document.getElementById("w_core_eng").value,
+    "Core Mathematics": document.getElementById("w_core_math").value,
+    "Integrated Science": document.getElementById("w_core_sci").value,
+    "Social Studies": document.getElementById("w_core_soc").value,
+  };
+  const electives = {};
+  for (let i = 0; i < 4; i++) {
+    const name = document.getElementById(`w_elect_name_${i}`).value.trim() || `Elective ${i+1}`;
+    const grade = document.getElementById(`w_elect_val_${i}`).value;
+    electives[name] = grade;
+  }
+  const programme = document.getElementById("wassce_programme").value;
+
+  try {
+    const res = await fetch("/api/advisor/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        exam_type: "WASSCE",
+        consent_given: true,
+        cores: cores,
+        electives: electives,
+        programme: programme
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      renderWassceResults(data.analysis);
+    } else {
+      alert("Analysis error: " + (data.message || "Failed to analyze grades."));
+    }
+  } catch (err) {
+    alert("Network error: " + err.message);
+  } finally {
+    btn.innerText = "Run Degree & Tertiary Analysis →";
+    btn.disabled = false;
+  }
+}
+
+function renderBeceResults(analysis) {
+  const section = document.getElementById("results_section");
+  section.style.display = "block";
+  section.scrollIntoView({ behavior: "smooth" });
+
+  document.getElementById("res_exam_badge").innerText = "BECE → CSSPS PLACEMENT";
+  document.getElementById("res_aggregate_title").innerText = `${analysis.aggregate_string} (${analysis.risk_level})`;
+  document.getElementById("res_breakdown").innerText = 
+    `Core Aggregate: ${analysis.core_aggregate} | Best 2 Electives: ${analysis.elective_aggregate} | Target Programme: ${analysis.preferred_programme}`;
+
+  // Reality Checks
+  const rcContainer = document.getElementById("reality_checks_container");
+  rcContainer.innerHTML = "";
+  if (analysis.reality_checks && analysis.reality_checks.length > 0) {
+    analysis.reality_checks.forEach(check => {
+      const box = document.createElement("div");
+      box.style.cssText = "background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 0.65rem; color: #fca5a5; font-size: 0.85rem; line-height: 1.5;";
+      box.innerHTML = check;
+      rcContainer.appendChild(box);
+    });
+  }
+
+  // Tiers
+  const tContainer = document.getElementById("tiers_container");
+  tContainer.innerHTML = "";
+  if (analysis.recommended_tiers) {
+    analysis.recommended_tiers.forEach(tier => {
+      const card = document.createElement("div");
+      card.style.cssText = "background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;";
+      
+      let badgeStyle = tier.status === "QUALIFIED" ? "background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #10b981;" : "background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid #f59e0b;";
+      
+      let schoolsHtml = "";
+      if (tier.sample_schools && tier.sample_schools.length > 0) {
+        schoolsHtml = `<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.75rem;">` + 
+          tier.sample_schools.map(s => `<span style="background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; color: #cbd5e1;">${s.name} (${s.region})</span>`).join("") + 
+          `</div>`;
+      }
+
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+          <h4 style="font-size: 1rem; font-weight: 800; color: #fff; margin: 0;">${tier.tier_name}</h4>
+          <span style="font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; ${badgeStyle}">${tier.status}</span>
+        </div>
+        <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0 0 0.5rem 0;">${tier.description}</p>
+        <div style="font-size: 0.75rem; color: var(--text-dim);">Recommended Cutoff Range: Aggregate ${tier.aggregate_range[0]} – ${tier.aggregate_range[1]}</div>
+        ${schoolsHtml}
+      `;
+      tContainer.appendChild(card);
+    });
+  }
+
+  // Roadmap
+  const rContainer = document.getElementById("roadmap_container");
+  rContainer.innerHTML = "";
+  if (analysis.roadmap) {
+    analysis.roadmap.forEach(item => {
+      const step = document.createElement("div");
+      step.style.cssText = "display: flex; gap: 12px; background: rgba(255,255,255,0.015); border-left: 3px solid var(--ghana-gold); padding: 0.85rem 1rem; border-radius: 0 var(--radius-md) var(--radius-md) 0;";
+      step.innerHTML = `
+        <div style="font-size: 1.1rem; font-weight: 900; color: var(--ghana-gold); line-height: 1;">${item.step}</div>
+        <div>
+          <div style="font-size: 0.875rem; font-weight: 800; color: #fff; margin-bottom: 2px;">${item.title}</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">${item.action}</div>
+        </div>
+      `;
+      rContainer.appendChild(step);
+    });
+  }
+}
+
+function renderWassceResults(analysis) {
+  const section = document.getElementById("results_section");
+  section.style.display = "block";
+  section.scrollIntoView({ behavior: "smooth" });
+
+  document.getElementById("res_exam_badge").innerText = "WASSCE → TERTIARY PATHWAYS";
+  document.getElementById("res_aggregate_title").innerText = `${analysis.aggregate_string} (${analysis.eligibility_status.replace(/_/g, ' ')})`;
+  document.getElementById("res_breakdown").innerText = 
+    `Core Aggregate: ${analysis.core_aggregate} | Best 3 Electives: ${analysis.elective_aggregate} | Field: ${analysis.interest_area}`;
+
+  // Reality Checks
+  const rcContainer = document.getElementById("reality_checks_container");
+  rcContainer.innerHTML = "";
+  if (analysis.reality_checks && analysis.reality_checks.length > 0) {
+    analysis.reality_checks.forEach(check => {
+      const box = document.createElement("div");
+      box.style.cssText = "background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 0.65rem; color: #fca5a5; font-size: 0.85rem; line-height: 1.5;";
+      box.innerHTML = check;
+      rcContainer.appendChild(box);
+    });
+  }
+
+  // Pathways
+  const tContainer = document.getElementById("tiers_container");
+  tContainer.innerHTML = "";
+  if (analysis.pathways) {
+    analysis.pathways.forEach(p => {
+      const card = document.createElement("div");
+      card.style.cssText = "background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;";
+      
+      let progHtml = "";
+      if (p.programmes && p.programmes.length > 0) {
+        progHtml = `<div style="margin-top: 0.75rem;">` + 
+          p.programmes.map(prog => `
+            <div style="background: rgba(255,255,255,0.04); border-radius: 6px; padding: 0.6rem 0.85rem; margin-bottom: 0.4rem;">
+              <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.825rem; color: #f8fafc;">
+                <span>${prog.category} (${prog.programmes.join(', ')})</span>
+                <span class="card-badge card-badge-fast">${prog.fit}</span>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 2px;">Typical: ${prog.typical_institutions.join(', ')} (Cutoff: ${prog.cutoff_range[0]}–${prog.cutoff_range[1]})</div>
+            </div>
+          `).join("") + `</div>`;
+      }
+
+      let extraHtml = "";
+      if (p.recommended_programmes) {
+        extraHtml = `<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.6rem;">` +
+          p.recommended_programmes.map(pr => `<span style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; color: var(--ghana-gold);">${pr}</span>`).join("") +
+          `</div>`;
+      }
+
+      let liveMatchesHtml = "";
+      if (p.live_matches && p.live_matches.length > 0) {
+        liveMatchesHtml = `
+          <div style="margin-top: 1rem; border-top: 1px dashed var(--border-subtle); padding-top: 0.85rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 6px;">
+              <span style="font-size: 0.8rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+                <span>⚡</span> Live Departmental Cut-Offs &amp; Portal Benchmarks
+              </span>
+              <span style="font-size: 0.7rem; color: var(--text-dim);">${p.live_matches.length} Verified Departmental Targets</span>
+            </div>
+            <div style="display: grid; gap: 0.65rem;">
+        ` + p.live_matches.map(m => {
+          let fitBadgeClass = m.fit === "Strong Match" ? "background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid #10b981;" :
+                              (m.fit === "Competitive" ? "background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid #f59e0b;" :
+                              "background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid #3b82f6;");
+          return `
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.75rem 0.9rem;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 4px;">
+                <div>
+                  <span style="font-weight: 800; font-size: 0.875rem; color: #fff;">${m.programme_name}</span>
+                  <span style="font-size: 0.75rem; color: var(--text-dim); margin-left: 6px;">&bull; ${m.institution_name} (${m.institution_code})</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 0.75rem; font-weight: 800; color: var(--ghana-gold); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); padding: 2px 7px; border-radius: 4px;">Cut-Off: Agg ${m.cutoff_aggregate}</span>
+                  <span style="font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; ${fitBadgeClass}">${m.fit}</span>
+                </div>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 6px;">
+                <strong style="color: #cbd5e1;">Requirements:</strong> ${m.mandatory_requirements}
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.725rem; color: var(--text-dim); border-top: 1px solid rgba(255,255,255,0.05); padding-top: 4px;">
+                <span>📅 Deadline: <strong style="color: #cbd5e1;">${m.application_deadline}</strong> &bull; Voucher: <strong style="color: #cbd5e1;">GH₵ ${Number(m.voucher_cost_ghs).toFixed(2)}</strong></span>
+                <a href="${m.portal_url}" target="_blank" rel="noopener noreferrer" style="color: var(--ghana-gold); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                  Official Portal ↗
+                </a>
+              </div>
+            </div>
+          `;
+        }).join("") + `</div></div>`;
+      }
+
+      card.innerHTML = `
+        <h4 style="font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem;">${p.title}</h4>
+        <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0 0 0.5rem 0;">${p.description}</p>
+        ${p.benefits ? `<div style="font-size: 0.775rem; color: #34d399; font-weight: 600;">✨ ${p.benefits}</div>` : ''}
+        ${progHtml}
+        ${liveMatchesHtml}
+        ${extraHtml}
+      `;
+      tContainer.appendChild(card);
+    });
+  }
+
+  // Roadmap
+  const rContainer = document.getElementById("roadmap_container");
+  rContainer.innerHTML = "";
+  if (analysis.roadmap) {
+    analysis.roadmap.forEach(item => {
+      const step = document.createElement("div");
+      step.style.cssText = "display: flex; gap: 12px; background: rgba(255,255,255,0.015); border-left: 3px solid var(--ghana-gold); padding: 0.85rem 1rem; border-radius: 0 var(--radius-md) var(--radius-md) 0;";
+      step.innerHTML = `
+        <div style="font-size: 1.1rem; font-weight: 900; color: var(--ghana-gold); line-height: 1;">${item.step}</div>
+        <div>
+          <div style="font-size: 0.875rem; font-weight: 800; color: #fff; margin-bottom: 2px;">${item.title}</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">${item.action}</div>
+        </div>
+      `;
+      rContainer.appendChild(step);
+    });
+  }
+}
+</script>
+{% endblock %}
