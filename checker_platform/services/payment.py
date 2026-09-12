@@ -11,7 +11,7 @@ import logging
 import re
 import urllib.request
 import urllib.error
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Tuple
 from ..database import get_setting, get_db_connection
 
 logger = logging.getLogger("checker.payment")
