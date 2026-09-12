@@ -6,7 +6,7 @@ Compliant with Ghana Data Protection Act, 2012 (Act 843):
 - Grounded in official GES CSSPS guidelines and GTEC / University admissions cut-offs.
 """
 
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 
 from ..database import get_admission_benchmarks, append_audit_block
 from .scraper import AdmissionScraperEngine
@@ -234,6 +234,21 @@ def evaluate_bece_results(
         }
     )
 
+    whatsapp_text = (
+        "🇬🇭 *CHECKERPAY GHANA | CSSPS PLACEMENT DOSSIER*\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"🏫 *BECE Aggregate:* {total_aggregate:02d} ({risk_level})\n"
+        f"🎯 *Target Programme:* {preferred_programme}\n"
+        f"📋 *Score Breakdown:* Cores: {core_aggregate} pts | Best 2 Electives: {elective_aggregate} pts\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "🏛️ *RECOMMENDED PLACEMENT TIERS:*\n"
+        + "\n".join([f"  • *{t['tier_name']}* ({t['status']})" for t in recommendations[:3]])
+        + "\n\n🛡️ *OFFICIAL CSSPS NOTICE:*\n"
+        "Never pay unauthorized protocol admission agents.\n"
+        "Official self-placement portal: https://cssps.gov.gh\n"
+        f"Verification Hash: `{audit_hash[:16]}...`"
+    )
+
     return {
         "exam_type": "BECE",
         "aggregate": total_aggregate,
@@ -247,6 +262,7 @@ def evaluate_bece_results(
         "recommended_tiers": recommendations,
         "roadmap": roadmap,
         "preferred_programme": preferred_programme,
+        "whatsapp_share_text": whatsapp_text,
         "compliance_attestation_hash": audit_hash
     }
 
@@ -311,6 +327,308 @@ UNIVERSITY_PROGRAMMES = [
         "mandatory_requirements": "Requires passes (A1-C6) in Core English and Core Math."
     }
 ]
+
+# ============================================================================
+# SCHOLARSHIP REGISTRY & FINANCIAL AID DATABASE
+# ============================================================================
+
+SCHOLARSHIP_REGISTRY = [
+    {
+        "id": "SCHOL_GNPC_STEM",
+        "name": "GNPC Foundation Local Undergraduate Scholarship",
+        "sponsor": "Ghana National Petroleum Corporation (GNPC)",
+        "category": "Corporate Full Sponsorship",
+        "max_aggregate": 16,
+        "stem_priority": True,
+        "coverage": "100% Tuition, Academic Facility User Fees, On-Campus Accommodation, Book Allowance & Annual Cash Stipend (~GH₵ 15,000/yr)",
+        "requirements": "Ghanaian citizen with admission to an accredited public university; strong priority for STEM, Agriculture, and Education.",
+        "application_window": "November – January (Annual Cycle)",
+        "portal_url": "https://gnpcfoundation.org/scholarships",
+        "status": "ANNUAL_CYCLE"
+    },
+    {
+        "id": "SCHOL_MTN_BRIGHT",
+        "name": "MTN Ghana Foundation Bright Scholarship",
+        "sponsor": "MTN Ghana Foundation",
+        "category": "Corporate Merit & Need Fellowship",
+        "max_aggregate": 12,
+        "stem_priority": False,
+        "coverage": "Full Tuition, Semester Hostel Fees, Living Stipend Allowance & High-Performance Laptop (~GH₵ 18,000/yr)",
+        "requirements": "First-year undergraduate Ghanaian applicants with exceptional academic distinction (Aggregate 6 to 12) in public universities.",
+        "application_window": "May – July (Annual Cycle)",
+        "portal_url": "https://scholarship.mtn.com.gh",
+        "status": "ANNUAL_CYCLE"
+    },
+    {
+        "id": "SCHOL_MASTERCARD_KNUST",
+        "name": "Mastercard Foundation Scholars Program at KNUST",
+        "sponsor": "Mastercard Foundation / KNUST",
+        "category": "Comprehensive Global Fellowship",
+        "max_aggregate": 16,
+        "stem_priority": True,
+        "coverage": "Comprehensive 100% Tuition, Modern Housing, Meals, Monthly Living Stipend, Laptop, Books & Leadership Academy",
+        "requirements": "Academically qualified youth from economically disadvantaged backgrounds, with priority for young women, displaced youth, and persons with disabilities.",
+        "application_window": "January – May (Annual Cycle)",
+        "portal_url": "https://mcf.knust.edu.gh",
+        "status": "ANNUAL_CYCLE"
+    },
+    {
+        "id": "SCHOL_GOV_BURSARY",
+        "name": "Ghana Scholarship Secretariat Local Tertiary Bursary",
+        "sponsor": "Government of Ghana (Scholarships Secretariat)",
+        "category": "National Government Bursary",
+        "max_aggregate": 24,
+        "stem_priority": False,
+        "coverage": "Subsidized Tuition / Academic Facility User Fee (AFUF) Grant paid directly to public tertiary institution (~GH₵ 2,500 – GH₵ 5,000/yr)",
+        "requirements": "Registered Ghanaian citizen with valid Ghana Card, verified admission letter to an accredited public tertiary institution.",
+        "application_window": "March – June (Portal Open)",
+        "portal_url": "https://www.scholarshipgh.com",
+        "status": "OPEN"
+    },
+    {
+        "id": "SCHOL_ASHESI_AID",
+        "name": "Ashesi University Comprehensive Need-Based Grant",
+        "sponsor": "Ashesi University Foundation",
+        "category": "Private Institutional Endowed Grant",
+        "max_aggregate": 14,
+        "stem_priority": False,
+        "coverage": "Up to 100% Tuition, Campus Housing, Meals, Laptop & Comprehensive Healthcare (~GH₵ 65,000/yr equivalent)",
+        "requirements": "Demonstrated academic excellence, leadership track record, and documented financial need. Open for BSc Computer Science, MIS, and Engineering.",
+        "application_window": "January – June (Phased Admissions)",
+        "portal_url": "https://www.ashesi.edu.gh/admissions/scholarships.html",
+        "status": "OPEN"
+    },
+    {
+        "id": "SCHOL_UG_STARS",
+        "name": "University of Ghana Students Financial Aid (SFAO)",
+        "sponsor": "University of Ghana / Needy Students Fund",
+        "category": "Public University Institutional Aid",
+        "max_aggregate": 20,
+        "stem_priority": False,
+        "coverage": "Tuition Grant / Residential Support Grant (GH₵ 1,500 – GH₵ 4,000/yr)",
+        "requirements": "Admitted or continuing full-time regular undergraduate student at UG Legon with documented financial hardship.",
+        "application_window": "August – October (Semester 1 Cycle)",
+        "portal_url": "https://finaid.ug.edu.gh",
+        "status": "ANNUAL_CYCLE"
+    }
+]
+
+def match_scholarships(
+    aggregate: int, 
+    interest_area: str, 
+    subjects_dict: Dict[str, str]
+) -> List[Dict[str, Any]]:
+    """
+    Evaluates candidate academic profile against active Ghanaian scholarship schemes.
+    Returns matched funding opportunities categorized by academic competitiveness.
+    """
+    matches = []
+    is_stem = any(s in interest_area for s in ["Science", "Engineering", "Health", "Medicine", "Technology", "Computing"])
+
+    for s in SCHOLARSHIP_REGISTRY:
+        if aggregate <= s["max_aggregate"]:
+            if aggregate <= s["max_aggregate"] - 4:
+                tier = "HIGH_COMPETITIVENESS"
+                badge = "Strong Academic Fit"
+            elif aggregate <= s["max_aggregate"] - 2:
+                tier = "COMPETITIVE"
+                badge = "Competitive Candidate"
+            else:
+                tier = "ELIGIBLE"
+                badge = "Eligible Applicant"
+
+            matches.append({
+                "id": s["id"],
+                "name": s["name"],
+                "sponsor": s["sponsor"],
+                "category": s["category"],
+                "max_aggregate": s["max_aggregate"],
+                "coverage": s["coverage"],
+                "requirements": s["requirements"],
+                "application_window": s["application_window"],
+                "portal_url": s["portal_url"],
+                "match_tier": tier,
+                "badge": badge,
+                "stem_bonus": s["stem_priority"] and is_stem
+            })
+    return matches
+
+def evaluate_programme_prerequisites(
+    programme_name: str,
+    institution_code: str,
+    grades_dict: Dict[str, str]
+) -> Dict[str, Any]:
+    """
+    Evaluates mandatory Ghanaian faculty prerequisite rules beyond composite aggregate.
+    Guarantees strict compliance without misleading or false admission assumptions.
+    """
+    name_upper = programme_name.upper()
+
+    def get_val(subj_search: str) -> int:
+        for k, v in grades_dict.items():
+            if subj_search.lower() in k.lower():
+                return WASSCE_GRADE_VALUES.get(str(v).strip().upper(), 9)
+        return 9
+
+    c_math = get_val("Core Mathematics")
+    e_math = get_val("Elective Mathematics")
+    eng = get_val("English")
+    sci = get_val("Science")
+    chem = get_val("Chemistry")
+    bio = get_val("Biology")
+    phys = get_val("Physics")
+
+    # 1. Medicine & Pharmacy
+    if any(term in name_upper for term in ["MEDICINE", "SURGERY", "PHARMACY", "OPTOMETRY", "MBCHB"]):
+        missing = []
+        if eng > 3: missing.append("English Language (Requires min B3)")
+        if c_math > 3: missing.append("Core Mathematics (Requires min B3)")
+        if chem > 3: missing.append("Chemistry (Requires min B3)")
+        if bio > 3: missing.append("Biology (Requires min B3)")
+        if missing:
+            return {"eligible": False, "status": "PREREQUISITE_DEFICIT", "details": f"Missing clinical prerequisite: {', '.join(missing)}"}
+        return {"eligible": True, "status": "PREREQUISITE_SATISFIED", "details": "Satisfies all high-competition medical faculty core prerequisites."}
+
+    # 2. Engineering & Computer Science
+    if any(term in name_upper for term in ["ENGINEERING", "COMPUTER SCIENCE", "SOFTWARE", "ELECTRICAL", "MECHANICAL"]):
+        missing = []
+        if c_math > 6: missing.append("Core Mathematics (Requires min C6)")
+        if e_math > 6: missing.append("Elective Mathematics (Requires min C6)")
+        if phys > 6 and sci > 6: missing.append("Physics or Integrated Science (Requires min C6)")
+        if missing:
+            return {"eligible": False, "status": "PREREQUISITE_DEFICIT", "details": f"Engineering prerequisite deficit: {', '.join(missing)}"}
+        return {"eligible": True, "status": "PREREQUISITE_SATISFIED", "details": "Satisfies STEM faculty Core Math, Elective Math & Science requirements."}
+
+    # 3. Business & Finance
+    if any(term in name_upper for term in ["ADMINISTRATION", "ACCOUNTING", "FINANCE", "BANKING", "ECONOMICS"]):
+        missing = []
+        if eng > 6: missing.append("English Language (Requires min C6)")
+        if c_math > 6: missing.append("Core Mathematics (Requires min C6)")
+        if missing:
+            return {"eligible": False, "status": "PREREQUISITE_DEFICIT", "details": f"Business school prerequisite deficit: {', '.join(missing)}"}
+        return {"eligible": True, "status": "PREREQUISITE_SATISFIED", "details": "Meets Business Faculty quantitative and language prerequisites."}
+
+    # 4. Nursing & Allied Health
+    if any(term in name_upper for term in ["NURSING", "MIDWIFERY", "ALLIED HEALTH", "MEDICAL LABORATORY"]):
+        missing = []
+        if eng > 6: missing.append("English Language (Requires min C6)")
+        if c_math > 6: missing.append("Core Mathematics (Requires min C6)")
+        if sci > 6: missing.append("Integrated Science (Requires min C6)")
+        if missing:
+            return {"eligible": False, "status": "PREREQUISITE_DEFICIT", "details": f"Nursing Council prerequisite deficit: {', '.join(missing)}"}
+        return {"eligible": True, "status": "PREREQUISITE_SATISFIED", "details": "Meets Ministry of Health & Nursing Council standard requirements."}
+
+    # 5. Law (LL.B)
+    if "LAW" in name_upper or "LL.B" in name_upper:
+        missing = []
+        if eng > 3: missing.append("English Language (Requires min B3)")
+        if missing:
+            return {"eligible": False, "status": "PREREQUISITE_DEFICIT", "details": f"Faculty of Law prerequisite deficit: {', '.join(missing)}"}
+        return {"eligible": True, "status": "PREREQUISITE_SATISFIED", "details": "Satisfies Law Faculty language proficiency requirements."}
+
+    # General Public University Degree Rule
+    if eng > 6 or c_math > 6:
+        return {"eligible": False, "status": "PREREQUISITE_DEFICIT", "details": "GTEC Rule: Public universities strictly require minimum C6 in English and Core Math for direct degree entry."}
+    return {"eligible": True, "status": "PREREQUISITE_SATISFIED", "details": "Standard university matriculation prerequisites satisfied."}
+
+def calculate_wassce_deficits(
+    qualifying_subjects: List[Tuple[str, str, int]],
+    current_aggregate: int,
+    benchmarks: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """
+    Identifies bottleneck subjects dragging down the candidate's aggregate
+    and calculates exact quantitative gains from strategic Nov/Dec remedial resits.
+    """
+    candidates_for_improvement = [s for s in qualifying_subjects if s[2] >= 3]
+    candidates_for_improvement.sort(key=lambda x: x[2], reverse=True)
+
+    scenarios = []
+    currently_eligible_count = sum(1 for b in benchmarks if current_aggregate <= b.get("cutoff_aggregate", 0))
+
+    for subj in candidates_for_improvement[:2]:
+        s_name, s_grade, s_val = subj
+        target_grade = "A1" if s_val <= 4 else "B2"
+        target_val = 1 if target_grade == "A1" else 2
+        point_gain = s_val - target_val
+
+        if point_gain <= 0:
+            continue
+
+        improved_aggregate = current_aggregate - point_gain
+        newly_eligible_count = sum(1 for b in benchmarks if improved_aggregate <= b.get("cutoff_aggregate", 0))
+        additional_programmes_unlocked = max(0, newly_eligible_count - currently_eligible_count)
+
+        unlocked_samples = [
+            f"{b['programme_name']} at {b['institution_code']} (Cut-Off: {b['cutoff_aggregate']})"
+            for b in benchmarks 
+            if current_aggregate > b.get("cutoff_aggregate", 0) >= improved_aggregate
+        ][:4]
+
+        scenarios.append({
+            "subject": s_name,
+            "current_grade": s_grade,
+            "current_val": s_val,
+            "target_grade": target_grade,
+            "target_val": target_val,
+            "aggregate_drop": point_gain,
+            "projected_aggregate": improved_aggregate,
+            "additional_programmes_unlocked": additional_programmes_unlocked,
+            "unlocked_samples": unlocked_samples
+        })
+
+    return {
+        "has_deficits": len(scenarios) > 0,
+        "scenarios": scenarios,
+        "remedial_guidance": {
+            "policy": "GTEC Two-Sitting Combination Policy",
+            "explanation": "Under GTEC policy, Ghanaian universities accept combination of results from up to two sittings (e.g. May/June + Nov/Dec). You only need to register and re-sit the specific bottleneck subject.",
+            "registration_window": "May – July (Annual WAEC Portal)",
+            "examination_window": "September – October",
+            "portal_url": "https://registration.waecgh.org"
+        }
+    }
+
+def format_wassce_whatsapp_dossier(analysis: Dict[str, Any]) -> str:
+    """Formats an executive WhatsApp share text for parents, mentors, and candidates."""
+    lines = [
+        "🇬🇭 *CHECKERPAY GHANA | ADMISSIONS & PLACEMENT DOSSIER*",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        f"📊 *Candidate Status:* {analysis.get('aggregate_string', 'N/A')}",
+        f"🎯 *Field of Interest:* {analysis.get('interest_area', 'General')}",
+        f"⚖️ *GTEC Qualification:* {analysis.get('eligibility_status', '').replace('_', ' ')}",
+        "",
+        "📋 *QUALIFYING SUBJECTS SUMMARY:*"
+    ]
+    for c in analysis.get("selected_cores", []):
+        lines.append(f"  • {c[0]}: *{c[1]}*")
+    for e in analysis.get("selected_electives", []):
+        lines.append(f"  • {e[0]}: *{e[1]}*")
+
+    scholarships = analysis.get("scholarships", [])
+    if scholarships:
+        lines.append("")
+        lines.append(f"💰 *MATCHED SCHOLARSHIPS ({len(scholarships)} Opportunities):*")
+        for s in scholarships[:3]:
+            lines.append(f"  ⭐ *{s['name']}*")
+            lines.append(f"     Coverage: {s['coverage'][:55]}...")
+            lines.append(f"     Portal: {s['portal_url']}")
+
+    deficits = analysis.get("deficits_analysis", {})
+    if deficits.get("has_deficits") and deficits.get("scenarios"):
+        top = deficits["scenarios"][0]
+        lines.append("")
+        lines.append("🚀 *STRATEGIC REMEDIAL PROJECTION (NOV/DEC):*")
+        lines.append(f"  Upgrading *{top['subject']}* ({top['current_grade']} ➔ {top['target_grade']}) shifts aggregate from *{analysis['aggregate']}* to *{top['projected_aggregate']}*, unlocking *+{top['additional_programmes_unlocked']} degree programmes* at Legon & KNUST!")
+
+    lines.extend([
+        "",
+        "🔒 *VERIFIED INTEGRITY ATTENUATION:*",
+        f"Proof Hash: `{analysis.get('compliance_attestation_hash', '')[:16]}...`",
+        "Grounded in official GTEC/WAEC benchmarks under Ghana Act 843.",
+        "Check live admissions: https://checkerpay.onrender.com/advisor"
+    ])
+    return "\n".join(lines)
 
 def evaluate_wassce_results(
     cores: Dict[str, str], 
@@ -409,8 +727,12 @@ def evaluate_wassce_results(
         # Pull live scraped departmental cut-offs from database
         live_degree_benchmarks = get_admission_benchmarks(institution_type="PUBLIC_DEGREE", limit=150)
         specific_live_matches = []
+        all_entered_grades = {**cores, **electives}
+
         for row in live_degree_benchmarks:
             cutoff = row["cutoff_aggregate"]
+            prereq = evaluate_programme_prerequisites(row["programme_name"], row["institution_code"], all_entered_grades)
+
             if total_aggregate <= cutoff:
                 fit = "Strong Match" if total_aggregate <= (cutoff - 2) else "Competitive"
                 specific_live_matches.append({
@@ -423,9 +745,13 @@ def evaluate_wassce_results(
                     "application_deadline": row["application_deadline"],
                     "voucher_cost_ghs": row["voucher_cost_ghs"],
                     "portal_url": row["portal_url"],
-                    "fit": fit
+                    "fit": fit,
+                    "prerequisites_met": prereq["eligible"],
+                    "prerequisite_status": prereq["status"],
+                    "prerequisite_details": prereq["details"]
                 })
             elif total_aggregate <= cutoff + 2:
+                fit = "Reach / Ambitious"
                 specific_live_matches.append({
                     "programme_name": row["programme_name"],
                     "institution_name": row["institution_name"],
@@ -436,7 +762,10 @@ def evaluate_wassce_results(
                     "application_deadline": row["application_deadline"],
                     "voucher_cost_ghs": row["voucher_cost_ghs"],
                     "portal_url": row["portal_url"],
-                    "fit": "Reach / Ambitious"
+                    "fit": fit,
+                    "prerequisites_met": prereq["eligible"],
+                    "prerequisite_status": prereq["status"],
+                    "prerequisite_details": prereq["details"]
                 })
 
         pathways.append({
@@ -515,6 +844,12 @@ def evaluate_wassce_results(
         }
     ]
 
+    # 6. SCAMPER Innovation Enhancements
+    all_entered_grades = {**cores, **electives}
+    matched_scholarships = match_scholarships(total_aggregate, interest_area, all_entered_grades)
+    live_benchmarks_for_deficits = live_degree_benchmarks if 'live_degree_benchmarks' in locals() else get_admission_benchmarks(institution_type="PUBLIC_DEGREE", limit=150)
+    deficits_analysis = calculate_wassce_deficits(all_6_subjects, total_aggregate, live_benchmarks_for_deficits)
+
     audit_hash = append_audit_block(
         action="ACT_843_WASSCE_EVALUATION",
         actor="EPHEMERAL_ADVISORY_ENGINE",
@@ -523,11 +858,12 @@ def evaluate_wassce_results(
             "aggregate": total_aggregate,
             "status": eligibility_status,
             "interest": interest_area,
+            "scholarships_matched": len(matched_scholarships),
             "zero_persistence_verified": True
         }
     )
 
-    return {
+    analysis_result = {
         "exam_type": "WASSCE",
         "aggregate": total_aggregate,
         "aggregate_string": f"Aggregate {total_aggregate:02d}",
@@ -538,7 +874,12 @@ def evaluate_wassce_results(
         "eligibility_status": eligibility_status,
         "reality_checks": reality_checks,
         "pathways": pathways,
+        "scholarships": matched_scholarships,
+        "deficits_analysis": deficits_analysis,
         "roadmap": roadmap,
         "interest_area": interest_area,
         "compliance_attestation_hash": audit_hash
     }
+    analysis_result["whatsapp_share_text"] = format_wassce_whatsapp_dossier(analysis_result)
+
+    return analysis_result

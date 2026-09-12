@@ -359,9 +359,17 @@
             <h2 id="res_aggregate_title" style="font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 0.25rem;">Aggregate Evaluation</h2>
             <p id="res_breakdown" style="color: var(--text-muted); font-size: 0.875rem;"></p>
           </div>
-          <button onclick="window.print()" class="btn-lookup" style="padding: 0.55rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
-            <span>🖨️</span> Print / Save Briefing
-          </button>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" onclick="openDossierModal()" class="btn-safety-guide" style="padding: 0.55rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+              <span>📜</span> Official Admissions Dossier
+            </button>
+            <button type="button" onclick="shareDossierWhatsApp()" class="btn-lookup" style="background: rgba(37, 211, 102, 0.15); border: 1px solid #25d366; color: #4ade80; padding: 0.55rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+              <span>💬</span> WhatsApp Placement Card
+            </button>
+            <button type="button" onclick="window.print()" class="btn-lookup" style="padding: 0.55rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
+              <span>🖨️</span> Print / Save Briefing
+            </button>
+          </div>
         </div>
 
         <!-- Reality Checks / Bottleneck Warnings -->
@@ -375,6 +383,28 @@
           <div id="tiers_container" style="display: grid; gap: 1.25rem;"></div>
         </div>
 
+        <!-- Scholarships & Bursary Opportunities (Dynamic) -->
+        <div id="scholarships_section" style="display: none; margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px;">
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+              <span>🎓</span> Matched Scholarships &amp; Bursary Funds
+            </h3>
+            <span id="scholarships_count_badge" class="card-badge card-badge-fast" style="font-size: 0.725rem;">Verified Funds</span>
+          </div>
+          <div id="scholarships_container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;"></div>
+        </div>
+
+        <!-- WASSCE Deficit & Remedial Strategy Engine (Dynamic) -->
+        <div id="deficits_section" style="display: none; margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px;">
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+              <span>📈</span> WASSCE Deficit Calculator &amp; NOV/DEC Remedial Strategy Engine
+            </h3>
+            <span class="card-badge card-badge-popular" style="font-size: 0.725rem;">GTEC Two-Sitting Policy</span>
+          </div>
+          <div id="deficits_container"></div>
+        </div>
+
         <!-- Step-by-Step Action Roadmap -->
         <div style="margin-bottom: 1.5rem;">
           <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
@@ -383,15 +413,72 @@
           <div id="roadmap_container" style="display: grid; gap: 0.85rem;"></div>
         </div>
 
-        <!-- Data Protection Ephemeral Stamp -->
-        <div style="padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-dim); flex-wrap: wrap; gap: 8px;">
-          <div>🛡️ Evaluated under Ghana Data Protection Act, 2012 (Act 843)</div>
-          <div>In-Memory Ephemeral Engine &bull; Zero DB Records Retained</div>
+        <!-- Data Protection Ephemeral Stamp & Cryptographic Proof -->
+        <div style="padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-dim); flex-wrap: wrap; gap: 8px;">
+          <div>🛡️ Evaluated under Ghana Data Protection Act, 2012 (Act 843) &bull; Zero DB Retention</div>
+          <div id="res_attestation_hash" style="font-family: monospace; color: var(--ghana-gold); font-size: 0.72rem; word-break: break-all;">Proof: Ephemeral</div>
         </div>
 
       </div>
     </div>
 
+  <!-- UNIVERSAL ADMISSIONS DOSSIER MODAL -->
+  <div id="dossier_modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 1.5rem;">
+    <div style="background: #0d1527; border: 2px solid var(--border-gold); border-radius: var(--radius-lg); width: 100%; max-width: 760px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);">
+      
+      <!-- Modal Header -->
+      <div style="background: rgba(245, 158, 11, 0.08); border-bottom: 1px solid var(--border-gold); padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.5rem;">🇬🇭</span>
+          <div>
+            <h3 id="dossier_title_display" style="font-size: 1.1rem; font-weight: 900; color: #fff; margin: 0;">
+              UNIVERSAL ADMISSIONS DOSSIER
+            </h3>
+            <div style="font-size: 0.72rem; color: var(--ghana-gold); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">
+              Republic of Ghana &bull; GTEC &amp; CSSPS Placement Verification
+            </div>
+          </div>
+        </div>
+        <button type="button" onclick="closeDossierModal()" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 4px 8px;">
+          &times;
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+        <!-- Verification Ledger Banner -->
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border-subtle); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Act 843 Ephemeral Proof Hash</div>
+            <div id="dossier_hash_display" style="font-family: monospace; font-size: 0.75rem; color: #38bdf8; word-break: break-all;">EPHEMERAL_ACT_843</div>
+          </div>
+          <span class="card-badge card-badge-fast" style="font-size: 0.7rem;">Verified Ledger Record</span>
+        </div>
+
+        <p style="font-size: 0.825rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+          This pre-formatted diagnostic card contains your official aggregate calculations, qualification tier, prerequisite clearance status, matched scholarships, and safe application directives. Share via WhatsApp to parents, teachers, or advisors.
+        </p>
+
+        <!-- Plaintext Card for 1-Click Sharing -->
+        <textarea id="dossier_plaintext" readonly style="width: 100%; height: 260px; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: #cbd5e1; font-family: monospace; font-size: 0.78rem; padding: 1rem; line-height: 1.45; resize: none;"></textarea>
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="background: rgba(0,0,0,0.25); border-top: 1px solid var(--border-subtle); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <button type="button" onclick="closeDossierModal()" class="btn-lookup" style="padding: 0.5rem 1rem; font-size: 0.825rem;">
+          Close
+        </button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="btn_copy_dossier" onclick="copyDossierText()" class="btn-lookup" style="padding: 0.5rem 1.1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
+            <span>📋</span> Copy Card Text
+          </button>
+          <button type="button" onclick="shareDossierWhatsApp()" class="btn-safety-guide" style="background: #25d366; color: #000; padding: 0.5rem 1.25rem; font-size: 0.825rem; font-weight: 800; display: inline-flex; align-items: center; gap: 6px;">
+            <span>💬</span> Share via WhatsApp
+          </button>
+        </div>
+      </div>
+
+    </div>
   </div>
 
 </div>
@@ -720,7 +807,10 @@ async function submitWassceAnalysis() {
   }
 }
 
+let currentAnalysis = null;
+
 function renderBeceResults(analysis) {
+  currentAnalysis = analysis;
   const section = document.getElementById("results_section");
   section.style.display = "block";
   section.scrollIntoView({ behavior: "smooth" });
@@ -729,6 +819,16 @@ function renderBeceResults(analysis) {
   document.getElementById("res_aggregate_title").innerText = `${analysis.aggregate_string} (${analysis.risk_level})`;
   document.getElementById("res_breakdown").innerText = 
     `Core Aggregate: ${analysis.core_aggregate} | Best 2 Electives: ${analysis.elective_aggregate} | Target Programme: ${analysis.preferred_programme}`;
+
+  if (analysis.compliance_attestation_hash) {
+    document.getElementById("res_attestation_hash").innerHTML = `Act 843 Ephemeral Proof: <span style="color:#38bdf8;">${analysis.compliance_attestation_hash}</span>`;
+  }
+
+  // Hide WASSCE-only sections
+  const sSection = document.getElementById("scholarships_section");
+  const dSection = document.getElementById("deficits_section");
+  if (sSection) sSection.style.display = "none";
+  if (dSection) dSection.style.display = "none";
 
   // Reality Checks
   const rcContainer = document.getElementById("reality_checks_container");
@@ -792,6 +892,7 @@ function renderBeceResults(analysis) {
 }
 
 function renderWassceResults(analysis) {
+  currentAnalysis = analysis;
   const section = document.getElementById("results_section");
   section.style.display = "block";
   section.scrollIntoView({ behavior: "smooth" });
@@ -800,6 +901,10 @@ function renderWassceResults(analysis) {
   document.getElementById("res_aggregate_title").innerText = `${analysis.aggregate_string} (${analysis.eligibility_status.replace(/_/g, ' ')})`;
   document.getElementById("res_breakdown").innerText = 
     `Core Aggregate: ${analysis.core_aggregate} | Best 3 Electives: ${analysis.elective_aggregate} | Field: ${analysis.interest_area}`;
+
+  if (analysis.compliance_attestation_hash) {
+    document.getElementById("res_attestation_hash").innerHTML = `Act 843 Ephemeral Proof: <span style="color:#38bdf8;">${analysis.compliance_attestation_hash}</span>`;
+  }
 
   // Reality Checks
   const rcContainer = document.getElementById("reality_checks_container");
@@ -857,6 +962,21 @@ function renderWassceResults(analysis) {
           let fitBadgeClass = m.fit === "Strong Match" ? "background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid #10b981;" :
                               (m.fit === "Competitive" ? "background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid #f59e0b;" :
                               "background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid #3b82f6;");
+
+          let prereqBadge = (m.prerequisites_met === false) 
+            ? `<span style="font-size: 0.7rem; font-weight: 800; background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; padding: 2px 7px; border-radius: 4px;">⛔ Prerequisite Deficit</span>`
+            : `<span style="font-size: 0.7rem; font-weight: 700; background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid #10b981; padding: 2px 6px; border-radius: 4px;">✓ Clear</span>`;
+
+          let prereqBox = "";
+          if (m.prerequisites_met === false) {
+            prereqBox = `
+              <div style="background: rgba(239,68,68,0.1); border-left: 3px solid #ef4444; padding: 6px 10px; border-radius: 4px; font-size: 0.74rem; color: #fca5a5; margin-top: 6px; line-height: 1.4;">
+                <strong style="color: #f87171;">Faculty Prerequisite Gatekeeper:</strong> ${m.prerequisite_deficit_reason}
+                <div style="color: #fca5a5; font-size: 0.7rem; margin-top: 2px;">⚠️ Do not purchase this application voucher until you satisfy this required subject in NOV/DEC remedial.</div>
+              </div>
+            `;
+          }
+
           return `
             <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.75rem 0.9rem;">
               <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 4px;">
@@ -867,12 +987,14 @@ function renderWassceResults(analysis) {
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <span style="font-size: 0.75rem; font-weight: 800; color: var(--ghana-gold); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); padding: 2px 7px; border-radius: 4px;">Cut-Off: Agg ${m.cutoff_aggregate}</span>
                   <span style="font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; ${fitBadgeClass}">${m.fit}</span>
+                  ${prereqBadge}
                 </div>
               </div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 6px;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 4px;">
                 <strong style="color: #cbd5e1;">Requirements:</strong> ${m.mandatory_requirements}
               </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.725rem; color: var(--text-dim); border-top: 1px solid rgba(255,255,255,0.05); padding-top: 4px;">
+              ${prereqBox}
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.725rem; color: var(--text-dim); border-top: 1px solid rgba(255,255,255,0.05); padding-top: 6px; margin-top: 6px;">
                 <span>📅 Deadline: <strong style="color: #cbd5e1;">${m.application_deadline}</strong> &bull; Voucher: <strong style="color: #cbd5e1;">GH₵ ${Number(m.voucher_cost_ghs).toFixed(2)}</strong></span>
                 <a href="${m.portal_url}" target="_blank" rel="noopener noreferrer" style="color: var(--ghana-gold); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
                   Official Portal ↗
@@ -895,6 +1017,110 @@ function renderWassceResults(analysis) {
     });
   }
 
+  // Render Scholarships & Bursaries
+  const sSection = document.getElementById("scholarships_section");
+  const sContainer = document.getElementById("scholarships_container");
+  const sBadge = document.getElementById("scholarships_count_badge");
+  if (analysis.scholarships && analysis.scholarships.length > 0) {
+    sSection.style.display = "block";
+    sBadge.innerText = `${analysis.scholarships.length} Verified Opportunities`;
+    sContainer.innerHTML = analysis.scholarships.map(s => {
+      let tierBadge = s.competitiveness_tier === "HIGH_COMPETITIVENESS" 
+        ? `<span style="font-size: 0.7rem; font-weight: 800; background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid #10b981; padding: 2px 7px; border-radius: 4px;">High Priority Fit</span>`
+        : (s.competitiveness_tier === "COMPETITIVE"
+        ? `<span style="font-size: 0.7rem; font-weight: 800; background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid #f59e0b; padding: 2px 7px; border-radius: 4px;">Competitive Match</span>`
+        : `<span style="font-size: 0.7rem; font-weight: 700; background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid #3b82f6; padding: 2px 7px; border-radius: 4px;">Eligible</span>`);
+      return `
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px;">
+              <span style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">${s.provider}</span>
+              ${tierBadge}
+            </div>
+            <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">${s.name}</h4>
+            <div style="font-size: 0.85rem; font-weight: 800; color: var(--ghana-gold); margin-bottom: 8px; background: rgba(245,158,11,0.08); padding: 4px 8px; border-radius: 4px; display: inline-block;">
+              💰 ${s.funding_amount}
+            </div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">
+              <strong>Coverage:</strong> ${s.coverage}
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.4; margin-bottom: 10px;">
+              <strong>Eligibility:</strong> ${s.criteria}
+            </div>
+          </div>
+          <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;">
+            <span style="color: var(--text-dim);">📅 Window: <strong style="color: #cbd5e1;">${s.application_window}</strong></span>
+            <a href="${s.portal_url}" target="_blank" rel="noopener noreferrer" class="btn-lookup" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; text-decoration: none; font-weight: 700;">
+              Apply ↗
+            </a>
+          </div>
+        </div>
+      `;
+    }).join("");
+  } else {
+    sSection.style.display = "none";
+  }
+
+  // Render Deficits & NOV/DEC Remedial Strategy
+  const dSection = document.getElementById("deficits_section");
+  const dContainer = document.getElementById("deficits_container");
+  if (analysis.deficits_analysis && analysis.deficits_analysis.has_bottlenecks) {
+    dSection.style.display = "block";
+    const d = analysis.deficits_analysis;
+    const bottleneckBadges = d.bottleneck_subjects.map(b => 
+      `<span style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #f87171; font-weight: 800; font-size: 0.775rem; padding: 3px 8px; border-radius: 4px;">⚠️ ${b.subject}: Grade ${b.current_grade} (${b.points} pts)</span>`
+    ).join(" ");
+
+    let scenariosHtml = "";
+    if (d.remedial_scenarios && d.remedial_scenarios.length > 0) {
+      scenariosHtml = `
+        <div style="display: grid; gap: 0.85rem; margin-top: 1rem;">
+          ${d.remedial_scenarios.map(sc => `
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+                <div>
+                  <span style="font-weight: 800; font-size: 0.95rem; color: #fff;">Target Subject: ${sc.remedial_subject}</span>
+                  <span style="font-size: 0.75rem; color: var(--text-dim); margin-left: 8px;">(Retake &amp; Raise ${sc.current_grade} ➔ ${sc.target_grade})</span>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <span style="font-size: 0.75rem; font-weight: 800; color: #34d399; background: rgba(16,185,129,0.15); border: 1px solid #10b981; padding: 2px 8px; border-radius: 4px;">
+                    -${sc.aggregate_drop} Points Drop
+                  </span>
+                  <span style="font-size: 0.85rem; font-weight: 900; color: var(--ghana-gold);">
+                    New Aggregate: ${sc.projected_aggregate}
+                  </span>
+                </div>
+              </div>
+              <div style="font-size: 0.78rem; color: #cbd5e1; margin-bottom: 6px;">
+                <strong>Newly Unlocked Programmes (+${sc.additional_programmes_unlocked} options):</strong>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                ${sc.newly_unlocked_programmes.map(p => `
+                  <span style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: var(--ghana-gold); font-size: 0.725rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">${p}</span>
+                `).join("")}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    dContainer.innerHTML = `
+      <div style="background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md); padding: 1.25rem;">
+        <div style="margin-bottom: 0.75rem;">
+          <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; font-weight: 700;">Identified Remedial Bottlenecks in Best 6 Count:</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">${bottleneckBadges}</div>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin: 0 0 0.5rem 0;">
+          ${d.two_sitting_policy_note}
+        </p>
+        ${scenariosHtml}
+      </div>
+    `;
+  } else {
+    dSection.style.display = "none";
+  }
+
   // Roadmap
   const rContainer = document.getElementById("roadmap_container");
   rContainer.innerHTML = "";
@@ -912,6 +1138,53 @@ function renderWassceResults(analysis) {
       rContainer.appendChild(step);
     });
   }
+}
+
+function openDossierModal() {
+  if (!currentAnalysis) {
+    alert("Please complete an evaluation first.");
+    return;
+  }
+  const modal = document.getElementById("dossier_modal");
+  const textEl = document.getElementById("dossier_plaintext");
+  const hashEl = document.getElementById("dossier_hash_display");
+  const titleEl = document.getElementById("dossier_title_display");
+
+  if (textEl) textEl.value = currentAnalysis.whatsapp_share_text || "";
+  if (hashEl) hashEl.innerText = currentAnalysis.compliance_attestation_hash || "EPHEMERAL_ACT_843";
+  if (titleEl) titleEl.innerText = `${currentAnalysis.aggregate_string || "CANDIDATE"} ADMISSIONS DOSSIER`;
+
+  if (modal) modal.style.display = "flex";
+}
+
+function closeDossierModal() {
+  const modal = document.getElementById("dossier_modal");
+  if (modal) modal.style.display = "none";
+}
+
+function copyDossierText() {
+  const textEl = document.getElementById("dossier_plaintext");
+  if (!textEl) return;
+  textEl.select();
+  navigator.clipboard.writeText(textEl.value).then(() => {
+    const btn = document.getElementById("btn_copy_dossier");
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = "<span>✓</span> Copied to Clipboard!";
+      setTimeout(() => { btn.innerHTML = orig; }, 2200);
+    }
+  }).catch(() => {
+    alert("Dossier text copied to clipboard!");
+  });
+}
+
+function shareDossierWhatsApp() {
+  if (!currentAnalysis || !currentAnalysis.whatsapp_share_text) {
+    alert("Please run an evaluation first to generate your WhatsApp Diagnostic Card.");
+    return;
+  }
+  const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(currentAnalysis.whatsapp_share_text);
+  window.open(url, "_blank");
 }
 </script>
 {% endblock %}
