@@ -29,6 +29,7 @@ from checker_platform.services.payment import (
     detect_ghana_telco,
     GhanaMoMoSimulator
 )
+from checker_platform.services.dispatch import DispatchManager, format_ghana_phone
 
 class TestOrderLifecycle(unittest.TestCase):
 
@@ -106,6 +107,17 @@ class TestOrderLifecycle(unittest.TestCase):
         )
         self.assertTrue(prompt["success"])
         self.assertIn("*170#", prompt["manual_steps"])
+
+    def test_sms_phone_normalization(self):
+        self.assertEqual(format_ghana_phone("024 123 4567"), "233241234567")
+        self.assertEqual(format_ghana_phone("+233 24 123 4567"), "233241234567")
+        self.assertEqual(format_ghana_phone("233241234567"), "233241234567")
+
+    def test_sms_dispatch_fallback(self):
+        res = DispatchManager.dispatch_sms("0241234567", "Test SMS message")
+        self.assertEqual(res["status"], "SENT")
+        self.assertEqual(res["provider"], "SMS_GATEWAY_SIMULATOR")
+        self.assertEqual(res["recipient"], "0241234567")
 
 if __name__ == "__main__":
     unittest.main()

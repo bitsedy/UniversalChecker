@@ -8,6 +8,7 @@ import hashlib
 import hmac
 import asyncio
 import os
+import re
 import random
 import time
 import logging
@@ -195,10 +196,18 @@ async def health_check():
 async def home(request: Request):
     """Storefront homepage with live stock and product options."""
     products = get_product_catalog()
+    raw_wa = get_setting("support_whatsapp", "+233240000000")
+    clean_wa = re.sub(r"\D", "", raw_wa) or "233240000000"
+    support_phone = get_setting("support_phone", "+233 24 000 0000")
     return templates.TemplateResponse(
         request=request,
         name="index.html",
-        context={"active_page": "home", "products": products}
+        context={
+            "active_page": "home",
+            "products": products,
+            "support_whatsapp": clean_wa,
+            "support_phone": support_phone
+        }
     )
 
 @app.get("/lookup", response_class=HTMLResponse)
@@ -714,6 +723,10 @@ async def admin_page(request: Request, admin_user: str = Depends(get_current_adm
         "env_password_override": bool(env_password),
         "admin_gate_key": get_setting("admin_gate_key", "ghana2026_gate"),
         "admin_allowed_ips": get_setting("admin_allowed_ips", "127.0.0.1,::1"),
+        "arkesel_api_key": get_setting("arkesel_api_key", ""),
+        "mnotify_api_key": get_setting("mnotify_api_key", ""),
+        "support_phone": get_setting("support_phone", "+233 24 000 0000"),
+        "support_whatsapp": get_setting("support_whatsapp", "+233240000000"),
     }
     admissions_metrics = get_admissions_summary_metrics()
     analytics_data = get_system_analytics(time_window="7d")
@@ -794,11 +807,11 @@ class BulkImportRequest(BaseModel):
     raw_data: str
 
 class SettingsUpdateRequest(BaseModel):
-    price_WASSCE: str
-    price_BECE: str
-    price_CSSPS: str
-    price_CTVET: str
-    sms_sender_id: str
+    price_WASSCE: Optional[str] = None
+    price_BECE: Optional[str] = None
+    price_CSSPS: Optional[str] = None
+    price_CTVET: Optional[str] = None
+    sms_sender_id: Optional[str] = None
     paystack_public_key: Optional[str] = None
     paystack_secret_key: Optional[str] = None
     inventory_mode: Optional[str] = "BATCH"
@@ -806,6 +819,10 @@ class SettingsUpdateRequest(BaseModel):
     admin_password: Optional[str] = None
     admin_gate_key: Optional[str] = None
     admin_allowed_ips: Optional[str] = None
+    arkesel_api_key: Optional[str] = None
+    mnotify_api_key: Optional[str] = None
+    support_phone: Optional[str] = None
+    support_whatsapp: Optional[str] = None
 
 class GenerateBatchRequest(BaseModel):
     category: str = "ALL"
@@ -976,8 +993,8 @@ async def api_verify_order(req: OrderVerifyRequest, background_tasks: Background
     sms_text = DispatchManager.generate_sms_text(req.order_reference, order["category"], sold_vouchers)
     whatsapp_text = DispatchManager.generate_whatsapp_share_text(req.order_reference, order["category"], sold_vouchers)
 
-    # Dispatch mock SMS in background
-    background_tasks.add_task(DispatchManager.dispatch_sms_mock, order["customer_phone"], sms_text)
+    # Dispatch SMS in background (routes to Arkesel/mNotify if configured, else simulation)
+    background_tasks.add_task(DispatchManager.dispatch_sms, order["customer_phone"], sms_text)
 
     result_payload = {
         "success": True,
@@ -1008,12 +1025,17 @@ async def api_get_order(reference: str):
     return data
 
 @app.post("/api/webhooks/paystack")
-async def paystack_webhook(request: Request, x_paystack_signature: Optional[str] = Header(None)):
+async def paystack_webhook(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    x_paystack_signature: Optional[str] = Header(None)
+):
     """
     Enterprise Idempotent Paystack Webhook Handler:
     1. Verifies HMAC-SHA512 signature in constant time.
     2. Reconciles exact pesewa-level parity against order amount.
     3. Guarantees safe atomic order fulfillment.
+    4. Automatically dispatches real-time SMS voucher credentials to customer.
     """
     body_bytes = await request.body()
     secret_key = get_setting("paystack_secret_key", "").strip()
@@ -1047,7 +1069,7 @@ async def paystack_webhook(request: Request, x_paystack_signature: Optional[str]
                         raise HTTPException(status_code=400, detail="Pesewa reconciliation failed: amount mismatch.")
 
                     logger.info(f"[Paystack Webhook] Fulfilling order {order_ref} ({paid_pesewas} pesewas)")
-                    complete_voucher_sale(order_ref)
+                    sold_vouchers = complete_voucher_sale(order_ref)
                     record_transaction(
                         order_ref=order_ref,
                         provider="PAYSTACK",
@@ -1056,6 +1078,11 @@ async def paystack_webhook(request: Request, x_paystack_signature: Optional[str]
                         status="SUCCESS",
                         payload=data
                     )
+
+                    # Trigger SMS dispatch in background
+                    if sold_vouchers and order.get("customer_phone"):
+                        sms_text = DispatchManager.generate_sms_text(order_ref, order["category"], sold_vouchers)
+                        background_tasks.add_task(DispatchManager.dispatch_sms, order["customer_phone"], sms_text)
                     try:
                         append_audit_block(
                             action="PAYSTACK_WEBHOOK_FULFILLED",
@@ -1106,11 +1133,16 @@ async def api_admin_save_settings(req: SettingsUpdateRequest, request: Request, 
     """Updates retail pricing and portal settings with salted password hashing and audit logging."""
     client_ip = AdminSecurityManager.get_client_ip(request)
 
-    update_setting("price_WASSCE", str(req.price_WASSCE))
-    update_setting("price_BECE", str(req.price_BECE))
-    update_setting("price_CSSPS", str(req.price_CSSPS))
-    update_setting("price_CTVET", str(req.price_CTVET))
-    update_setting("sms_sender_id", req.sms_sender_id)
+    if req.price_WASSCE is not None:
+        update_setting("price_WASSCE", str(req.price_WASSCE))
+    if req.price_BECE is not None:
+        update_setting("price_BECE", str(req.price_BECE))
+    if req.price_CSSPS is not None:
+        update_setting("price_CSSPS", str(req.price_CSSPS))
+    if req.price_CTVET is not None:
+        update_setting("price_CTVET", str(req.price_CTVET))
+    if req.sms_sender_id is not None:
+        update_setting("sms_sender_id", req.sms_sender_id.strip())
 
     if req.paystack_public_key and req.paystack_public_key.strip():
         update_setting("paystack_public_key", req.paystack_public_key.strip())
@@ -1119,6 +1151,20 @@ async def api_admin_save_settings(req: SettingsUpdateRequest, request: Request, 
     if req.paystack_secret_key and req.paystack_secret_key.strip():
         update_setting("paystack_secret_key", req.paystack_secret_key.strip())
         logger.info(f"[Admin Audit] Paystack secret key updated by '{admin_user}' ({client_ip}).")
+
+    if req.arkesel_api_key is not None and req.arkesel_api_key.strip():
+        update_setting("arkesel_api_key", req.arkesel_api_key.strip())
+        logger.info(f"[Admin Audit] Arkesel SMS gateway key updated by '{admin_user}' ({client_ip}).")
+
+    if req.mnotify_api_key is not None and req.mnotify_api_key.strip():
+        update_setting("mnotify_api_key", req.mnotify_api_key.strip())
+        logger.info(f"[Admin Audit] mNotify SMS gateway key updated by '{admin_user}' ({client_ip}).")
+
+    if req.support_phone is not None:
+        update_setting("support_phone", req.support_phone.strip())
+
+    if req.support_whatsapp is not None:
+        update_setting("support_whatsapp", req.support_whatsapp.strip())
 
     if req.inventory_mode:
         update_setting("inventory_mode", req.inventory_mode.strip())

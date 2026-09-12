@@ -631,7 +631,7 @@
           <input type="text" id="cfg_paystack_public_key" value="{{ settings.paystack_public_key }}" class="form-input" placeholder="pk_test_...">
         </div>
 
-        <div class="form-group" style="margin-bottom: 1.5rem;">
+        <div class="form-group" style="margin-bottom: 1rem;">
           <label class="form-label">Paystack Secret Key (sk_test_... or sk_live_...)</label>
           <input type="password" id="cfg_paystack_secret_key" class="form-input" placeholder="{% if settings.has_paystack_secret_key %}•••••••••••••••• (Leave blank to keep current){% else %}sk_test_... or sk_live_...{% endif %}">
           {% if settings.masked_paystack_secret_key %}
@@ -639,6 +639,28 @@
             Configured: <code>{{ settings.masked_paystack_secret_key }}</code> (Protected with SHA-256 HMAC)
           </span>
           {% endif %}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label class="form-label">Arkesel SMS API Key (Ghana SMS Gateway)</label>
+            <input type="password" id="cfg_arkesel_api_key" value="{{ settings.arkesel_api_key }}" class="form-input" placeholder="Paste Arkesel API key">
+          </div>
+          <div>
+            <label class="form-label">mNotify SMS API Key (Alternative Gateway)</label>
+            <input type="password" id="cfg_mnotify_api_key" value="{{ settings.mnotify_api_key }}" class="form-input" placeholder="Paste mNotify API key">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <label class="form-label">Support Phone Number (Voice Calls)</label>
+            <input type="text" id="cfg_support_phone" value="{{ settings.support_phone }}" class="form-input" placeholder="+233 24 000 0000">
+          </div>
+          <div>
+            <label class="form-label">Support WhatsApp Number (Direct Chat)</label>
+            <input type="text" id="cfg_support_whatsapp" value="{{ settings.support_whatsapp }}" class="form-input" placeholder="+233240000000">
+          </div>
         </div>
 
         <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); margin-bottom: 0.85rem; text-transform: uppercase;">
@@ -1221,6 +1243,15 @@ async function handleSaveSettings(e) {
   if (gateKey) settings.admin_gate_key = gateKey;
   const allowedIps = document.getElementById("cfg_admin_allowed_ips")?.value?.trim();
   if (allowedIps !== undefined) settings.admin_allowed_ips = allowedIps;
+
+  const arkeselKey = document.getElementById("cfg_arkesel_api_key")?.value?.trim();
+  if (arkeselKey !== undefined) settings.arkesel_api_key = arkeselKey;
+  const mnotifyKey = document.getElementById("cfg_mnotify_api_key")?.value?.trim();
+  if (mnotifyKey !== undefined) settings.mnotify_api_key = mnotifyKey;
+  const supportPhone = document.getElementById("cfg_support_phone")?.value?.trim();
+  if (supportPhone !== undefined) settings.support_phone = supportPhone;
+  const supportWhatsapp = document.getElementById("cfg_support_whatsapp")?.value?.trim();
+  if (supportWhatsapp !== undefined) settings.support_whatsapp = supportWhatsapp;
 
   try {
     const res = await fetch("/api/admin/settings", {
