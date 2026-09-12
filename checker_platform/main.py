@@ -61,6 +61,7 @@ from .services.advisory import (
     WASSCE_GRADE_VALUES,
 )
 from .services.scraper import AdmissionScraperEngine
+from .services.analytics import get_system_analytics
 from .services.security import (
     SSRFValidator,
     SSRFSecurityViolation,
@@ -621,6 +622,7 @@ async def admin_page(request: Request, admin_user: str = Depends(get_current_adm
         "admin_allowed_ips": get_setting("admin_allowed_ips", "127.0.0.1,::1"),
     }
     admissions_metrics = get_admissions_summary_metrics()
+    analytics_data = get_system_analytics(time_window="7d")
     return templates.TemplateResponse(
         request=request,
         name="admin.html",
@@ -629,7 +631,8 @@ async def admin_page(request: Request, admin_user: str = Depends(get_current_adm
             "metrics": metrics,
             "settings": settings,
             "admin_user": admin_user,
-            "admissions_metrics": admissions_metrics
+            "admissions_metrics": admissions_metrics,
+            "analytics": analytics_data
         }
     )
 
@@ -1074,6 +1077,20 @@ async def api_admin_generate_demo_batch(req: GenerateBatchRequest, request: Requ
         "breakdown": breakdown,
         "message": f"Successfully generated and inserted {total_inserted} test vouchers into inventory."
     }
+
+@app.get("/api/admin/analytics")
+async def api_admin_analytics(
+    request: Request,
+    window: str = "7d",
+    admin_user: str = Depends(get_current_admin)
+):
+    """
+    Returns live operational and financial telemetry for the admin visual command dashboard.
+    Protected under stealth 404 gate and session authentication.
+    Strictly zero PII (compliant with Ghana Data Protection Act 843).
+    """
+    analytics_data = get_system_analytics(time_window=window)
+    return JSONResponse(content=analytics_data)
 
 # ============================================================================
 # EDUCATIONAL PLACEMENT & PATHWAY ADVISOR (GHANA ACT 843 COMPLIANT)

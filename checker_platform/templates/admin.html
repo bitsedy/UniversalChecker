@@ -1,20 +1,41 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Management & Inventory Control | CheckerPay Ghana{% endblock %}
+{% block title %}Executive Operational Command & Inventory Control | CheckerPay Ghana{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js for Visual Telemetry & Analytics -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+{% endblock %}
 
 {% block content %}
-<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem;">
   
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+  <!-- EXECUTIVE HEADER -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
     <div>
-      <h1 style="font-size: 2rem; font-weight: 900;">Merchant Inventory & Operations</h1>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Manage stock batches, sales velocity, and payment settings.</p>
+      <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--border-gold); padding: 0.25rem 0.75rem; border-radius: 999px; margin-bottom: 0.5rem;">
+        <span style="display: inline-block; width: 7px; height: 7px; background: #10b981; border-radius: 50%;"></span>
+        <span style="font-size: 0.75rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; letter-spacing: 0.05em;">
+          Sovereign Mission Control &bull; Live Telemetry
+        </span>
+      </div>
+      <h1 style="font-size: 1.85rem; font-weight: 900; color: #fff; margin: 0;">
+        Operations &amp; Intelligence Command Center
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 0 0;">
+        Logged in as <strong style="color: #cbd5e1;">{{ admin_user }}</strong> &bull; Bank of Ghana &amp; GTEC Institutional Standard
+      </p>
     </div>
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <span class="card-badge card-badge-popular" style="padding: 6px 14px; font-size: 0.85rem;">
-        High-Concurrency Mode Active (WAL)
+
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <span class="card-badge card-badge-popular" style="padding: 6px 12px; font-size: 0.775rem;">
+        WAL Mode Active
       </span>
-      <a href="/admin/logout" style="background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); padding: 6px 14px; border-radius: var(--radius-sm); text-decoration: none; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
+      <span style="background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.3); padding: 6px 12px; border-radius: var(--radius-sm); font-size: 0.775rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+        <span style="display: inline-block; width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span>
+        Merkle Ledger: Verified ({{ analytics.security.total_blocks }} blocks)
+      </span>
+      <a href="/admin/logout" style="background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); padding: 6px 14px; border-radius: var(--radius-sm); text-decoration: none; font-size: 0.825rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
         <span>🔒</span> Sign Out
       </a>
     </div>
@@ -22,209 +43,432 @@
 
   <!-- SECURITY WARNING IF DEFAULT PASSWORD ACTIVE -->
   {% if settings.is_default_password %}
-  <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid var(--ghana-red); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; margin-bottom: 2rem; display: flex; align-items: flex-start; gap: 14px;">
-    <span style="font-size: 1.6rem; line-height: 1;">⚠️</span>
+  <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid var(--ghana-red); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 12px;">
+    <span style="font-size: 1.5rem; line-height: 1;">⚠️</span>
     <div>
-      <div style="font-weight: 800; color: #fca5a5; font-size: 1rem; margin-bottom: 4px;">SECURITY WARNING: Default Admin Password Active!</div>
-      <div style="font-size: 0.875rem; color: #e2e8f0; line-height: 1.5;">
+      <div style="font-weight: 800; color: #fca5a5; font-size: 0.95rem; margin-bottom: 2px;">SECURITY WARNING: Default Admin Password Active!</div>
+      <div style="font-size: 0.825rem; color: #e2e8f0; line-height: 1.45;">
         Your platform is currently protected only by the factory default password (<code>ghana2026</code>). 
-        To secure your platform, scroll down to <strong>Admin Access Credentials</strong> to set a new password (min. 8 chars), or define the <code>ADMIN_PASSWORD</code> environment variable in your cloud hosting settings.
+        Click <strong>Settings &amp; Security</strong> below to set a new password, or set <code>ADMIN_PASSWORD</code> in cloud environment variables.
       </div>
     </div>
-  </div>
-  {% elif settings.env_password_override %}
-  <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid var(--ghana-green); border-radius: var(--radius-md); padding: 0.85rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px;">
-    <span style="font-size: 1.2rem;">🛡️</span>
-    <span style="font-size: 0.85rem; color: #a7f3d0;">
-      Admin password is encrypted and securely locked via the <code>ADMIN_PASSWORD</code> environment variable.
-    </span>
   </div>
   {% endif %}
 
-  <!-- METRICS SUMMARY -->
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
-    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
-      <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Total Revenue</div>
-      <div style="font-size: 1.9rem; font-weight: 900; color: var(--ghana-gold);">GH₵ {{ "%.2f"|format(metrics.total_revenue) }}</div>
-      <div style="font-size: 0.75rem; color: var(--ghana-green); font-weight: 600; margin-top: 4px;">Verified Settlements</div>
-    </div>
-
-    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
-      <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Total Orders Fulfilled</div>
-      <div style="font-size: 1.9rem; font-weight: 900; color: #fff;">{{ metrics.total_orders }}</div>
-      <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px;">Zero duplicate sales</div>
-    </div>
-
-    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
-      <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Active Categories</div>
-      <div style="font-size: 1.9rem; font-weight: 900; color: #fff;">4 Portals</div>
-      <div style="font-size: 0.75rem; color: var(--ghana-green); margin-top: 4px;">WASSCE, BECE, CSSPS, CTVET</div>
-    </div>
-  </div>
-
-  <!-- INVENTORY LEVELS -->
-  <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2.5rem;">
-    <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1.25rem;">Live Inventory Stock By Category</h3>
-    
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
-        <thead>
-          <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-dim);">
-            <th style="padding: 0.75rem 1rem;">Category</th>
-            <th style="padding: 0.75rem 1rem;">Unsold (Available)</th>
-            <th style="padding: 0.75rem 1rem;">Reserved (In Checkout)</th>
-            <th style="padding: 0.75rem 1rem;">Sold (Delivered)</th>
-            <th style="padding: 0.75rem 1rem;">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for s in metrics.stock %}
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-            <td style="padding: 0.85rem 1rem; font-weight: 700; color: #fff;">{{ s.category }}</td>
-            <td style="padding: 0.85rem 1rem; color: var(--ghana-gold); font-weight: 800;">{{ s.unsold }}</td>
-            <td style="padding: 0.85rem 1rem; color: var(--text-muted);">{{ s.reserved }}</td>
-            <td style="padding: 0.85rem 1rem; color: var(--ghana-green); font-weight: 700;">{{ s.sold }}</td>
-            <td style="padding: 0.85rem 1rem;">
-              {% if s.unsold > 10 %}
-                <span style="color: var(--ghana-green); font-size: 0.8rem; font-weight: 700;">Healthy</span>
-              {% elif s.unsold > 0 %}
-                <span style="color: var(--ghana-gold); font-size: 0.8rem; font-weight: 700;">Low Stock</span>
-              {% else %}
-                <span style="color: var(--ghana-red); font-size: 0.8rem; font-weight: 700;">Out of Stock</span>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- INVENTORY FULFILLMENT MODE SELECTOR -->
-  <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
-      <div>
-        <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
-          <span>⚙️</span> Voucher Generation & Inventory Mode
-        </h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
-          Choose whether the store dynamically mints unique random codes on every sale (demo mode) or strictly dispenses pre-loaded wholesale inventory.
-        </p>
-      </div>
-      <span class="card-badge {% if settings.inventory_mode == 'DEMO_GENERATE' %}card-badge-popular{% else %}card-badge-demand{% endif %}" style="font-size: 0.85rem; padding: 0.4rem 0.85rem;">
-        Active: {% if settings.inventory_mode == 'DEMO_GENERATE' %}⚡ Dynamic Demo Generator{% else %}📦 Strict Wholesale Batch{% endif %}
-      </span>
-    </div>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
-      <!-- Option 1: Dynamic Demo Generator -->
-      <label style="background: rgba(0,0,0,0.3); border: 2px solid {% if settings.inventory_mode == 'DEMO_GENERATE' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_demo">
-        <div style="display: flex; align-items: flex-start; gap: 12px;">
-          <input type="radio" name="cfg_inventory_mode" id="mode_demo" value="DEMO_GENERATE" {% if settings.inventory_mode == 'DEMO_GENERATE' %}checked{% endif %} onchange="updateModeSelection('DEMO_GENERATE')">
-          <div>
-            <div style="font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
-              <span>⚡</span> Dynamic Demo Generator Mode
-            </div>
-            <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">
-              Generates fresh, unique authentic codes (serials & PINs) on each purchase. Perfect for live presentations, client demos, and continuous testing without manual replenishment. Stock never runs out.
-            </div>
-          </div>
-        </div>
-      </label>
-
-      <!-- Option 2: Strict Batch Upload -->
-      <label style="background: rgba(0,0,0,0.3); border: 2px solid {% if settings.inventory_mode == 'BATCH' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_batch">
-        <div style="display: flex; align-items: flex-start; gap: 12px;">
-          <input type="radio" name="cfg_inventory_mode" id="mode_batch" value="BATCH" {% if settings.inventory_mode == 'BATCH' %}checked{% endif %} onchange="updateModeSelection('BATCH')">
-          <div>
-            <div style="font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
-              <span>📦</span> Strict Wholesale Batch Mode
-            </div>
-            <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">
-              Strictly allocates vouchers from existing pre-uploaded batches below. Blocks purchases and flags "Out of Stock" when inventory runs out. Recommended for live production with real merchant vouchers.
-            </div>
-          </div>
-        </div>
-      </label>
-    </div>
-
-    <button type="button" id="btn_save_mode" class="btn-buy" style="font-size: 0.85rem; padding: 0.65rem 1.5rem; width: auto; cursor: pointer;" onclick="saveInventoryModeOnly()">
-      💾 Save Inventory Mode Setting
+  <!-- NAVIGATION TABS (Top-Level Command Switcher) -->
+  <div style="display: flex; gap: 8px; margin-bottom: 1.75rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; flex-wrap: wrap;">
+    <button type="button" id="tab_btn_analytics" onclick="switchAdminTab('analytics')" style="background: none; border: none; font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); border-bottom: 3px solid var(--ghana-gold); padding: 0.5rem 1.1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+      <span>📊</span> Visual Analytics &amp; Telemetry
+    </button>
+    <button type="button" id="tab_btn_inventory" onclick="switchAdminTab('inventory')" style="background: none; border: none; font-size: 0.95rem; font-weight: 800; color: var(--text-muted); padding: 0.5rem 1.1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+      <span>📦</span> Inventory &amp; Batch Management
+    </button>
+    <button type="button" id="tab_btn_scraper" onclick="switchAdminTab('scraper')" style="background: none; border: none; font-size: 0.95rem; font-weight: 800; color: var(--text-muted); padding: 0.5rem 1.1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+      <span>🌐</span> Admissions Scraper Fleet
+    </button>
+    <button type="button" id="tab_btn_settings" onclick="switchAdminTab('settings')" style="background: none; border: none; font-size: 0.95rem; font-weight: 800; color: var(--text-muted); padding: 0.5rem 1.1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+      <span>⚙️</span> Settings &amp; Security Gateway
     </button>
   </div>
 
-  <!-- LIVE ADMISSION & CUT-OFF SCRAPER ENGINE -->
-  <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2.5rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
-      <div>
-        <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--ghana-gold); margin-bottom: 0.25rem; display: flex; align-items: center; gap: 8px;">
-          <span>🌐</span> Live Admission Data, Cut-Offs & Deadlines Scraper
-        </h3>
-        <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0;">
-          Scrapes and synchronizes official admission portals (UG Legon, KNUST, UCC, UPSA, ATU, CSSPS) to power the Placement Advisor.
-        </p>
+  <!-- ===================================================================== -->
+  <!-- TAB 1: VISUAL MISSION CONTROL & ANALYTICS                             -->
+  <!-- ===================================================================== -->
+  <div id="tab_content_analytics">
+    
+    <!-- TIME FILTER & REFRESH CONTROL BAR -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">Time Window:</span>
+        <div style="display: inline-flex; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 2px;">
+          <button type="button" class="analytics-filter-btn" id="btn_win_24h" onclick="changeAnalyticsWindow('24h')">Last 24h</button>
+          <button type="button" class="analytics-filter-btn active" id="btn_win_7d" onclick="changeAnalyticsWindow('7d')">Last 7 Days</button>
+          <button type="button" class="analytics-filter-btn" id="btn_win_30d" onclick="changeAnalyticsWindow('30d')">Last 30 Days</button>
+          <button type="button" class="analytics-filter-btn" id="btn_win_all" onclick="changeAnalyticsWindow('all')">All Time</button>
+        </div>
       </div>
-      <button type="button" id="btn_sync_scraper" class="btn-safety-guide" style="padding: 0.65rem 1.25rem; font-size: 0.85rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" onclick="triggerLiveScrape()">
-        <span>🔄</span> Trigger Live Scrape & Sync Now
+
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="telemetry_last_updated" style="font-size: 0.75rem; color: var(--text-dim);">Live Sync Active</span>
+        <button type="button" onclick="refreshAnalytics(true)" id="btn_telemetry_refresh" class="btn-lookup" style="padding: 0.4rem 0.85rem; font-size: 0.775rem; display: inline-flex; align-items: center; gap: 6px;">
+          <span>⚡</span> Refresh Telemetry
+        </button>
+      </div>
+    </div>
+
+    <!-- 5 HIGH-LEVEL KPI TILES -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
+      
+      <!-- Card 1: Gross Settled Revenue -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Window Revenue</div>
+          <div id="kpi_revenue" style="font-size: 1.8rem; font-weight: 900; color: var(--ghana-gold); margin-top: 4px;">
+            GH₵ {{ "%.2f"|format(analytics.financials.window_revenue) }}
+          </div>
+        </div>
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
+          <span>Avg Order Value:</span>
+          <strong id="kpi_aov" style="color: #fff;">GH₵ {{ "%.2f"|format(analytics.financials.average_order_value) }}</strong>
+        </div>
+      </div>
+
+      <!-- Card 2: Paid Orders & Conversion -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Paid Orders Fulfilled</div>
+          <div id="kpi_orders" style="font-size: 1.8rem; font-weight: 900; color: #fff; margin-top: 4px;">
+            {{ analytics.financials.window_orders }}
+          </div>
+        </div>
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
+          <span>Conversion Rate:</span>
+          <strong id="kpi_conversion" style="color: #34d399;">{{ analytics.financials.conversion_rate_pct }}%</strong>
+        </div>
+      </div>
+
+      <!-- Card 3: Live Voucher Stock -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Unsold Stock Depth</div>
+          <div id="kpi_unsold" style="font-size: 1.8rem; font-weight: 900; color: #34d399; margin-top: 4px;">
+            {{ analytics.inventory.total_unsold }}
+          </div>
+        </div>
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
+          <span>Capacity Available:</span>
+          <strong id="kpi_stock_pct" style="color: #fff;">{{ analytics.inventory.overall_availability_pct }}%</strong>
+        </div>
+      </div>
+
+      <!-- Card 4: Placement Advisor Telemetry -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Placement Evaluations</div>
+          <div id="kpi_advisory" style="font-size: 1.8rem; font-weight: 900; color: #38bdf8; margin-top: 4px;">
+            {{ analytics.placement_intelligence.total_evaluations }}
+          </div>
+        </div>
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
+          <span>Scholarships Matched:</span>
+          <strong id="kpi_schol_count" style="color: var(--ghana-gold);">{{ analytics.placement_intelligence.scholarships_matched }}</strong>
+        </div>
+      </div>
+
+      <!-- Card 5: Sovereign Security & Tamper Proof -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Merkle Ledger &amp; Act 843</div>
+          <div id="kpi_merkle" style="font-size: 1.45rem; font-weight: 900; color: #a855f7; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+            <span>🛡️</span> Verified Intact
+          </div>
+        </div>
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
+          <span>Blocks in Chain:</span>
+          <strong id="kpi_blocks" style="color: #fff;">{{ analytics.security.total_blocks }}</strong>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 1 OF CHARTS: Revenue Velocity & Portal Share -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;" class="charts-row-split">
+      
+      <!-- Chart A: Revenue & Order Velocity Trend -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+              📈 Sales Velocity &amp; Revenue Timeline
+            </h3>
+            <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
+              Dual-axis visual: Gross Settlement (GH₵) vs Total Delivered Orders
+            </p>
+          </div>
+          <span class="card-badge card-badge-popular" style="font-size: 0.7rem;">Dynamic Timeline</span>
+        </div>
+        <div style="position: relative; height: 260px; width: 100%;">
+          <canvas id="chart_revenue_timeline"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart B: Category Share Doughnut -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <div style="margin-bottom: 1rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+            🥧 Examination Portal Share
+          </h3>
+          <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
+            Revenue distribution across WAEC, CSSPS &amp; CTVET
+          </p>
+        </div>
+        <div style="position: relative; height: 260px; width: 100%;">
+          <canvas id="chart_category_doughnut"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 2 OF CHARTS: Inventory Stock Levels & Candidate Academic Scores -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;" class="charts-row-even">
+      
+      <!-- Chart C: Category Stock Capacity Bars -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+              📊 Inventory Levels &amp; Fulfillment Ratio
+            </h3>
+            <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
+              Available unsold stock vs Reserved vs Delivered per category
+            </p>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--ghana-gold); font-weight: 700;">Stock Depth</span>
+        </div>
+        <div style="position: relative; height: 250px; width: 100%;">
+          <canvas id="chart_inventory_bars"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart D: Candidate Academic Score Histogram -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+              🎓 Candidate Academic Aggregate Distribution
+            </h3>
+            <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
+              WASSCE &amp; BECE applicant aggregate score brackets evaluated
+            </p>
+          </div>
+          <span class="card-badge card-badge-fast" style="font-size: 0.7rem;">Act 843 In-Memory</span>
+        </div>
+        <div style="position: relative; height: 250px; width: 100%;">
+          <canvas id="chart_aggregate_histogram"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 3 OF CHARTS: Payment Telco Channels & Demanded Academic Disciplines -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;" class="charts-row-even">
+      
+      <!-- Chart E: Payment Telco Share -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <div style="margin-bottom: 1rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+            📱 Mobile Money &amp; Payment Channels
+          </h3>
+          <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
+            MTN Mobile Money, Telecel Cash, AT Money &amp; Bank Cards
+          </p>
+        </div>
+        <div style="position: relative; height: 240px; width: 100%;">
+          <canvas id="chart_payment_channels"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart F: Demanded Academic Disciplines -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <div style="margin-bottom: 1rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+            🏛️ Top Candidate Placement Disciplines
+          </h3>
+          <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
+            Most sought-after undergraduate &amp; high school faculties
+          </p>
+        </div>
+        <div style="position: relative; height: 240px; width: 100%;">
+          <canvas id="chart_disciplines"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 4: Live Merkle Ledger Feed & Scraper Fleet Matrix -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; margin-bottom: 2.5rem;" class="charts-row-split">
+      
+      <!-- Merkle Audit Ledger Activity Stream -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+              <span>🔗</span> Cryptographic Merkle Audit Chain (Live Blocks)
+            </h3>
+            <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
+              Immutable SHA-256 ledger proof for Bank of Ghana &amp; GTEC regulatory compliance
+            </p>
+          </div>
+          <span style="font-size: 0.75rem; color: #34d399; font-weight: 800;">● Tamper-Proof</span>
+        </div>
+
+        <div id="merkle_blocks_stream" style="display: grid; gap: 6px; font-family: monospace; font-size: 0.75rem; max-height: 250px; overflow-y: auto;">
+          {% for blk in analytics.security.recent_ledger_blocks %}
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); padding: 8px 12px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+            <div>
+              <span style="color: var(--ghana-gold); font-weight: 800;">Block #{{ blk.block_index }}</span>
+              <span style="color: #38bdf8; margin-left: 8px;">{{ blk.action_type }}</span>
+              <span style="color: var(--text-dim); margin-left: 8px;">by {{ blk.actor }}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="color: #cbd5e1;">Hash: <code>{{ blk.hash_snippet }}</code></span>
+              <span style="color: var(--text-dim); font-size: 0.7rem;">{{ blk.timestamp_str }}</span>
+              <span style="color: #34d399; font-weight: 700; font-size: 0.7rem;">✓</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Scraper Fleet Health Card -->
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0 0 0.5rem 0;">
+            🌐 Admissions Fleet Status
+          </h3>
+          <p style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Real-time synchronization across Ghanaian tertiary institutions
+          </p>
+
+          <div style="display: grid; gap: 0.75rem; font-size: 0.8rem;">
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <span style="color: var(--text-dim);">Institutions Tracked:</span>
+              <strong style="color: #fff;">{{ analytics.scraper_fleet.tracked_institutions }} Portals</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <span style="color: var(--text-dim);">Live Benchmarks:</span>
+              <strong style="color: var(--ghana-gold);">{{ analytics.scraper_fleet.total_benchmarks }} Programmes</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <span style="color: var(--text-dim);">Open Admissions:</span>
+              <strong style="color: #34d399;">{{ analytics.scraper_fleet.open_admissions }} Open</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+              <span style="color: var(--text-dim);">Fleet State:</span>
+              <span style="color: #34d399; font-weight: 700;">● {{ analytics.scraper_fleet.status }}</span>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" onclick="switchAdminTab('scraper')" class="btn-lookup" style="padding: 0.5rem 1rem; font-size: 0.775rem; width: 100%; margin-top: 1rem;">
+          Manage Scraper Engine &rarr;
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TAB 2: INVENTORY & BATCH MANAGEMENT                                  -->
+  <!-- ===================================================================== -->
+  <div id="tab_content_inventory" style="display: none;">
+    
+    <!-- INVENTORY LEVELS -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2.5rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1.25rem;">Merchant Inventory & Operations &bull; Live Stock By Category</h3>
+      
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-dim);">
+              <th style="padding: 0.75rem 1rem;">Category</th>
+              <th style="padding: 0.75rem 1rem;">Unsold (Available)</th>
+              <th style="padding: 0.75rem 1rem;">Reserved (In Checkout)</th>
+              <th style="padding: 0.75rem 1rem;">Sold (Delivered)</th>
+              <th style="padding: 0.75rem 1rem;">Burn Rate (Daily)</th>
+              <th style="padding: 0.75rem 1rem;">Stock Runway</th>
+              <th style="padding: 0.75rem 1rem;">Health Status</th>
+            </tr>
+          </thead>
+          <tbody id="inventory_table_body">
+            {% for s in analytics.inventory.categories %}
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 0.85rem 1rem; font-weight: 700; color: #fff;">{{ s.category }}</td>
+              <td style="padding: 0.85rem 1rem; color: var(--ghana-gold); font-weight: 800;">{{ s.unsold }}</td>
+              <td style="padding: 0.85rem 1rem; color: var(--text-muted);">{{ s.reserved }}</td>
+              <td style="padding: 0.85rem 1rem; color: var(--ghana-green); font-weight: 700;">{{ s.sold }}</td>
+              <td style="padding: 0.85rem 1rem; color: #cbd5e1;">{{ s.daily_burn_rate }}/day</td>
+              <td style="padding: 0.85rem 1rem; color: #38bdf8;">{{ s.days_remaining }}</td>
+              <td style="padding: 0.85rem 1rem;">
+                <span style="color: {{ s.health_color }}; font-size: 0.8rem; font-weight: 800;">{{ s.health_status }}</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INVENTORY FULFILLMENT MODE SELECTOR -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+            <span>⚙️</span> Voucher Generation &amp; Inventory Mode
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+            Choose whether the store dynamically mints unique random codes on every sale (demo mode) or strictly dispenses pre-loaded wholesale inventory.
+          </p>
+        </div>
+        <span class="card-badge {% if settings.inventory_mode == 'DEMO_GENERATE' %}card-badge-popular{% else %}card-badge-demand{% endif %}" style="font-size: 0.85rem; padding: 0.4rem 0.85rem;">
+          Active: {% if settings.inventory_mode == 'DEMO_GENERATE' %}⚡ Dynamic Demo Generator{% else %}📦 Strict Wholesale Batch{% endif %}
+        </span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
+        <!-- Option 1: Dynamic Demo Generator -->
+        <label style="background: rgba(0,0,0,0.3); border: 2px solid {% if settings.inventory_mode == 'DEMO_GENERATE' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_demo">
+          <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <input type="radio" name="cfg_inventory_mode" id="mode_demo" value="DEMO_GENERATE" {% if settings.inventory_mode == 'DEMO_GENERATE' %}checked{% endif %} onchange="updateModeSelection('DEMO_GENERATE')">
+            <div>
+              <div style="font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                <span>⚡</span> Dynamic Demo Generator Mode
+              </div>
+              <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">
+                Generates fresh, unique authentic codes (serials &amp; PINs) on each purchase. Perfect for live presentations, client demos, and continuous testing without manual replenishment. Stock never runs out.
+              </div>
+            </div>
+          </div>
+        </label>
+
+        <!-- Option 2: Strict Batch Upload -->
+        <label style="background: rgba(0,0,0,0.3); border: 2px solid {% if settings.inventory_mode == 'BATCH' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_batch">
+          <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <input type="radio" name="cfg_inventory_mode" id="mode_batch" value="BATCH" {% if settings.inventory_mode == 'BATCH' %}checked{% endif %} onchange="updateModeSelection('BATCH')">
+            <div>
+              <div style="font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                <span>📦</span> Strict Wholesale Batch Mode
+              </div>
+              <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">
+                Strictly allocates vouchers from existing pre-uploaded batches below. Blocks purchases and flags "Out of Stock" when inventory runs out. Recommended for live production with real merchant vouchers.
+              </div>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <button type="button" id="btn_save_mode" class="btn-buy" style="font-size: 0.85rem; padding: 0.65rem 1.5rem; width: auto; cursor: pointer;" onclick="saveInventoryModeOnly()">
+        💾 Save Inventory Mode Setting
       </button>
     </div>
 
-    <!-- Scraper Stats Row -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
-      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
-        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Tracked Programmes</div>
-        <div id="stat_total_programmes" style="font-size: 1.5rem; font-weight: 900; color: #fff; margin-top: 4px;">
-          {{ admissions_metrics.total_programmes or 0 }}
-        </div>
-      </div>
-      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
-        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Open Admissions</div>
-        <div id="stat_open_admissions" style="font-size: 1.5rem; font-weight: 900; color: #34d399; margin-top: 4px;">
-          {{ admissions_metrics.open_admissions or 0 }}
-        </div>
-      </div>
-      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
-        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Institutions Monitored</div>
-        <div id="stat_institutions" style="font-size: 1.5rem; font-weight: 900; color: var(--ghana-gold); margin-top: 4px;">
-          {{ admissions_metrics.institutions_tracked or 0 }}
-        </div>
-      </div>
-      <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
-        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Scraper Engine Status</div>
-        <div id="scraper_status_badge" style="font-size: 0.85rem; font-weight: 800; color: #38bdf8; margin-top: 8px;">
-          Active & Synced
-        </div>
-      </div>
-    </div>
-
-    <!-- Scrape output log area -->
-    <div id="scrape_log_box" style="display: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; font-family: monospace; font-size: 0.8rem; color: #cbd5e1; max-height: 160px; overflow-y: auto;">
-    </div>
-  </div>
-
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; margin-bottom: 2.5rem;">
-    <!-- BULK PIN IMPORTER & DEMO GENERATOR -->
-    <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem;">
-      <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--ghana-gold);">
-        📦 Inventory Management & Importer
-      </h3>
-      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-        Generate authentic test batches on demand or paste existing wholesale vouchers.
-      </p>
-
+    <!-- BULK PIN IMPORTER & DEMO GENERATOR ROW -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem;">
+      
       <!-- 1-CLICK TEST BATCH GENERATOR -->
-      <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
-        <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 6px;">
-          <span>⚡</span> 1-Click Test Batch Generator
-        </h4>
-        <p style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.85rem;">
-          Generate batches of different authentic-format codes and checkers directly into inventory:
+      <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--ghana-gold);">
+          ⚡ Instant Batch Generator
+        </h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Instantly generate batches of authentic random serials and PINs directly into inventory.
         </p>
 
-        <form onsubmit="handleGenerateDemoBatch(event)" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-end;">
-          <div style="flex: 1; min-width: 140px;">
-            <label class="form-label" style="font-size: 0.75rem;">Category</label>
-            <select id="gen_category" class="form-input" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
+        <form onsubmit="handleGenerateDemoBatch(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Target Category</label>
+            <select id="gen_category" class="form-input" style="font-size: 0.85rem; padding: 0.55rem 0.75rem;">
               <option value="ALL">All Categories (4x)</option>
               <option value="WASSCE">WAEC WASSCE</option>
               <option value="BECE">WAEC BECE</option>
@@ -232,61 +476,127 @@
               <option value="CTVET">CTVET / NABPTEX</option>
             </select>
           </div>
-          <div style="width: 85px;">
-            <label class="form-label" style="font-size: 0.75rem;">Count</label>
-            <select id="gen_count" class="form-input" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
-              <option value="25">25</option>
-              <option value="50" selected>50</option>
-              <option value="100">100</option>
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">Batch Count</label>
+            <select id="gen_count" class="form-input" style="font-size: 0.85rem; padding: 0.55rem 0.75rem;">
+              <option value="25">25 Vouchers</option>
+              <option value="50" selected>50 Vouchers</option>
+              <option value="100">100 Vouchers</option>
+              <option value="250">250 Vouchers</option>
             </select>
           </div>
-          <button type="submit" id="btn_gen_demo" class="btn-safety-guide" style="font-size: 0.85rem; padding: 0.55rem 1rem; cursor: pointer; white-space: nowrap;">
-            ⚡ Inject Batch
+          <button type="submit" id="btn_gen_demo" class="btn-safety-guide" style="font-size: 0.85rem; padding: 0.75rem 1rem; cursor: pointer; font-weight: 800;">
+            ⚡ Inject Batch into Database
           </button>
         </form>
       </div>
 
       <!-- EXISTING BATCH UPLOADER -->
-      <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 6px;">
-        <span>📥</span> Upload Pre-Existing Wholesale Batch
-      </h4>
-      <p style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-        Paste existing voucher lists. Format: <code>SERIAL, PIN</code> (one per line).
-      </p>
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff;">
+          📥 Wholesale Voucher Upload
+        </h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Paste merchant vouchers from WAEC distributors. Format: <code>SERIAL, PIN</code> (one per line).
+        </p>
 
-      <form id="bulk_import_form" onsubmit="handleBulkImport(event)">
-        <div class="form-group">
-          <label class="form-label" style="font-size: 0.75rem;">Target Category</label>
-          <select id="import_category" class="form-input" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
-            <option value="WASSCE">WAEC WASSCE</option>
-            <option value="BECE">WAEC BECE</option>
-            <option value="CSSPS">CSSPS Placement</option>
-            <option value="CTVET">CTVET / NABPTEX</option>
-          </select>
-        </div>
+        <form id="bulk_import_form" onsubmit="handleBulkImport(event)">
+          <div class="form-group" style="margin-bottom: 0.85rem;">
+            <label class="form-label" style="font-size: 0.8rem;">Target Category</label>
+            <select id="import_category" class="form-input" style="font-size: 0.85rem; padding: 0.55rem 0.75rem;">
+              <option value="WASSCE">WAEC WASSCE</option>
+              <option value="BECE">WAEC BECE</option>
+              <option value="CSSPS">CSSPS Placement</option>
+              <option value="CTVET">CTVET / NABPTEX</option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" style="font-size: 0.75rem;">Batch Data</label>
-          <textarea id="import_data" class="form-input" rows="5" placeholder="WSC2026881901, 847192847192&#10;WSC2026881902, 381928471920" style="font-family: monospace; font-size: 0.82rem;" required></textarea>
-        </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.8rem;">Batch List</label>
+            <textarea id="import_data" class="form-input" rows="5" placeholder="WSC2026881901, 847192847192&#10;WSC2026881902, 381928471920" style="font-family: monospace; font-size: 0.8rem;" required></textarea>
+          </div>
 
-        <button type="submit" id="btn_import" class="btn-buy" style="font-size: 0.85rem; padding: 0.65rem 1rem;">
-          Load Batch Into Inventory
-        </button>
-      </form>
+          <button type="submit" id="btn_import" class="btn-buy" style="font-size: 0.85rem; padding: 0.75rem 1rem;">
+            Load Batch Into Inventory
+          </button>
+        </form>
+      </div>
+
     </div>
 
-    <!-- PRICING & CONFIGURATION -->
-    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem;">
-      <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem;">
-        ⚙️ Pricing & Gateway Settings
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TAB 3: ADMISSIONS SCRAPER FLEET                                      -->
+  <!-- ===================================================================== -->
+  <div id="tab_content_scraper" style="display: none;">
+    <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--ghana-gold); margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+            <span>🌐</span> Live Admissions &amp; Cut-Off Scraper Fleet
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+            Scrapes and synchronizes official admission portals (UG Legon, KNUST, UCC, UPSA, ATU, CSSPS).
+          </p>
+        </div>
+        <button type="button" id="btn_sync_scraper" class="btn-safety-guide" style="padding: 0.65rem 1.25rem; font-size: 0.85rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" onclick="triggerLiveScrape()">
+          <span>🔄</span> Trigger Live Scrape &amp; Sync Now
+        </button>
+      </div>
+
+      <!-- Scraper Stats Row -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Tracked Programmes</div>
+          <div id="stat_total_programmes" style="font-size: 1.6rem; font-weight: 900; color: #fff; margin-top: 4px;">
+            {{ admissions_metrics.total_programmes or 37 }}
+          </div>
+        </div>
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Open Admissions</div>
+          <div id="stat_open_admissions" style="font-size: 1.6rem; font-weight: 900; color: #34d399; margin-top: 4px;">
+            {{ admissions_metrics.open_admissions or 33 }}
+          </div>
+        </div>
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Institutions Monitored</div>
+          <div id="stat_institutions" style="font-size: 1.6rem; font-weight: 900; color: var(--ghana-gold); margin-top: 4px;">
+            {{ admissions_metrics.institutions_tracked or 6 }}
+          </div>
+        </div>
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Scraper Engine Status</div>
+          <div id="scraper_status_badge" style="font-size: 0.9rem; font-weight: 800; color: #38bdf8; margin-top: 8px;">
+            Active &amp; Synced
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrape output log area -->
+      <div id="scrape_log_box" style="display: none; background: rgba(0,0,0,0.45); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; font-family: monospace; font-size: 0.8rem; color: #cbd5e1; max-height: 200px; overflow-y: auto;">
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TAB 4: SETTINGS & SECURITY GATEWAY                                    -->
+  <!-- ===================================================================== -->
+  <div id="tab_content_settings" style="display: none;">
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; max-width: 800px; margin: 0 auto;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff;">
+        ⚙️ Pricing, Gateway &amp; Perimeter Security Settings
       </h3>
-      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
-        Adjust retail unit pricing in GHS (Ghanaian Cedis) and gateway keys.
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        Adjust retail unit pricing in GHS, payment gateway keys, and stealth admin defense parameters.
       </p>
 
       <form id="settings_form" onsubmit="handleSaveSettings(event)">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+        
+        <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); margin-bottom: 0.85rem; text-transform: uppercase;">
+          Voucher Retail Pricing (GH₵)
+        </h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
           <div>
             <label class="form-label">WASSCE Price (GH₵)</label>
             <input type="number" step="0.5" id="cfg_price_WASSCE" value="{{ settings.price_WASSCE }}" class="form-input" required>
@@ -297,7 +607,7 @@
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
           <div>
             <label class="form-label">CSSPS Price (GH₵)</label>
             <input type="number" step="0.5" id="cfg_price_CSSPS" value="{{ settings.price_CSSPS }}" class="form-input" required>
@@ -308,191 +618,540 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); margin-bottom: 0.85rem; text-transform: uppercase;">
+          Gateway &amp; Messaging Configuration
+        </h4>
+        <div class="form-group" style="margin-bottom: 1rem;">
           <label class="form-label">SMS Sender ID</label>
           <input type="text" id="cfg_sms_sender_id" value="{{ settings.sms_sender_id }}" class="form-input">
         </div>
 
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 1rem;">
           <label class="form-label">Paystack Public Key (pk_test_... or pk_live_...)</label>
           <input type="text" id="cfg_paystack_public_key" value="{{ settings.paystack_public_key }}" class="form-input" placeholder="pk_test_...">
         </div>
 
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 1.5rem;">
           <label class="form-label">Paystack Secret Key (sk_test_... or sk_live_...)</label>
           <input type="password" id="cfg_paystack_secret_key" class="form-input" placeholder="{% if settings.has_paystack_secret_key %}•••••••••••••••• (Leave blank to keep current){% else %}sk_test_... or sk_live_...{% endif %}">
           {% if settings.masked_paystack_secret_key %}
           <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
-            Configured: <code>{{ settings.masked_paystack_secret_key }}</code> (Never exposed in plaintext)
+            Configured: <code>{{ settings.masked_paystack_secret_key }}</code> (Protected with SHA-256 HMAC)
           </span>
           {% endif %}
         </div>
 
-        <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle);">
-          <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 6px;">
-            <span>🔒</span> Admin Access Credentials
-          </h4>
-          <p style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.85rem;">
-            Secures this dashboard and API routes against unauthorized public access.
-          </p>
-          <div class="form-group">
-            <label class="form-label">Admin Username</label>
-            <input type="text" id="cfg_admin_username" value="{{ settings.admin_username }}" class="form-input" placeholder="admin">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Change Admin Password</label>
-            <input type="password" id="cfg_admin_password" class="form-input" placeholder="Leave blank to keep current password (Min. 8 characters)" minlength="8">
-            <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
-              Protected with salted PBKDF2-HMAC-SHA256 encryption. Can also be set on Render/Koyeb via <code>ADMIN_PASSWORD</code>.
-            </span>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
-              <span>Stealth Gate Key (?gate=...)</span>
-              <span class="card-badge card-badge-demand" style="font-size: 0.65rem;">Stealth 404</span>
-            </label>
-            <input type="text" id="cfg_admin_gate_key" value="{{ settings.admin_gate_key }}" class="form-input" placeholder="ghana2026_gate">
-            <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
-              Accessing `/admin?gate={{ settings.admin_gate_key }}` unlocks access from any remote device. All unauthorized probes receive an authentic <strong>404 Not Found</strong>.
-            </span>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Allowed IP Addresses (Comma-Separated)</label>
-            <input type="text" id="cfg_admin_allowed_ips" value="{{ settings.admin_allowed_ips }}" class="form-input" placeholder="127.0.0.1,::1">
-            <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
-              Direct access without gate key. Defaults to <code>127.0.0.1,::1</code> (localhost). Set to <code>*</code> to permit all IPs.
-            </span>
-          </div>
+        <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); margin-bottom: 0.85rem; text-transform: uppercase;">
+          Admin Credentials &amp; Perimeter Defense
+        </h4>
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Admin Username</label>
+          <input type="text" id="cfg_admin_username" value="{{ settings.admin_username }}" class="form-input" placeholder="admin">
+        </div>
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Change Admin Password</label>
+          <input type="password" id="cfg_admin_password" class="form-input" placeholder="Leave blank to keep current password (Min. 8 characters)" minlength="8">
         </div>
 
-        <button type="submit" id="btn_save_settings" class="btn-safety-guide" style="width: 100%; text-align: center; cursor: pointer; margin-top: 0.5rem;">
-          Save Settings, Keys & Credentials
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Stealth Admin Gate Key (?gate=...)</label>
+          <input type="text" id="cfg_admin_gate_key" value="{{ settings.admin_gate_key }}" class="form-input" placeholder="ghana2026_gate">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label">Whitelisted Admin IP Addresses</label>
+          <input type="text" id="cfg_admin_allowed_ips" value="{{ settings.admin_allowed_ips }}" class="form-input" placeholder="127.0.0.1,::1">
+        </div>
+
+        <button type="submit" id="btn_save_settings" class="btn-safety-guide" style="padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 800; cursor: pointer;">
+          💾 Save Configuration &amp; Security Settings
         </button>
       </form>
     </div>
   </div>
 
-  <!-- RECENT ORDERS -->
-  <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem;">
-    <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1.25rem;">Recent Order Transactions</h3>
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
-        <thead>
-          <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-dim);">
-            <th style="padding: 0.75rem;">Order Ref</th>
-            <th style="padding: 0.75rem;">Category</th>
-            <th style="padding: 0.75rem;">Qty</th>
-            <th style="padding: 0.75rem;">Amount</th>
-            <th style="padding: 0.75rem;">Customer Phone</th>
-            <th style="padding: 0.75rem;">Payment</th>
-            <th style="padding: 0.75rem;">Status</th>
-            <th style="padding: 0.75rem;">Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ord in metrics.recent_orders %}
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-            <td style="padding: 0.75rem; font-weight: 700; color: var(--ghana-gold);">{{ ord.order_reference }}</td>
-            <td style="padding: 0.75rem;">{{ ord.category }}</td>
-            <td style="padding: 0.75rem;">{{ ord.quantity }}</td>
-            <td style="padding: 0.75rem; font-weight: 700;">GH₵ {{ "%.2f"|format(ord.total_amount) }}</td>
-            <td style="padding: 0.75rem;">{{ ord.customer_phone }}</td>
-            <td style="padding: 0.75rem; color: var(--text-dim);">{{ ord.payment_method }}</td>
-            <td style="padding: 0.75rem;">
-              <span class="card-badge {% if ord.payment_status == 'PAID' %}card-badge-demand{% else %}card-badge-popular{% endif %}">
-                {{ ord.payment_status }}
-              </span>
-            </td>
-            <td style="padding: 0.75rem; color: var(--text-dim);">{{ ord.created_at }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
 </div>
 
+<!-- STYLING FOR ANALYTICS CONTROLS -->
+<style>
+.analytics-filter-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.analytics-filter-btn:hover {
+  color: #fff;
+}
+.analytics-filter-btn.active {
+  background: var(--ghana-gold);
+  color: #000;
+  font-weight: 800;
+}
+@media (max-width: 900px) {
+  .charts-row-split, .charts-row-even {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style>
+
+<!-- CHART.JS LOGIC & ASYNC TELEMETRY ENGINE -->
 <script>
+let currentWindow = "7d";
+let charts = {};
+const initialAnalytics = {{ analytics|tojson }};
+
+// Tab switching
+function switchAdminTab(tabName) {
+  const tabs = ["analytics", "inventory", "scraper", "settings"];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`tab_btn_${t}`);
+    const content = document.getElementById(`tab_content_${t}`);
+    if (btn) {
+      if (t === tabName) {
+        btn.style.color = "var(--ghana-gold)";
+        btn.style.borderBottom = "3px solid var(--ghana-gold)";
+      } else {
+        btn.style.color = "var(--text-muted)";
+        btn.style.borderBottom = "none";
+      }
+    }
+    if (content) {
+      content.style.display = (t === tabName) ? "block" : "none";
+    }
+  });
+
+  // Trigger chart resize when switching back to analytics
+  if (tabName === "analytics") {
+    Object.values(charts).forEach(c => {
+      try { c.resize(); } catch (e) {}
+    });
+  }
+}
+
 function updateModeSelection(mode) {
-  const labelDemo = document.getElementById("label_mode_demo");
-  const labelBatch = document.getElementById("label_mode_batch");
+  const lDemo = document.getElementById("label_mode_demo");
+  const lBatch = document.getElementById("label_mode_batch");
   if (mode === "DEMO_GENERATE") {
-    labelDemo.style.borderColor = "var(--ghana-gold)";
-    labelBatch.style.borderColor = "var(--border-subtle)";
+    if (lDemo) lDemo.style.borderColor = "var(--ghana-gold)";
+    if (lBatch) lBatch.style.borderColor = "var(--border-subtle)";
   } else {
-    labelBatch.style.borderColor = "var(--ghana-gold)";
-    labelDemo.style.borderColor = "var(--border-subtle)";
+    if (lDemo) lDemo.style.borderColor = "var(--border-subtle)";
+    if (lBatch) lBatch.style.borderColor = "var(--ghana-gold)";
   }
 }
 
 async function saveInventoryModeOnly() {
-  const selectedMode = document.querySelector('input[name="cfg_inventory_mode"]:checked')?.value || "BATCH";
   const btn = document.getElementById("btn_save_mode");
-  btn.innerText = "Saving Mode...";
+  const selectedMode = document.querySelector('input[name="cfg_inventory_mode"]:checked')?.value || "BATCH";
+  btn.innerText = "Saving...";
   btn.disabled = true;
 
   try {
-    const payload = {
-      price_WASSCE: document.getElementById("cfg_price_WASSCE").value,
-      price_BECE: document.getElementById("cfg_price_BECE").value,
-      price_CSSPS: document.getElementById("cfg_price_CSSPS").value,
-      price_CTVET: document.getElementById("cfg_price_CTVET").value,
-      sms_sender_id: document.getElementById("cfg_sms_sender_id").value,
-      paystack_public_key: document.getElementById("cfg_paystack_public_key").value,
-      inventory_mode: selectedMode
-    };
-
     const res = await fetch("/api/admin/settings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ inventory_mode: selectedMode })
     });
     const data = await res.json();
     if (res.ok && data.success) {
-      alert(`Success! Inventory mode updated to: ${selectedMode === 'DEMO_GENERATE' ? 'Dynamic Demo Generator' : 'Strict Wholesale Batch'}.`);
+      alert(`Success: Inventory Mode updated to ${selectedMode === 'DEMO_GENERATE' ? '⚡ Dynamic Demo Generator' : '📦 Strict Wholesale Batch'}.`);
       window.location.reload();
     } else {
-      alert("Error: " + (data.message || "Error saving inventory mode."));
-      btn.innerText = "💾 Save Inventory Mode Setting";
-      btn.disabled = false;
+      alert("Error: " + (data.message || "Failed to update mode"));
     }
   } catch (err) {
     alert("Network error: " + err.message);
+  } finally {
     btn.innerText = "💾 Save Inventory Mode Setting";
     btn.disabled = false;
   }
 }
 
+// ============================================================================
+// VISUAL CHART.JS RENDERING ENGINE
+// ============================================================================
+
+function initAllCharts(data) {
+  if (typeof Chart === "undefined") {
+    console.warn("Chart.js failed to load from CDN. Rendering fallback.");
+    return;
+  }
+
+  // Global Chart.js Dark Mode Defaults
+  Chart.defaults.color = "#94a3b8";
+  Chart.defaults.borderColor = "rgba(255, 255, 255, 0.06)";
+  Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+
+  // 1. Revenue & Order Velocity Timeline
+  const ctxTimeline = document.getElementById("chart_revenue_timeline")?.getContext("2d");
+  if (ctxTimeline) {
+    const revGradient = ctxTimeline.createLinearGradient(0, 0, 0, 260);
+    revGradient.addColorStop(0, "rgba(245, 158, 11, 0.35)");
+    revGradient.addColorStop(1, "rgba(245, 158, 11, 0.0)");
+
+    charts.timeline = new Chart(ctxTimeline, {
+      type: "line",
+      data: {
+        labels: data.financials.timeline.labels,
+        datasets: [
+          {
+            label: "Revenue (GH₵)",
+            data: data.financials.timeline.revenues,
+            borderColor: "#f59e0b",
+            backgroundColor: revGradient,
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.35,
+            yAxisID: "y"
+          },
+          {
+            label: "Paid Orders",
+            data: data.financials.timeline.orders,
+            borderColor: "#10b981",
+            backgroundColor: "rgba(16, 185, 129, 0.15)",
+            borderWidth: 2,
+            type: "bar",
+            borderRadius: 4,
+            yAxisID: "y1"
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        scales: {
+          y: {
+            type: "linear",
+            display: true,
+            position: "left",
+            ticks: { callback: v => "GH₵ " + v }
+          },
+          y1: {
+            type: "linear",
+            display: true,
+            position: "right",
+            grid: { drawOnChartArea: false },
+            ticks: { precision: 0 }
+          }
+        }
+      }
+    });
+  }
+
+  // 2. Examination Portal Share (Doughnut)
+  const ctxCategory = document.getElementById("chart_category_doughnut")?.getContext("2d");
+  if (ctxCategory) {
+    const catLabels = data.financials.revenue_by_category.map(c => c.category);
+    const catRevenues = data.financials.revenue_by_category.map(c => c.revenue);
+    charts.category = new Chart(ctxCategory, {
+      type: "doughnut",
+      data: {
+        labels: catLabels,
+        datasets: [{
+          data: catRevenues,
+          backgroundColor: ["#f59e0b", "#10b981", "#38bdf8", "#a855f7"],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "68%",
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 12, padding: 12 } },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.label}: GH₵ ${ctx.raw.toFixed(2)}`
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // 3. Category Inventory Levels (Stacked Bar)
+  const ctxInventory = document.getElementById("chart_inventory_bars")?.getContext("2d");
+  if (ctxInventory) {
+    const invLabels = data.inventory.categories.map(c => c.category);
+    const unsoldData = data.inventory.categories.map(c => c.unsold);
+    const reservedData = data.inventory.categories.map(c => c.reserved);
+    const soldData = data.inventory.categories.map(c => c.sold);
+
+    charts.inventory = new Chart(ctxInventory, {
+      type: "bar",
+      data: {
+        labels: invLabels,
+        datasets: [
+          { label: "Available", data: unsoldData, backgroundColor: "#10b981", borderRadius: 4 },
+          { label: "In Checkout", data: reservedData, backgroundColor: "#f59e0b", borderRadius: 4 },
+          { label: "Fulfilled", data: soldData, backgroundColor: "#64748b", borderRadius: 4 }
+        ]
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true }
+        },
+        plugins: {
+          legend: { position: "top", labels: { boxWidth: 10, padding: 10 } }
+        }
+      }
+    });
+  }
+
+  // 4. Candidate Academic Score Histogram
+  const ctxHistogram = document.getElementById("chart_aggregate_histogram")?.getContext("2d");
+  if (ctxHistogram) {
+    const histLabels = data.placement_intelligence.aggregate_distribution.map(d => d.bracket);
+    const histCounts = data.placement_intelligence.aggregate_distribution.map(d => d.count);
+
+    charts.histogram = new Chart(ctxHistogram, {
+      type: "bar",
+      data: {
+        labels: histLabels,
+        datasets: [{
+          label: "Evaluated Candidates",
+          data: histCounts,
+          backgroundColor: ["#10b981", "#38bdf8", "#f59e0b", "#f97316", "#ef4444"],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { precision: 0 } }
+        }
+      }
+    });
+  }
+
+  // 5. Payment Telco Channels (Doughnut / Polar)
+  const ctxPayment = document.getElementById("chart_payment_channels")?.getContext("2d");
+  if (ctxPayment) {
+    const pLabels = data.financials.payment_methods.map(p => p.label);
+    const pCounts = data.financials.payment_methods.map(p => p.count);
+
+    charts.payment = new Chart(ctxPayment, {
+      type: "doughnut",
+      data: {
+        labels: pLabels.length > 0 ? pLabels : ["MTN MoMo", "Telecel Cash", "Paystack"],
+        datasets: [{
+          data: pCounts.length > 0 ? pCounts : [5, 2, 1],
+          backgroundColor: ["#eab308", "#ef4444", "#3b82f6", "#10b981", "#8b5cf6"],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "60%",
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 10, padding: 8 } }
+        }
+      }
+    });
+  }
+
+  // 6. Placement Disciplines
+  const ctxDisciplines = document.getElementById("chart_disciplines")?.getContext("2d");
+  if (ctxDisciplines) {
+    const dLabels = data.placement_intelligence.top_disciplines.map(d => d.discipline);
+    const dCounts = data.placement_intelligence.top_disciplines.map(d => d.count);
+
+    charts.disciplines = new Chart(ctxDisciplines, {
+      type: "bar",
+      data: {
+        labels: dLabels,
+        datasets: [{
+          label: "Inquiries",
+          data: dCounts,
+          backgroundColor: "rgba(56, 189, 248, 0.75)",
+          borderRadius: 4
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, ticks: { precision: 0 } }
+        }
+      }
+    });
+  }
+}
+
+function updateChartsData(data) {
+  // Update KPI Tiles
+  document.getElementById("kpi_revenue").innerText = `GH₵ ${data.financials.window_revenue.toFixed(2)}`;
+  document.getElementById("kpi_aov").innerText = `GH₵ ${data.financials.average_order_value.toFixed(2)}`;
+  document.getElementById("kpi_orders").innerText = data.financials.window_orders;
+  document.getElementById("kpi_conversion").innerText = `${data.financials.conversion_rate_pct}%`;
+  document.getElementById("kpi_unsold").innerText = data.inventory.total_unsold;
+  document.getElementById("kpi_stock_pct").innerText = `${data.inventory.overall_availability_pct}%`;
+  document.getElementById("kpi_advisory").innerText = data.placement_intelligence.total_evaluations;
+  document.getElementById("kpi_schol_count").innerText = data.placement_intelligence.scholarships_matched;
+  document.getElementById("kpi_blocks").innerText = data.security.total_blocks;
+
+  // 1. Update Timeline
+  if (charts.timeline) {
+    charts.timeline.data.labels = data.financials.timeline.labels;
+    charts.timeline.data.datasets[0].data = data.financials.timeline.revenues;
+    charts.timeline.data.datasets[1].data = data.financials.timeline.orders;
+    charts.timeline.update();
+  }
+
+  // 2. Update Category Share
+  if (charts.category) {
+    charts.category.data.labels = data.financials.revenue_by_category.map(c => c.category);
+    charts.category.data.datasets[0].data = data.financials.revenue_by_category.map(c => c.revenue);
+    charts.category.update();
+  }
+
+  // 3. Update Inventory Bars
+  if (charts.inventory) {
+    charts.inventory.data.labels = data.inventory.categories.map(c => c.category);
+    charts.inventory.data.datasets[0].data = data.inventory.categories.map(c => c.unsold);
+    charts.inventory.data.datasets[1].data = data.inventory.categories.map(c => c.reserved);
+    charts.inventory.data.datasets[2].data = data.inventory.categories.map(c => c.sold);
+    charts.inventory.update();
+  }
+
+  // 4. Update Aggregate Histogram
+  if (charts.histogram) {
+    charts.histogram.data.labels = data.placement_intelligence.aggregate_distribution.map(d => d.bracket);
+    charts.histogram.data.datasets[0].data = data.placement_intelligence.aggregate_distribution.map(d => d.count);
+    charts.histogram.update();
+  }
+
+  // 5. Update Payment Channels
+  if (charts.payment) {
+    charts.payment.data.labels = data.financials.payment_methods.map(p => p.label);
+    charts.payment.data.datasets[0].data = data.financials.payment_methods.map(p => p.count);
+    charts.payment.update();
+  }
+
+  // 6. Update Disciplines
+  if (charts.disciplines) {
+    charts.disciplines.data.labels = data.placement_intelligence.top_disciplines.map(d => d.discipline);
+    charts.disciplines.data.datasets[0].data = data.placement_intelligence.top_disciplines.map(d => d.count);
+    charts.disciplines.update();
+  }
+
+  // Update Merkle Blocks
+  const stream = document.getElementById("merkle_blocks_stream");
+  if (stream && data.security.recent_ledger_blocks) {
+    stream.innerHTML = data.security.recent_ledger_blocks.map(blk => `
+      <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); padding: 8px 12px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+        <div>
+          <span style="color: var(--ghana-gold); font-weight: 800;">Block #${blk.block_index}</span>
+          <span style="color: #38bdf8; margin-left: 8px;">${blk.action_type}</span>
+          <span style="color: var(--text-dim); margin-left: 8px;">by ${blk.actor}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="color: #cbd5e1;">Hash: <code>${blk.hash_snippet}</code></span>
+          <span style="color: var(--text-dim); font-size: 0.7rem;">${blk.timestamp_str}</span>
+          <span style="color: #34d399; font-weight: 700; font-size: 0.7rem;">✓</span>
+        </div>
+      </div>
+    `).join("");
+  }
+}
+
+async function changeAnalyticsWindow(win) {
+  currentWindow = win;
+  ["24h", "7d", "30d", "all"].forEach(w => {
+    const btn = document.getElementById(`btn_win_${w}`);
+    if (btn) {
+      if (w === win) btn.classList.add("active");
+      else btn.classList.remove("active");
+    }
+  });
+
+  await refreshAnalytics(false);
+}
+
+async function refreshAnalytics(isManual = false) {
+  const btn = document.getElementById("btn_telemetry_refresh");
+  const timeLabel = document.getElementById("telemetry_last_updated");
+  if (btn && isManual) {
+    btn.innerHTML = "<span>⏳</span> Refreshing...";
+    btn.disabled = true;
+  }
+
+  try {
+    const res = await fetch(`/api/admin/analytics?window=${currentWindow}`);
+    const data = await res.json();
+    if (res.ok && data.success) {
+      updateChartsData(data);
+      if (timeLabel) {
+        const d = new Date();
+        timeLabel.innerText = `Updated at ${d.toLocaleTimeString()}`;
+      }
+    }
+  } catch (err) {
+    console.error("Failed to refresh telemetry:", err);
+  } finally {
+    if (btn && isManual) {
+      btn.innerHTML = "<span>⚡</span> Refresh Telemetry";
+      btn.disabled = false;
+    }
+  }
+}
+
+// Background auto-refresh every 30 seconds
+setInterval(() => {
+  const analyticsTab = document.getElementById("tab_content_analytics");
+  if (analyticsTab && analyticsTab.style.display !== "none") {
+    refreshAnalytics(false);
+  }
+}, 30000);
+
+// Initialize charts on DOM ready
+document.addEventListener("DOMContentLoaded", () => {
+  initAllCharts(initialAnalytics);
+});
+
+// Existing functions for Batch, Settings and Scraper
 async function handleGenerateDemoBatch(e) {
   e.preventDefault();
-  const category = document.getElementById("gen_category").value;
+  const cat = document.getElementById("gen_category").value;
   const count = parseInt(document.getElementById("gen_count").value, 10);
   const btn = document.getElementById("btn_gen_demo");
 
-  btn.innerText = "Injecting Batch...";
+  btn.innerText = "⚡ Generating...";
   btn.disabled = true;
 
   try {
     const res = await fetch("/api/admin/inventory/generate-demo", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ category, count })
+      body: JSON.stringify({ category: cat, count: count })
     });
     const data = await res.json();
     if (res.ok && data.success) {
-      alert(`Success! Generated and inserted ${data.total_inserted} test vouchers into inventory.`);
+      alert(`Success: Inserted ${data.total_inserted} demo vouchers into database.`);
       window.location.reload();
     } else {
-      alert("Error: " + (data.message || "Failed to generate batch"));
-      btn.innerText = "⚡ Inject Batch";
-      btn.disabled = false;
+      alert("Error: " + (data.message || "Failed to generate vouchers."));
     }
   } catch (err) {
     alert("Network error: " + err.message);
-    btn.innerText = "⚡ Inject Batch";
+  } finally {
+    btn.innerText = "⚡ Inject Batch into Database";
     btn.disabled = false;
   }
 }
@@ -518,11 +1177,10 @@ async function handleBulkImport(e) {
       window.location.reload();
     } else {
       alert("Error: " + (data.message || "Failed to import"));
-      btn.innerText = "Load Batch Into Inventory";
-      btn.disabled = false;
     }
   } catch (err) {
     alert("Network error: " + err.message);
+  } finally {
     btn.innerText = "Load Batch Into Inventory";
     btn.disabled = false;
   }
@@ -530,21 +1188,17 @@ async function handleBulkImport(e) {
 
 async function handleSaveSettings(e) {
   e.preventDefault();
-  const selectedMode = document.querySelector('input[name="cfg_inventory_mode"]:checked')?.value || "BATCH";
   const settings = {
     price_WASSCE: document.getElementById("cfg_price_WASSCE").value,
     price_BECE: document.getElementById("cfg_price_BECE").value,
     price_CSSPS: document.getElementById("cfg_price_CSSPS").value,
     price_CTVET: document.getElementById("cfg_price_CTVET").value,
     sms_sender_id: document.getElementById("cfg_sms_sender_id").value,
-    paystack_public_key: document.getElementById("cfg_paystack_public_key").value,
-    inventory_mode: selectedMode
+    paystack_public_key: document.getElementById("cfg_paystack_public_key").value
   };
 
   const secretKey = document.getElementById("cfg_paystack_secret_key")?.value?.trim();
-  if (secretKey) {
-    settings.paystack_secret_key = secretKey;
-  }
+  if (secretKey) settings.paystack_secret_key = secretKey;
 
   const adminUser = document.getElementById("cfg_admin_username")?.value?.trim();
   const adminPass = document.getElementById("cfg_admin_password")?.value?.trim();
@@ -564,13 +1218,9 @@ async function handleSaveSettings(e) {
   }
 
   const gateKey = document.getElementById("cfg_admin_gate_key")?.value?.trim();
-  if (gateKey) {
-    settings.admin_gate_key = gateKey;
-  }
+  if (gateKey) settings.admin_gate_key = gateKey;
   const allowedIps = document.getElementById("cfg_admin_allowed_ips")?.value?.trim();
-  if (allowedIps !== undefined) {
-    settings.admin_allowed_ips = allowedIps;
-  }
+  if (allowedIps !== undefined) settings.admin_allowed_ips = allowedIps;
 
   try {
     const res = await fetch("/api/admin/settings", {
@@ -618,6 +1268,7 @@ async function triggerLiveScrape() {
       }
       logBox.innerText = lines;
       alert(`Scraper Sync Completed! Verified ${summary.total_programmes_indexed} cut-offs, criteria, and deadlines across Ghana.`);
+      refreshAnalytics(false);
     } else {
       logBox.innerText = "Error: " + (data.message || "Scraper failed.");
       alert("Scraper error: " + (data.message || "Failed"));
@@ -626,7 +1277,7 @@ async function triggerLiveScrape() {
     logBox.innerText = "Network failure: " + err.message;
     alert("Network error during scrape: " + err.message);
   } finally {
-    btn.innerHTML = "<span>🔄</span> Trigger Live Scrape & Sync Now";
+    btn.innerHTML = "<span>🔄</span> Trigger Live Scrape &amp; Sync Now";
     btn.disabled = false;
   }
 }

@@ -132,6 +132,18 @@ def init_db():
             );
         """)
 
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS advisory_telemetry (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                exam_type TEXT NOT NULL,
+                aggregate_value INTEGER NOT NULL,
+                aggregate_bracket TEXT NOT NULL,
+                field_of_interest TEXT NOT NULL,
+                scholarships_matched INTEGER DEFAULT 0,
+                timestamp REAL NOT NULL
+            );
+        """)
+
         # Performance and concurrency indexes
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vouchers_cat_status ON vouchers(category, status);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vouchers_order_ref ON vouchers(order_reference);")
@@ -143,6 +155,8 @@ def init_db():
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_adm_code ON admission_benchmarks(institution_code);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_idem_expires ON idempotency_records(expires_at);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_audit_hash ON compliance_audit_ledger(current_block_hash);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_adv_tel_time ON advisory_telemetry(timestamp);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_adv_tel_exam ON advisory_telemetry(exam_type);")
 
         # Default pricing in GHS (Ghanaian Cedis)
         default_settings = [
@@ -985,7 +999,8 @@ def verify_database_integrity() -> Dict[str, Any]:
         
         tables = [
             "vouchers", "orders", "transactions", "site_settings",
-            "admission_benchmarks", "idempotency_records", "compliance_audit_ledger"
+            "admission_benchmarks", "idempotency_records", "compliance_audit_ledger",
+            "advisory_telemetry"
         ]
         table_counts = {}
         for t in tables:
@@ -1001,6 +1016,86 @@ def verify_database_integrity() -> Dict[str, Any]:
             "foreign_key_violations": len(fks),
             "table_counts": table_counts
         }
+    finally:
+        conn.close()
+
+def log_advisory_telemetry(
+    exam_type: str, 
+    aggregate_value: int, 
+    field_of_interest: str, 
+    scholarships_matched: int = 0
+) -> None:
+    """
+    Non-blockingly logs an anonymized telemetry entry for educational advisor analytics.
+    Strictly zero PII (no phone, no name, no individual grades, no index numbers).
+    """
+    bracket = "Agg 06 - 09" if aggregate_value <= 9 else (
+        "Agg 10 - 15" if aggregate_value <= 15 else (
+            "Agg 16 - 24" if aggregate_value <= 24 else (
+                "Agg 25 - 36" if aggregate_value <= 36 else "Agg 37+"
+            )
+        )
+    )
+    conn = get_db_connection()
+    try:
+        conn.execute(
+            """
+            INSERT INTO advisory_telemetry (
+                exam_type, aggregate_value, aggregate_bracket, field_of_interest, scholarships_matched, timestamp
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (exam_type, aggregate_value, bracket, field_of_interest, scholarships_matched, time.time())
+        )
+        conn.commit()
+    except Exception:
+        pass
+    finally:
+        conn.close()
+
+def seed_advisory_telemetry_if_empty() -> int:
+    """Seeds baseline synthetic educational telemetry if table is empty for visual dashboard demonstration."""
+    conn = get_db_connection()
+    try:
+        count = conn.execute("SELECT COUNT(*) as c FROM advisory_telemetry").fetchone()["c"]
+        if count > 0:
+            return count
+
+        now = time.time()
+        sample_records = [
+            # WASSCE Candidates
+            ("WASSCE", 8, "Agg 06 - 09", "Computer Science & Engineering", 6, now - 86400 * 5),
+            ("WASSCE", 7, "Agg 06 - 09", "Medicine & Health Sciences", 6, now - 86400 * 4),
+            ("WASSCE", 11, "Agg 10 - 15", "Computer Science & Engineering", 5, now - 86400 * 4),
+            ("WASSCE", 14, "Agg 10 - 15", "Business, Finance & Law", 4, now - 86400 * 3),
+            ("WASSCE", 12, "Agg 10 - 15", "Engineering & Technology", 5, now - 86400 * 3),
+            ("WASSCE", 18, "Agg 16 - 24", "Business, Finance & Law", 3, now - 86400 * 2),
+            ("WASSCE", 19, "Agg 16 - 24", "Nursing & Allied Health", 3, now - 86400 * 2),
+            ("WASSCE", 22, "Agg 16 - 24", "Arts, Humanities & Social Sciences", 2, now - 86400 * 1),
+            ("WASSCE", 27, "Agg 25 - 36", "Technical University (HND)", 1, now - 3600 * 18),
+            ("WASSCE", 32, "Agg 25 - 36", "Applied Sciences", 0, now - 3600 * 12),
+            ("WASSCE", 38, "Agg 37+", "Remedial NOV/DEC Strategy", 0, now - 3600 * 4),
+            # BECE Candidates
+            ("BECE", 8, "Agg 06 - 09", "General Science", 0, now - 86400 * 5),
+            ("BECE", 9, "Agg 06 - 09", "General Science", 0, now - 86400 * 4),
+            ("BECE", 13, "Agg 10 - 15", "General Arts", 0, now - 86400 * 3),
+            ("BECE", 15, "Agg 10 - 15", "Business", 0, now - 86400 * 2),
+            ("BECE", 18, "Agg 16 - 24", "Visual Arts", 0, now - 86400 * 2),
+            ("BECE", 22, "Agg 16 - 24", "Home Economics", 0, now - 3600 * 8),
+            ("BECE", 28, "Agg 25 - 36", "Technical / Vocational", 0, now - 3600 * 2),
+        ]
+
+        conn.executemany(
+            """
+            INSERT INTO advisory_telemetry (
+                exam_type, aggregate_value, aggregate_bracket, field_of_interest, scholarships_matched, timestamp
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            sample_records
+        )
+        conn.commit()
+        return len(sample_records)
+    except Exception:
+        return 0
     finally:
         conn.close()
 

@@ -252,7 +252,7 @@ class SecurityHeadersGuard:
         # Content Security Policy (Level 3 compliant)
         headers["Content-Security-Policy"] = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' https://js.paystack.co; "
+            "script-src 'self' 'unsafe-inline' https://js.paystack.co https://cdn.jsdelivr.net; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com data:; "
             "img-src 'self' data: https:; "

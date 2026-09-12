@@ -8,7 +8,7 @@ Compliant with Ghana Data Protection Act, 2012 (Act 843):
 
 from typing import Dict, List, Any, Optional, Tuple
 
-from ..database import get_admission_benchmarks, append_audit_block
+from ..database import get_admission_benchmarks, append_audit_block, log_advisory_telemetry
 from .scraper import AdmissionScraperEngine
 from .security import EphemeralMemoryVault
 
@@ -233,6 +233,7 @@ def evaluate_bece_results(
             "zero_persistence_verified": True
         }
     )
+    log_advisory_telemetry("BECE", total_aggregate, preferred_programme, 0)
 
     whatsapp_text = (
         "🇬🇭 *CHECKERPAY GHANA | CSSPS PLACEMENT DOSSIER*\n"
@@ -862,6 +863,7 @@ def evaluate_wassce_results(
             "zero_persistence_verified": True
         }
     )
+    log_advisory_telemetry("WASSCE", total_aggregate, interest_area, len(matched_scholarships))
 
     analysis_result = {
         "exam_type": "WASSCE",
