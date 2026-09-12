@@ -183,67 +183,206 @@
     </div>
   </div>
 
-  <!-- Frequently Asked Questions (Friction Eliminator) -->
-  <section class="faq-section">
+  <style>
+    /* Zero-Cache Safety Reset for FAQ buttons */
+    .faq-question {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      color: #ffffff !important;
+      box-shadow: none !important;
+    }
+    .faq-question:focus, .faq-question:active {
+      outline: none !important;
+      background: transparent !important;
+    }
+  </style>
+
+  <!-- Frequently Asked Questions (Friction Eliminator & Candidate Guide) -->
+  <section class="faq-section" id="faq">
     <div class="faq-header">
-      <div class="hero-pill" style="margin-bottom: 0.75rem;">
-        <span>💡 Candidate &amp; Parent Help</span>
+      <div class="faq-badge">
+        <span>💡</span> 24/7 Candidate &amp; Parent Help
       </div>
       <h2>Frequently Asked Questions</h2>
-      <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto;">
-        Everything you need to know about buying, retrieving, and safely using your result checkers.
+      <p>
+        Everything you need to know about instant delivery, official WAEC checking rules, index number structures, and self-service voucher recovery.
       </p>
     </div>
 
+    <!-- Category Filter Tabs -->
+    <div class="faq-categories">
+      <button type="button" class="faq-category-btn active" onclick="filterFaq('all', this)">
+        <span>✨</span> All Questions
+      </button>
+      <button type="button" class="faq-category-btn" onclick="filterFaq('delivery', this)">
+        <span>⚡</span> Instant Delivery &amp; Recovery
+      </button>
+      <button type="button" class="faq-category-btn" onclick="filterFaq('rules', this)">
+        <span>📜</span> Official Exam Rules
+      </button>
+      <button type="button" class="faq-category-btn" onclick="filterFaq('security', this)">
+        <span>🛡️</span> Security &amp; Bulk Orders
+      </button>
+    </div>
+
     <div class="faq-grid">
-      <div class="faq-item">
+      <!-- Q1: Speed & Delivery -->
+      <div class="faq-item" data-category="delivery">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <span>How quickly do I receive my voucher Serial Number and PIN?</span>
-          <span class="faq-icon">+</span>
+          <div class="faq-q-left">
+            <div class="faq-q-icon gold">⚡</div>
+            <span class="faq-q-text">How quickly do I receive my voucher Serial Number and PIN?</span>
+          </div>
+          <div class="faq-chevron">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
         </button>
         <div class="faq-answer">
-          Immediately! As soon as you approve the prompt on your phone (MTN MoMo, Telecel Cash, or AT Money), your Serial Number and PIN appear right on your screen in under 3 seconds. An automated backup copy is also dispatched via SMS.
+          <p>
+            <strong>Immediately on-screen in under 3 seconds!</strong> The moment you approve your Mobile Money prompt (MTN MoMo, Telecel Cash, or AT Money), the transaction completes atomically and your unique Serial Number and PIN are revealed directly on your device.
+          </p>
+          <div class="faq-pro-tip">
+            <span>💡</span>
+            <div><strong>Instant Access:</strong> You do not need to wait for SMS or email. The credentials unlock right on your browser with 1-click copy buttons, and an automated backup copy is dispatched to your phone via SMS.</div>
+          </div>
         </div>
       </div>
 
-      <div class="faq-item">
+      <!-- Q2: Lost PIN / Browser Closed -->
+      <div class="faq-item" data-category="delivery">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <span>What should I do if I close my browser before copying my PIN?</span>
-          <span class="faq-icon">+</span>
+          <div class="faq-q-left">
+            <div class="faq-q-icon emerald">🔍</div>
+            <span class="faq-q-text">What should I do if I close my browser before copying my PIN?</span>
+          </div>
+          <div class="faq-chevron">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
         </button>
         <div class="faq-answer">
-          Don't panic! Click <strong>Retrieve My Voucher</strong> at the top right of the navigation bar, enter the phone number you used during checkout, and the system will instantly retrieve all Serial Numbers and PINs issued to your number with official checking links.
+          <p>
+            <strong>Zero stress.</strong> Every purchased voucher is permanently registered to your mobile phone number. Simply navigate to the self-service voucher recovery tool, enter the phone number you used during checkout, and the system will immediately display all active serial numbers and PINs issued to your number.
+          </p>
+          <a href="/lookup" class="faq-action-link">
+            <span>🔍</span> Open Instant Voucher Lookup Tool &rarr;
+          </a>
         </div>
       </div>
 
-      <div class="faq-item">
+      <!-- Q3: Check Limit / WAEC 3-Check Rule -->
+      <div class="faq-item" data-category="rules">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <span>How many times can I use a WAEC Result Checker voucher?</span>
-          <span class="faq-icon">+</span>
+          <div class="faq-q-left">
+            <div class="faq-q-icon blue">🛡️</div>
+            <span class="faq-q-text">How many times can I use a WAEC Result Checker voucher?</span>
+          </div>
+          <div class="faq-chevron">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
         </button>
         <div class="faq-answer">
-          Under official WAEC regulations, each result checker voucher allows up to <strong>3 checks</strong> for one specific candidate index number. WAEC burns 1 check every time you submit the form, so ensure you take a screenshot or print your result on the first check to avoid wasting attempts.
+          <p>
+            Under official WAEC regulations, each result checker voucher allows a maximum of <strong>3 checks</strong> for one specific candidate index number. The first time you check your results, WAEC's portal permanently binds that voucher's serial number to your candidate index number.
+          </p>
+          <div class="faq-pro-tip">
+            <span>⚠️</span>
+            <div><strong>Avoid Burning Checks:</strong> Always take a screenshot, save a PDF, or print your statement of results during your very first check so you don't exhaust remaining attempts on simple re-views.</div>
+          </div>
         </div>
       </div>
 
-      <div class="faq-item">
+      <!-- Q4: 10-Digit vs 12-Digit Index -->
+      <div class="faq-item" data-category="rules">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <span>What is the difference between 10-digit and 12-digit Index Numbers?</span>
-          <span class="faq-icon">+</span>
+          <div class="faq-q-left">
+            <div class="faq-q-icon purple">🆔</div>
+            <span class="faq-q-text">What is the difference between 10-digit and 12-digit Index Numbers?</span>
+          </div>
+          <div class="faq-chevron">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
         </button>
         <div class="faq-answer">
-          For <strong>WASSCE and BECE</strong>, enter your standard 10-digit Index Number and choose your examination year from the portal's dropdown. For <strong>CSSPS SHS Placement</strong>, you must append your 2-digit completion year directly to your index (e.g. Index 1012345678 completed in 2026 becomes 101234567826).
+          <p>
+            For <strong>WASSCE and BECE</strong>, enter your standard 10-digit Index Number (e.g. <code>0010123456</code>) and select your examination year from the portal's dropdown menu.
+          </p>
+          <p style="margin-top: 0.5rem;">
+            For <strong>CSSPS SHS Placement</strong>, the Ministry of Education requires a 12-digit index by appending your 2-digit completion year directly to your index (e.g. Index <code>0010123456</code> completed in 2026 becomes <code>001012345626</code>).
+          </p>
+          <div class="faq-pro-tip emerald">
+            <span>💡</span>
+            <div><strong>Rule of Thumb:</strong> WAEC portals require 10 digits; CSSPS placement portal requires 12 digits.</div>
+          </div>
         </div>
       </div>
 
-      <div class="faq-item">
+      <!-- Q5: Security & MoMo Safety -->
+      <div class="faq-item" data-category="security">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <span>Can I purchase in bulk for my school, cyber café, or siblings?</span>
-          <span class="faq-icon">+</span>
+          <div class="faq-q-left">
+            <div class="faq-q-icon emerald">🔒</div>
+            <span class="faq-q-text">Is paying with Mobile Money secure on CheckerPay Ghana?</span>
+          </div>
+          <div class="faq-chevron">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
         </button>
         <div class="faq-answer">
-          Yes! Simply select your desired quantity (1, 2, 3, 5, or 10) in the checkout modal. You will receive all distinct serial numbers and PINs in a clean, printable batch list with one-click individual copy buttons.
+          <p>
+            <strong>100% bank-grade security.</strong> Payments are processed over 256-bit encrypted SSL connections directly through Bank of Ghana authorized financial rails (Paystack / Mobile Money aggregators).
+          </p>
+          <p style="margin-top: 0.5rem;">
+            We never store your Mobile Money PIN or financial secrets. The authorization prompt appears natively on your own phone SIM card from MTN, Telecel, or AT.
+          </p>
         </div>
+      </div>
+
+      <!-- Q6: Bulk Ordering -->
+      <div class="faq-item" data-category="security">
+        <button type="button" class="faq-question" onclick="toggleFaq(this)">
+          <div class="faq-q-left">
+            <div class="faq-q-icon gold">📦</div>
+            <span class="faq-q-text">Can I purchase in bulk for my school, cyber café, or siblings?</span>
+          </div>
+          <div class="faq-chevron">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </button>
+        <div class="faq-answer">
+          <p>
+            <strong>Yes!</strong> You can select quantities of up to 10 vouchers in a single checkout transaction. All distinct Serial Numbers and PINs are delivered simultaneously in a structured, exportable batch table with individual 1-click copy buttons.
+          </p>
+          <div class="faq-pro-tip">
+            <span>🏫</span>
+            <div><strong>Heads of Schools &amp; Café Operators:</strong> If you require wholesale batches of 50 to 500+ vouchers at institutional rates, contact our merchant desk on WhatsApp.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Still Have Questions? Support Reassurance Banner -->
+    <div class="faq-support-banner">
+      <div class="faq-support-left">
+        <div class="faq-support-avatar">
+          <span>🎧</span>
+          <div class="faq-support-status" title="Support Team Online"></div>
+        </div>
+        <div class="faq-support-text">
+          <h4>Have a question not answered here?</h4>
+          <p>Our dedicated Accra-based support desk is active 24/7 to assist with index checks or payment questions.</p>
+        </div>
+      </div>
+
+      <div class="faq-support-actions">
+        <a href="https://wa.me/233240000000?text=Hello%20CheckerPay%20Support,%20I%20need%20help%20with%20my%20result%20checker" target="_blank" rel="noopener" class="faq-btn-whatsapp">
+          <span>💬</span> Chat on WhatsApp
+        </a>
+        <a href="/guides" class="faq-btn-guide">
+          <span>📖</span> Portal Safety Guide &rarr;
+        </a>
       </div>
     </div>
   </section>

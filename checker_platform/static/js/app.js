@@ -498,7 +498,7 @@ function initLiveSocialProof() {
   setInterval(showNextEvent, 14000);
 }
 
-// Interactive FAQ Accordion
+// Interactive FAQ Accordion & Category Filtering
 function toggleFaq(buttonElem) {
   const item = buttonElem.closest(".faq-item");
   if (!item) return;
@@ -507,4 +507,20 @@ function toggleFaq(buttonElem) {
   if (!wasOpen) {
     item.classList.add("open");
   }
+}
+
+function filterFaq(category, pillElem) {
+  document.querySelectorAll(".faq-category-btn").forEach(btn => btn.classList.remove("active"));
+  if (pillElem) pillElem.classList.add("active");
+
+  const items = document.querySelectorAll(".faq-item");
+  items.forEach(item => {
+    const itemCat = item.getAttribute("data-category");
+    if (category === "all" || itemCat === category) {
+      item.style.display = "block";
+    } else {
+      item.style.display = "none";
+      item.classList.remove("open");
+    }
+  });
 }
