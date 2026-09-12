@@ -4,6 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Ghana Result Checkers & eVoucher Gateway | Instant WAEC, CSSPS, CTVET{% endblock %}</title>
+  
+  <!-- Sovereign Brand Icons & Browser Tab Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/static/img/logo-symbol.svg">
+  <meta name="theme-color" content="#0b0f19">
+
+  <!-- Social Graph & Mobile Metas -->
+  <meta name="description" content="Instant digital delivery of authentic WAEC WASSCE, BECE, CSSPS, and CTVET result checkers in Ghana. Pay securely with MTN MoMo, Telecel Cash, and AT Money.">
+  <meta property="og:title" content="CheckerPay Ghana | Official Result Checker & Placement Gateway">
+  <meta property="og:description" content="Instant on-screen reveal & SMS delivery of authentic Ghanaian examination vouchers. Powered by concurrency-safe locking and Act 843 data protection.">
+  <meta property="og:image" content="/static/img/logo-symbol.svg">
+  <meta property="og:type" content="website">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -15,24 +29,26 @@
   <div class="kente-ribbon"></div>
 
   <!-- Navbar -->
-  <header style="border-bottom: 1px solid var(--border-subtle); background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 40;">
+  <header class="app-header">
     <nav class="navbar">
-      <a href="/" class="brand-link">
+      <a href="/" class="brand-link" title="CheckerPay Ghana Official Gateway">
         <div class="brand-badge-star">
-          <!-- Stylized Black Star Motif with Ghana Gold -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="#f59e0b" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-          </svg>
+          <!-- Sovereign Shield + Black Star Vector Emblem -->
+          <img src="/static/img/logo-symbol.svg" alt="CheckerPay Ghana Emblem" width="28" height="28" style="display: block;">
         </div>
-        <div class="brand-title">Checker<span>Pay</span> Ghana</div>
+        <div class="brand-title">Checker<span>Pay</span> <span class="brand-ghana-tag">Ghana</span></div>
       </a>
 
       <div class="nav-links">
-        <a href="/" class="nav-link {% if active_page == 'home' %}active{% endif %}">Home</a>
-        <a href="/advisor" class="nav-link {% if active_page == 'advisor' %}active{% endif %}" style="display: inline-flex; align-items: center; gap: 5px;">
-          <span>🎓</span> Placement & Pathway Advisor
+        <a href="/" class="nav-link {% if active_page == 'home' %}active{% endif %}">
+          <span>🏠</span> Home
         </a>
-        <a href="/guides" class="nav-link {% if active_page == 'guides' %}active{% endif %}">Portal Guides & Rules</a>
+        <a href="/advisor" class="nav-link {% if active_page == 'advisor' %}active{% endif %}" style="display: inline-flex; align-items: center; gap: 6px;">
+          <span>🎓</span> Placement &amp; Pathway Advisor
+        </a>
+        <a href="/guides" class="nav-link {% if active_page == 'guides' %}active{% endif %}">
+          <span>📖</span> Portal Guides &amp; Rules
+        </a>
         <a href="/lookup" class="btn-nav-lookup">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <circle cx="11" cy="11" r="8"></circle>
@@ -89,6 +105,16 @@
       </div>
     </div>
   </footer>
+
+  <!-- Live Verified Activity Toast (Social Proof - Zero PII) -->
+  <div id="live_activity_toast" class="live-activity-toast" aria-live="polite">
+    <div class="toast-icon">⚡</div>
+    <div class="toast-body">
+      <div class="toast-title" id="toast_title">Verified Order Delivered</div>
+      <div class="toast-desc" id="toast_desc">WASSCE Checker sent to 024 &bull;&bull;&bull; 4192 (Accra)</div>
+    </div>
+    <div class="toast-time" id="toast_time">12s ago</div>
+  </div>
 
   <script src="https://js.paystack.co/v1/inline.js"></script>
   <script src="/static/js/app.js"></script>

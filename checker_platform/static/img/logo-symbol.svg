@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="symShield" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </linearGradient>
+
+    <linearGradient id="symGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="35%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+
+    <linearGradient id="symEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6ee7b7"/>
+      <stop offset="50%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+
+    <filter id="symGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Hexagonal Shield Emblem -->
+  <path d="M50 8 L88 24 L88 62 C88 78 70 92 50 96 C30 92 12 78 12 62 L12 24 Z" 
+        fill="url(#symShield)" 
+        stroke="url(#symGold)" 
+        stroke-width="3.5" />
+
+  <!-- Inner Crest Contour -->
+  <path d="M50 14 L82 28 L82 60 C82 73 67 85 50 89 C33 85 18 73 18 60 L18 28 Z" 
+        fill="none" 
+        stroke="rgba(245, 158, 11, 0.2)" 
+        stroke-width="1.5" />
+
+  <!-- Radiance Aura -->
+  <circle cx="50" cy="48" r="24" fill="rgba(245, 158, 11, 0.06)" />
+
+  <!-- Dimensional Black Star of Ghana -->
+  <polygon points="50,26 55.5,40.5 70,41 58.5,50.5 62.5,65 50,56.5 37.5,65 41.5,50.5 30,41 44.5,40.5" 
+           fill="url(#symGold)" 
+           stroke="#090d16" 
+           stroke-width="1.5" 
+           filter="url(#symGlow)" />
+
+  <!-- Center Star Inset Diamond -->
+  <polygon points="50,44 53,49 50,54 47,49" fill="#090d16" opacity="0.85" />
+
+  <!-- Digital Verification Checkmark Badge -->
+  <g transform="translate(18, 16)">
+    <circle cx="56" cy="60" r="14" fill="#0b0f19" stroke="url(#symEmerald)" stroke-width="2.5"/>
+    <path d="M50 60 L54 64 L62 55" fill="none" stroke="url(#symEmerald)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

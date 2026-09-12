@@ -17,7 +17,7 @@ from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks, Header, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
@@ -119,6 +119,13 @@ app = FastAPI(
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
  
+@app.get("/favicon.ico", include_in_schema=False)
+async def get_favicon():
+    """Serves high-resolution SVG favicon to avoid browser 404s and render branded browser tabs."""
+    favicon_path = os.path.join(STATIC_DIR, "img", "favicon.svg")
+    if os.path.exists(favicon_path):
+        return FileResponse(favicon_path, media_type="image/svg+xml")
+    return Response(status_code=204)
 MAX_STANDARD_BODY = 65536    # 64 KB for standard JSON/API requests
 MAX_BULK_BODY = 2097152       # 2 MB for bulk voucher imports
 

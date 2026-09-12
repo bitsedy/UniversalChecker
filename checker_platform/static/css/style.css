@@ -43,6 +43,22 @@ body {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* Atmospheric Ambient Mesh Glow */
+body::before {
+  content: '';
+  position: fixed;
+  top: -240px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1000px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, rgba(16, 185, 129, 0.03) 45%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Subtle Kente Geometric Top Ribbon */
@@ -64,12 +80,23 @@ body {
   z-index: 50;
 }
 
-/* Navbar */
+/* App Header & Navbar */
+.app-header {
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(11, 15, 25, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  transition: all 0.25s ease;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 0.9rem 2rem;
   max-width: 1240px;
   margin: 0 auto;
   width: 100%;
@@ -84,22 +111,47 @@ body {
   font-weight: 800;
   font-size: 1.25rem;
   letter-spacing: -0.02em;
+  transition: transform 0.2s ease;
+}
+
+.brand-link:hover {
+  transform: scale(1.02);
 }
 
 .brand-badge-star {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  background: linear-gradient(135deg, #1e293b, #0f172a);
-  border: 1px solid var(--border-gold);
-  border-radius: 10px;
-  box-shadow: var(--shadow-gold);
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #1e293b, #0b0f19);
+  border: 1.5px solid var(--border-gold);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px -3px rgba(245, 158, 11, 0.25);
+  transition: all 0.25s ease;
+}
+
+.brand-link:hover .brand-badge-star {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.45);
+  border-color: var(--ghana-gold);
 }
 
 .brand-title span {
   color: var(--ghana-gold);
+}
+
+.brand-ghana-tag {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid var(--border-gold);
+  color: var(--ghana-gold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  margin-left: 5px;
+  vertical-align: middle;
 }
 
 .nav-links {
@@ -831,4 +883,226 @@ footer {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ==========================================================================
+   Live Activity Social Proof Toast (Zero PII - Verified Events)
+   ========================================================================== */
+.live-activity-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: rgba(19, 27, 46, 0.95);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 0 15px -3px rgba(245, 158, 11, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 80;
+  max-width: 360px;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+.live-activity-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid var(--border-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.toast-body {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-size: 0.775rem;
+  font-weight: 800;
+  color: var(--ghana-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.toast-desc {
+  font-size: 0.8rem;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toast-time {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Trust Seals & Institutional Certification Bar
+   ========================================================================== */
+.trust-seals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin: 3.5rem 0 4.5rem;
+}
+
+.trust-seal-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.25s ease;
+}
+
+.trust-seal-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-gold);
+  transform: translateY(-2px);
+}
+
+.trust-seal-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid var(--border-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.trust-seal-info h4 {
+  font-size: 0.925rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.trust-seal-info p {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   Interactive FAQ Accordion (Cognitive Ease & Friction Killer)
+   ========================================================================== */
+.faq-section {
+  margin: 4.5rem 0;
+}
+
+.faq-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.faq-header h2 {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+
+.faq-grid {
+  display: grid;
+  gap: 1rem;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.faq-item:hover {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.faq-question {
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  gap: 1rem;
+}
+
+.faq-icon {
+  font-size: 1.25rem;
+  color: var(--ghana-gold);
+  transition: transform 0.25s ease;
+}
+
+.faq-item.open .faq-icon {
+  transform: rotate(45deg);
+}
+
+.faq-answer {
+  padding: 0 1.5rem 1.25rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  display: none;
+}
+
+.faq-item.open .faq-answer {
+  display: block;
+}
+
+/* Telco Active Brand Transitions */
+.telco-radio-card.active-mtn .telco-radio-box {
+  border-color: #ffcc00;
+  background: rgba(255, 204, 0, 0.14);
+  color: #ffcc00;
+  box-shadow: 0 0 12px rgba(255, 204, 0, 0.25);
+}
+
+.telco-radio-card.active-telecel .telco-radio-box {
+  border-color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.14);
+  color: #ff4d4d;
+  box-shadow: 0 0 12px rgba(255, 77, 77, 0.25);
+}
+
+.telco-radio-card.active-at .telco-radio-box {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.14);
+  color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
 }

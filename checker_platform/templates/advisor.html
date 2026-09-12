@@ -107,6 +107,18 @@
           </div>
         </div>
 
+        <!-- Quick Presets for BECE -->
+        <div style="background: rgba(245, 158, 11, 0.06); border: 1px dashed var(--border-gold); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+            <span>⚡ Explore Common Profiles:</span>
+          </div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" class="btn-copy" onclick="applyBecePreset('distinction')">🌟 Category A (Agg 06)</button>
+            <button type="button" class="btn-copy" onclick="applyBecePreset('competitive')">⚖️ Category B (Agg 12)</button>
+            <button type="button" class="btn-copy" onclick="applyBecePreset('self_placement')">💡 Self-Placement (Agg 24)</button>
+          </div>
+        </div>
+
         <!-- Cores Section -->
         <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
           <span>📌</span> 4 Compulsory Core Subjects
@@ -178,6 +190,19 @@
               <option value="Arts, Humanities & Social Sciences">Arts, Humanities & Social Sciences</option>
               <option value="Education & Teaching">Education & Teaching</option>
             </select>
+          </div>
+        </div>
+
+        <!-- Quick Presets for WASSCE -->
+        <div style="background: rgba(245, 158, 11, 0.06); border: 1px dashed var(--border-gold); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+            <span>⚡ Explore Common Profiles:</span>
+          </div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('medicine')">🔬 Medicine / Surgery (Agg 07)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('engineering')">💻 Computer Science (Agg 09)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('business')">📊 Business Admin (Agg 12)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('remedial')">⚠️ Remedial Simulation (D7 in Math)</button>
           </div>
         </div>
 
@@ -1176,6 +1201,97 @@ function copyDossierText() {
   }).catch(() => {
     alert("Dossier text copied to clipboard!");
   });
+}
+
+function applyBecePreset(type) {
+  if (type === 'distinction') {
+    for (let i = 0; i < 4; i++) {
+      const el = document.getElementById(`bece_core_${i}`);
+      if (el) el.value = "1";
+    }
+    for (let i = 0; i < 3; i++) {
+      const el = document.getElementById(`bece_elect_val_${i}`);
+      if (el) el.value = "1";
+    }
+    const prog = document.getElementById("bece_programme");
+    if (prog) prog.value = "General Science";
+  } else if (type === 'competitive') {
+    for (let i = 0; i < 4; i++) {
+      const el = document.getElementById(`bece_core_${i}`);
+      if (el) el.value = "2";
+    }
+    for (let i = 0; i < 3; i++) {
+      const el = document.getElementById(`bece_elect_val_${i}`);
+      if (el) el.value = "2";
+    }
+    const prog = document.getElementById("bece_programme");
+    if (prog) prog.value = "General Arts";
+  } else {
+    for (let i = 0; i < 4; i++) {
+      const el = document.getElementById(`bece_core_${i}`);
+      if (el) el.value = "4";
+    }
+    for (let i = 0; i < 3; i++) {
+      const el = document.getElementById(`bece_elect_val_${i}`);
+      if (el) el.value = "4";
+    }
+    const prog = document.getElementById("bece_programme");
+    if (prog) prog.value = "Business";
+  }
+  calculateLiveBeceAggregate();
+}
+
+function applyWasscePreset(type) {
+  if (type === 'medicine') {
+    document.getElementById("w_core_eng").value = "A1";
+    document.getElementById("w_core_math").value = "A1";
+    document.getElementById("w_core_sci").value = "A1";
+    document.getElementById("w_core_soc").value = "B2";
+    document.getElementById("w_elect_name_0").value = "Biology";
+    document.getElementById("w_elect_val_0").value = "A1";
+    document.getElementById("w_elect_name_1").value = "Chemistry";
+    document.getElementById("w_elect_val_1").value = "A1";
+    document.getElementById("w_elect_name_2").value = "Physics";
+    document.getElementById("w_elect_val_2").value = "B2";
+    document.getElementById("wassce_programme").value = "Medicine & Health Sciences";
+  } else if (type === 'engineering') {
+    document.getElementById("w_core_eng").value = "B2";
+    document.getElementById("w_core_math").value = "A1";
+    document.getElementById("w_core_sci").value = "B2";
+    document.getElementById("w_core_soc").value = "C4";
+    document.getElementById("w_elect_name_0").value = "Elective Mathematics";
+    document.getElementById("w_elect_val_0").value = "A1";
+    document.getElementById("w_elect_name_1").value = "Physics";
+    document.getElementById("w_elect_val_1").value = "B2";
+    document.getElementById("w_elect_name_2").value = "Chemistry";
+    document.getElementById("w_elect_val_2").value = "B3";
+    document.getElementById("wassce_programme").value = "Computer Science & Engineering";
+  } else if (type === 'business') {
+    document.getElementById("w_core_eng").value = "B2";
+    document.getElementById("w_core_math").value = "B2";
+    document.getElementById("w_core_sci").value = "C4";
+    document.getElementById("w_core_soc").value = "B2";
+    document.getElementById("w_elect_name_0").value = "Financial Accounting";
+    document.getElementById("w_elect_val_0").value = "B2";
+    document.getElementById("w_elect_name_1").value = "Cost Accounting";
+    document.getElementById("w_elect_val_1").value = "B3";
+    document.getElementById("w_elect_name_2").value = "Economics";
+    document.getElementById("w_elect_val_2").value = "B3";
+    document.getElementById("wassce_programme").value = "Business, Finance & Law";
+  } else {
+    document.getElementById("w_core_eng").value = "C5";
+    document.getElementById("w_core_math").value = "D7";
+    document.getElementById("w_core_sci").value = "C4";
+    document.getElementById("w_core_soc").value = "B3";
+    document.getElementById("w_elect_name_0").value = "Elective Mathematics";
+    document.getElementById("w_elect_val_0").value = "C4";
+    document.getElementById("w_elect_name_1").value = "Economics";
+    document.getElementById("w_elect_val_1").value = "B3";
+    document.getElementById("w_elect_name_2").value = "Geography";
+    document.getElementById("w_elect_val_2").value = "C4";
+    document.getElementById("wassce_programme").value = "Computer Science & Engineering";
+  }
+  calculateLiveWassceAggregate();
 }
 
 function shareDossierWhatsApp() {

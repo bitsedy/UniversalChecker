@@ -39,6 +39,11 @@ class TestApiEndpoints(unittest.TestCase):
         self.assertIn("WASSCE", response.text)
         self.assertIn("CSSPS", response.text)
 
+    def test_favicon_get(self):
+        response = self.client.get("/favicon.ico")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("image/svg+xml", response.headers.get("content-type", ""))
+
     def test_lookup_page_get(self):
         response = self.client.get("/lookup")
         self.assertEqual(response.status_code, 200)
