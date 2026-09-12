@@ -72,6 +72,11 @@
         </div>
 
         {% if ord.payment_status == 'PAID' and ord.vouchers %}
+          {% if is_phone_query %}
+          <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--ghana-gold);">
+            🔒 <strong>Security Notice:</strong> To protect your voucher against unauthorized access, PINs are masked for phone searches. Your full PIN was dispatched via SMS to your registered phone number. To view full PINs on-screen, search using your unique <strong>Order Reference (ORD-...)</strong>.
+          </div>
+          {% endif %}
           <div style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
             Your Active Voucher Credentials:
           </div>

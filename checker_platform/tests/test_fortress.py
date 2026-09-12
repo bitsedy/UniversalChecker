@@ -19,6 +19,7 @@ import os
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 
 # Point test suite to temporary isolated SQLite database
 temp_db = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
@@ -93,8 +94,10 @@ class TestFortressSecurity(unittest.TestCase):
                 with self.assertRaises(SSRFSecurityViolation):
                     SSRFValidator.validate_url(url)
 
-    def test_ssrf_strict_educational_domain_allowlist(self):
+    @patch("socket.getaddrinfo")
+    def test_ssrf_strict_educational_domain_allowlist(self, mock_getaddr):
         """Strict educational mode allows legitimate Ghanaian universities and blocks others."""
+        mock_getaddr.return_value = [(2, 1, 6, '', ('197.255.125.10', 443))]
         valid_edu = "https://ug.edu.gh/admissions"
         validated = SSRFValidator.validate_url(valid_edu, enforce_ghana_domains=True)
         self.assertEqual(validated, valid_edu)
@@ -376,6 +379,104 @@ class TestFortressSecurity(unittest.TestCase):
 
         self.assertEqual(sold_count, 5)
         self.assertEqual(unsold_count, 0)
+
+    # ========================================================================
+    # 9. P0 AUDIT FORTIFICATIONS
+    # ========================================================================
+
+    def test_webhook_currency_arbitrage_rejection(self):
+        """Validates that webhooks with non-GHS currencies (e.g. NGN, USD) are rejected."""
+        from checker_platform.database import bulk_insert_vouchers, reserve_vouchers, create_order, update_setting
+        bulk_insert_vouchers("WASSCE", [{"serial_number": "CURR_WSC_01", "pin": "PIN_CURR_01"}])
+        order_ref = "ORD_CURR_TEST_01"
+        reserve_vouchers("WASSCE", 1, order_ref)
+        create_order(
+            order_ref=order_ref,
+            category="WASSCE",
+            quantity=1,
+            unit_price=22.00,
+            customer_phone="0241234567",
+            customer_email=None,
+            payment_method="PAYSTACK"
+        )
+        test_secret = "sk_test_fortress_secure_key_123"
+        update_setting("paystack_secret_key", test_secret)
+
+        foreign_curr_body = json.dumps({
+            "event": "charge.success",
+            "data": {
+                "reference": order_ref,
+                "amount": 2200,
+                "currency": "NGN",
+                "id": 88888
+            }
+        }).encode("utf-8")
+        foreign_sig = hmac.new(test_secret.encode("utf-8"), foreign_curr_body, hashlib.sha512).hexdigest()
+        res = self.client.post(
+            "/api/webhooks/paystack",
+            content=foreign_curr_body,
+            headers={"X-Paystack-Signature": foreign_sig, "Content-Type": "application/json"}
+        )
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("Currency mismatch", res.text)
+
+    def test_admin_backdoor_eradication(self):
+        """Validates that changing admin password strictly revokes default 'ghana2026'."""
+        from checker_platform.database import update_setting
+        from checker_platform.main import hash_password
+        
+        # Change password to new custom secure password
+        new_pass = "ultra_secure_custom_password_2026"
+        update_setting("admin_password", hash_password(new_pass))
+        
+        # 1. Attempt login with old default password 'ghana2026' - MUST FAIL
+        res_old = self.client.get("/admin", auth=("admin", "ghana2026"))
+        self.assertEqual(res_old.status_code, 401)
+        
+        # 2. Attempt login with new password - MUST SUCCEED
+        res_new = self.client.get("/admin", auth=("admin", new_pass))
+        self.assertEqual(res_new.status_code, 200)
+
+        # Restore default for test isolation
+        update_setting("admin_password", hash_password("ghana2026"))
+
+    def test_api_and_phone_lookup_pin_masking(self):
+        """Validates that GET /api/orders and phone lookups mask sensitive PINs."""
+        from checker_platform.database import bulk_insert_vouchers, reserve_vouchers, create_order, complete_voucher_sale
+        bulk_insert_vouchers("BECE", [{"serial_number": "MASK_BEC_01", "pin": "987654321000"}])
+        order_ref = "ORD_MASK_TEST_01"
+        phone = "0249876543"
+        reserve_vouchers("BECE", 1, order_ref)
+        create_order(
+            order_ref=order_ref,
+            category="BECE",
+            quantity=1,
+            unit_price=18.00,
+            customer_phone=phone,
+            customer_email=None,
+            payment_method="MOMO_MTN"
+        )
+        complete_voucher_sale(order_ref)
+
+        # 1. Public API lookup must return masked PIN
+        res_api = self.client.get(f"/api/orders/{order_ref}")
+        self.assertEqual(res_api.status_code, 200)
+        api_data = res_api.json()
+        self.assertTrue(api_data["vouchers"][0].get("pin_masked"))
+        self.assertIn("••••••••", api_data["vouchers"][0]["pin"])
+        self.assertNotIn("987654321000", api_data["vouchers"][0]["pin"])
+
+        # 2. Phone query on /lookup must mask PIN and show security notice
+        res_phone = self.client.get(f"/lookup?q={phone}")
+        self.assertEqual(res_phone.status_code, 200)
+        self.assertIn("Security Notice", res_phone.text)
+        self.assertIn("••••••••1000", res_phone.text)
+        self.assertNotIn("987654321000", res_phone.text)
+
+        # 3. Order reference query on /lookup reveals full PIN
+        res_ref = self.client.get(f"/lookup?q={order_ref}")
+        self.assertEqual(res_ref.status_code, 200)
+        self.assertIn("987654321000", res_ref.text)
 
 
 if __name__ == "__main__":

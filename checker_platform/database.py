@@ -171,7 +171,7 @@ def init_db():
             ("support_whatsapp", "+233240000000"),
             ("inventory_mode", "BATCH"), # 'BATCH' or 'DEMO_GENERATE'
             ("admin_username", "admin"),
-            ("admin_password", "ghana2026"),
+            ("admin_password", "pbkdf2:sha256:100000$819e68795004da0b7d103dc1f7ea4bda$6d629dc72822847627fc5308b32ab1da9638b3b67cc13ef578a9f19e8b7c3d21"),
             ("admin_gate_key", "ghana2026_gate"),
             ("admin_allowed_ips", "127.0.0.1,::1"),
         ]
@@ -401,7 +401,22 @@ def complete_voucher_sale(order_ref: str) -> List[Dict[str, Any]]:
             (order_ref,)
         )
 
-        # Update order status
+        # Fetch sold vouchers
+        rows = conn.execute(
+            "SELECT serial_number, pin, category, sold_at FROM vouchers WHERE order_reference = ? AND status = 'SOLD'",
+            (order_ref,)
+        ).fetchall()
+
+        expected_qty = order["quantity"]
+        if len(rows) < expected_qty:
+            conn.execute("ROLLBACK;")
+            raise RuntimeError(
+                f"Voucher allocation discrepancy for {order_ref}: "
+                f"order requires {expected_qty} vouchers, but only {len(rows)} were allocated "
+                f"(reservation may have expired before payment completion)."
+            )
+
+        # Update order status to PAID
         conn.execute(
             """
             UPDATE orders 
@@ -411,12 +426,6 @@ def complete_voucher_sale(order_ref: str) -> List[Dict[str, Any]]:
             """,
             (order_ref,)
         )
-
-        # Fetch sold vouchers
-        rows = conn.execute(
-            "SELECT serial_number, pin, category, sold_at FROM vouchers WHERE order_reference = ?",
-            (order_ref,)
-        ).fetchall()
 
         conn.execute("COMMIT;")
         return [dict(r) for r in rows]

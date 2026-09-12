@@ -11,6 +11,7 @@ import logging
 import re
 import urllib.request
 import urllib.error
+import urllib.parse
 from typing import Dict, Any, Optional, Tuple
 from ..database import get_setting, get_db_connection
 
@@ -99,6 +100,11 @@ class PaystackProvider:
         if not data or not data.get("reference"):
             return False, payload, "Missing transaction data or order reference."
 
+        # Verify payment currency is strictly Ghanaian Cedis (GHS)
+        currency = data.get("currency")
+        if currency and str(currency).upper().strip() != "GHS":
+            return False, payload, f"Currency mismatch: expected GHS, received {currency}."
+
         return True, payload, "Verified successfully."
 
     @staticmethod
@@ -165,7 +171,8 @@ class PaystackProvider:
     def verify_transaction(cls, reference: str) -> Dict[str, Any]:
         """Verifies transaction status directly against Paystack."""
         secret_key = cls.get_secret_key()
-        url = f"https://api.paystack.co/transaction/verify/{reference}"
+        quoted_ref = urllib.parse.quote(str(reference).strip())
+        url = f"https://api.paystack.co/transaction/verify/{quoted_ref}"
         req = urllib.request.Request(
             url,
             headers={"Authorization": f"Bearer {secret_key}"}

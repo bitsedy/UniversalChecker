@@ -212,12 +212,27 @@ async def home(request: Request):
 
 @app.get("/lookup", response_class=HTMLResponse)
 async def lookup_page(request: Request, q: Optional[str] = None):
-    """Self-service voucher recovery page."""
-    orders = lookup_orders_by_customer(q) if q else []
+    """Self-service voucher recovery page with anti-scraping credential masking."""
+    orders = []
+    is_phone_query = False
+    if q and q.strip():
+        raw_q = q.strip()
+        orders = lookup_orders_by_customer(raw_q)
+        # If user searched by phone rather than explicit order reference, mask the PINs
+        is_order_ref = raw_q.upper().startswith("ORD-") or any(raw_q.upper() == o.get("order_reference", "").upper() for o in orders)
+        if not is_order_ref:
+            is_phone_query = True
+            for ord_item in orders:
+                for v in ord_item.get("vouchers", []):
+                    raw_pin = str(v.get("pin", ""))
+                    if raw_pin:
+                        v["pin"] = "••••••••" + (raw_pin[-4:] if len(raw_pin) > 4 else "")
+                        v["is_masked"] = True
+
     return templates.TemplateResponse(
         request=request,
         name="lookup.html",
-        context={"active_page": "lookup", "query": q, "orders": orders}
+        context={"active_page": "lookup", "query": q, "orders": orders, "is_phone_query": is_phone_query}
     )
 
 @app.get("/guides", response_class=HTMLResponse)
@@ -311,6 +326,15 @@ def verify_password(plain_password: str, stored_hash_or_plain: str) -> bool:
             return False
     # Legacy plaintext fallback (with constant-time comparison)
     return secrets.compare_digest(plain_password, stored_hash_or_plain)
+
+def is_secure_connection(request: Request) -> bool:
+    """Returns True if the connection is HTTPS or configured for secure cookies."""
+    if os.environ.get("COOKIE_SECURE", "").lower() in ("true", "1"):
+        return True
+    if request.url.scheme == "https":
+        return True
+    proto = request.headers.get("x-forwarded-proto", "").lower()
+    return proto == "https"
 
 _SESSION_SECRET: Optional[str] = None
 
@@ -498,7 +522,8 @@ def get_current_admin(
     if is_browser_req:
         headers = {"Location": f"/admin/login?error=Please+log+in+to+access+the+admin+dashboard.{gate_query}"}
         if valid_gate:
-            headers["Set-Cookie"] = f"admin_gate_pass={valid_gate}; Path=/; Max-Age=43200; HttpOnly; SameSite=Lax"
+            sec_attr = "; Secure" if is_secure_connection(request) else ""
+            headers["Set-Cookie"] = f"admin_gate_pass={valid_gate}; Path=/; Max-Age=43200; HttpOnly; SameSite=Lax{sec_attr}"
         raise HTTPException(
             status_code=303,
             headers=headers
@@ -510,16 +535,11 @@ def get_current_admin(
         env_password = os.environ.get("ADMIN_PASSWORD")
         db_password = get_setting("admin_password", "ghana2026").strip()
 
-        is_user_ok = (
-            secrets.compare_digest(credentials.username.strip().lower(), expected_username.lower()) or
-            secrets.compare_digest(credentials.username.strip().lower(), "admin")
-        )
+        is_user_ok = secrets.compare_digest(credentials.username.strip().lower(), expected_username.lower())
         is_pass_ok = False
         if env_password and verify_password(credentials.password.strip(), env_password.strip()):
             is_pass_ok = True
         elif db_password and verify_password(credentials.password.strip(), db_password):
-            is_pass_ok = True
-        elif verify_password(credentials.password.strip(), "ghana2026"):
             is_pass_ok = True
 
         if is_user_ok and is_pass_ok:
@@ -571,6 +591,7 @@ async def admin_login_page(request: Request, logged_out: Optional[str] = None, e
             max_age=43200,
             httponly=True,
             samesite="lax",
+            secure=is_secure_connection(request),
             path="/"
         )
     return response
@@ -624,16 +645,11 @@ async def admin_login_submit(request: Request):
     env_password = os.environ.get("ADMIN_PASSWORD")
     db_password = get_setting("admin_password", "ghana2026").strip()
 
-    is_user_ok = (
-        secrets.compare_digest(username.lower(), expected_username.lower()) or
-        secrets.compare_digest(username.lower(), "admin")
-    )
+    is_user_ok = secrets.compare_digest(username.lower(), expected_username.lower())
     is_pass_ok = False
     if env_password and verify_password(password, env_password.strip()):
         is_pass_ok = True
     elif db_password and verify_password(password, db_password):
-        is_pass_ok = True
-    elif verify_password(password, "ghana2026"):
         is_pass_ok = True
 
     if not (is_user_ok and is_pass_ok):
@@ -670,12 +686,14 @@ async def admin_login_submit(request: Request):
     else:
         response = RedirectResponse(url="/admin", status_code=303)
 
+    is_sec = is_secure_connection(request)
     response.set_cookie(
         key="admin_session",
         value=session_token,
         max_age=SESSION_TIMEOUT_SECONDS,
         httponly=True,
         samesite="lax",
+        secure=is_sec,
         path="/"
     )
     if valid_gate:
@@ -685,6 +703,7 @@ async def admin_login_submit(request: Request):
             max_age=SESSION_TIMEOUT_SECONDS,
             httponly=True,
             samesite="lax",
+            secure=is_sec,
             path="/"
         )
     return response
@@ -971,6 +990,8 @@ async def api_verify_order(req: OrderVerifyRequest, background_tasks: Background
                 release_idempotency_lock(idem_key)
             raise HTTPException(status_code=400, detail=err_msg)
 
+    was_already_paid = (order.get("payment_status") == "PAID")
+
     # Complete voucher sale atomically
     sold_vouchers = complete_voucher_sale(req.order_reference)
     if not sold_vouchers:
@@ -993,8 +1014,9 @@ async def api_verify_order(req: OrderVerifyRequest, background_tasks: Background
     sms_text = DispatchManager.generate_sms_text(req.order_reference, order["category"], sold_vouchers)
     whatsapp_text = DispatchManager.generate_whatsapp_share_text(req.order_reference, order["category"], sold_vouchers)
 
-    # Dispatch SMS in background (routes to Arkesel/mNotify if configured, else simulation)
-    background_tasks.add_task(DispatchManager.dispatch_sms, order["customer_phone"], sms_text)
+    # Dispatch SMS in background only if order was not previously fulfilled (deduplicate)
+    if not was_already_paid and order.get("customer_phone"):
+        background_tasks.add_task(DispatchManager.dispatch_sms, order["customer_phone"], sms_text)
 
     result_payload = {
         "success": True,
@@ -1018,10 +1040,18 @@ async def api_verify_order(req: OrderVerifyRequest, background_tasks: Background
 
 @app.get("/api/orders/{reference}")
 async def api_get_order(reference: str):
-    """Fetches details and credentials of an order."""
+    """Fetches details of an order with masked voucher PINs for anti-scraping protection."""
     data = get_order_details(reference)
     if not data:
         raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Mask PINs in public unauthenticated API responses
+    for v in data.get("vouchers", []):
+        raw_pin = str(v.get("pin", ""))
+        if raw_pin:
+            v["pin"] = "••••••••" + (raw_pin[-4:] if len(raw_pin) > 4 else "")
+            v["pin_masked"] = True
+            
     return data
 
 @app.post("/api/webhooks/paystack")
@@ -1038,18 +1068,10 @@ async def paystack_webhook(
     4. Automatically dispatches real-time SMS voucher credentials to customer.
     """
     body_bytes = await request.body()
-    secret_key = get_setting("paystack_secret_key", "").strip()
-
-    if secret_key and not secret_key.startswith("sk_test_sample"):
-        is_valid, payload, err = PaystackProvider.validate_and_reconcile_webhook(body_bytes, x_paystack_signature or "")
-        if not is_valid:
-            logger.warning(f"[Security Alert] Paystack webhook verification failed: {err}")
-            raise HTTPException(status_code=400, detail=err)
-    else:
-        try:
-            payload = json.loads(body_bytes.decode("utf-8"))
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid JSON body")
+    is_valid, payload, err = PaystackProvider.validate_and_reconcile_webhook(body_bytes, x_paystack_signature or "")
+    if not is_valid:
+        logger.warning(f"[Security Alert] Paystack webhook verification failed: {err}")
+        raise HTTPException(status_code=400, detail=err)
 
     try:
         event_type = payload.get("event")
@@ -1059,7 +1081,16 @@ async def paystack_webhook(
             if order_ref:
                 order = get_order_details(order_ref)
                 if order:
-                    # Verify exact pesewa match
+                    # 1. Currency validation (reject foreign currency arbitrage)
+                    paid_currency = str(data.get("currency", "GHS")).upper().strip()
+                    if paid_currency != "GHS":
+                        logger.error(
+                            f"[Security Alert] Currency mismatch for {order_ref}: "
+                            f"expected GHS, received {paid_currency}."
+                        )
+                        raise HTTPException(status_code=400, detail="Invalid payment currency: only GHS is accepted.")
+
+                    # 2. Verify exact pesewa match
                     paid_pesewas = int(data.get("amount", 0))
                     if not PaystackProvider.reconcile_pesewas(order["total_amount"], paid_pesewas):
                         logger.error(
@@ -1068,6 +1099,7 @@ async def paystack_webhook(
                         )
                         raise HTTPException(status_code=400, detail="Pesewa reconciliation failed: amount mismatch.")
 
+                    was_already_paid = (order.get("payment_status") == "PAID")
                     logger.info(f"[Paystack Webhook] Fulfilling order {order_ref} ({paid_pesewas} pesewas)")
                     sold_vouchers = complete_voucher_sale(order_ref)
                     record_transaction(
@@ -1079,8 +1111,8 @@ async def paystack_webhook(
                         payload=data
                     )
 
-                    # Trigger SMS dispatch in background
-                    if sold_vouchers and order.get("customer_phone"):
+                    # Trigger SMS dispatch only if order was not previously fulfilled (deduplicate)
+                    if not was_already_paid and sold_vouchers and order.get("customer_phone"):
                         sms_text = DispatchManager.generate_sms_text(order_ref, order["category"], sold_vouchers)
                         background_tasks.add_task(DispatchManager.dispatch_sms, order["customer_phone"], sms_text)
                     try:
@@ -1096,7 +1128,7 @@ async def paystack_webhook(
         raise
     except Exception as e:
         logger.error(f"Error handling Paystack webhook: {e}")
-        return {"status": "error", "message": str(e)}
+        return {"status": "error", "message": "Webhook processing encountered an error."}
 
 @app.post("/api/admin/inventory/bulk")
 async def api_admin_bulk_import(req: BulkImportRequest, request: Request, admin_user: str = Depends(get_current_admin)):
