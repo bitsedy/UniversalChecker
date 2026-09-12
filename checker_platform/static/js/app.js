@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupTelcoAutoDetect();
   setupQuantityListeners();
   initLiveSocialProof();
+  initScrollEngine();
 });
 
 // Auto-detect Ghanaian network from phone number
@@ -524,3 +525,75 @@ function filterFaq(category, pillElem) {
     }
   });
 }
+
+/**
+ * Sovereign Navigation Scroll Engine
+ * Drives the real-time top laser progress beam and floating precision scroll navigator orb.
+ * Throttled with requestAnimationFrame for 60fps buttery smooth performance.
+ */
+function initScrollEngine() {
+  const progressBar = document.getElementById("scroll_progress_bar");
+  const scrollTopBtn = document.getElementById("scroll_top_btn");
+  const ringProgress = document.getElementById("scroll_ring_progress");
+  const percentText = document.getElementById("scroll_percent_text");
+
+  if (!progressBar && !scrollTopBtn) return;
+
+  const RING_CIRCUMFERENCE = 125.66; // 2 * PI * 20
+  let isTicking = false;
+
+  function updateScrollState() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const docHeight = (document.documentElement.scrollHeight || document.body.scrollHeight) - window.innerHeight;
+    const progress = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+    const roundedProgress = Math.round(progress);
+
+    // 1. Update top micro-beam progress laser
+    if (progressBar) {
+      progressBar.style.width = `${progress}%`;
+      progressBar.setAttribute("aria-valuenow", roundedProgress);
+    }
+
+    // 2. Update circular SVG progress ring & percentage text
+    if (ringProgress) {
+      const offset = RING_CIRCUMFERENCE - (progress / 100) * RING_CIRCUMFERENCE;
+      ringProgress.style.strokeDashoffset = offset;
+    }
+    if (percentText) {
+      percentText.textContent = `${roundedProgress}%`;
+    }
+
+    // 3. Toggle floating orb visibility
+    if (scrollTopBtn) {
+      if (scrollTop > 180) {
+        scrollTopBtn.classList.add("is-visible");
+      } else {
+        scrollTopBtn.classList.remove("is-visible");
+      }
+    }
+
+    isTicking = false;
+  }
+
+  window.addEventListener("scroll", () => {
+    if (!isTicking) {
+      window.requestAnimationFrame(updateScrollState);
+      isTicking = true;
+    }
+  }, { passive: true });
+
+  // Smooth scroll back to top on click
+  if (scrollTopBtn) {
+    scrollTopBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+  }
+
+  // Initial calculation on load
+  updateScrollState();
+}
+
