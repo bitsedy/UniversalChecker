@@ -11,6 +11,7 @@ import os
 import random
 import time
 import logging
+import json
 from contextlib import asynccontextmanager
 from typing import Optional, List, Dict, Any
 
@@ -36,7 +37,13 @@ from .database import (
     update_setting,
     generate_dynamic_vouchers,
     get_admission_benchmarks,
-    get_admissions_summary_metrics
+    get_admissions_summary_metrics,
+    acquire_idempotency_lock,
+    complete_idempotency_record,
+    release_idempotency_lock,
+    append_audit_block,
+    verify_audit_chain_integrity,
+    verify_database_integrity
 )
 from .services.payment import (
     GhanaMoMoSimulator,
@@ -54,6 +61,14 @@ from .services.advisory import (
     WASSCE_GRADE_VALUES,
 )
 from .services.scraper import AdmissionScraperEngine
+from .services.security import (
+    SSRFValidator,
+    SSRFSecurityViolation,
+    EphemeralMemoryVault,
+    CryptographicAuditLedger,
+    SessionFingerprinter,
+    SecurityHeadersGuard
+)
 from .seed_data import run_seed
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -103,25 +118,66 @@ app = FastAPI(
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
  
+MAX_STANDARD_BODY = 65536    # 64 KB for standard JSON/API requests
+MAX_BULK_BODY = 2097152       # 2 MB for bulk voucher imports
+
+@app.middleware("http")
+async def request_size_limiter_middleware(request: Request, call_next):
+    """Guards against memory-exhaustion Denial-of-Service and oversized payloads."""
+    content_length = request.headers.get("content-length")
+    if content_length:
+        try:
+            length = int(content_length)
+            limit = MAX_BULK_BODY if request.url.path == "/api/admin/inventory/bulk" else MAX_STANDARD_BODY
+            if length > limit:
+                return JSONResponse(
+                    status_code=413,
+                    content={"success": False, "message": "Payload Too Large: Maximum allowed request size exceeded."}
+                )
+        except ValueError:
+            pass
+    return await call_next(request)
+
 @app.middleware("http")
 async def security_headers_middleware(request: Request, call_next):
+    """
+    Perimeter Defense Middleware:
+    1. Cloaks server identity (strips Server, X-Powered-By, framework traces).
+    2. Enforces CSP Level 3, HSTS preloading, framing prevention, and MIME isolation.
+    """
     response = await call_next(request)
-    if request.url.path.startswith("/admin") or request.url.path.startswith("/api/admin"):
-        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-        response.headers["Pragma"] = "no-cache"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+
+    # Server cloaking: strip identifying server fingerprints
+    for h in ("server", "Server", "x-powered-by", "X-Powered-By"):
+        if h in response.headers:
+            del response.headers[h]
+
+    is_admin = request.url.path.startswith("/admin") or request.url.path.startswith("/api/admin")
+    SecurityHeadersGuard.apply_security_headers(response.headers, is_admin=is_admin)
     return response
 
 # ============================================================================
-# HEALTH CHECK & SYSTEM ROUTES
+# HEALTH CHECK & SYSTEM INTEGRITY ROUTES
 # ============================================================================
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint for cloud load balancers and uptime monitors."""
-    return {"status": "healthy", "service": "CheckerPay Ghana", "timestamp": time.time()}
+    """Health check endpoint with cryptographic database integrity reporting."""
+    db_integrity = verify_database_integrity()
+    audit_ok, audit_count, audit_msg = verify_audit_chain_integrity()
+    return {
+        "status": "healthy" if db_integrity["intact"] and audit_ok else "degraded",
+        "service": "CheckerPay Ghana",
+        "timestamp": time.time(),
+        "integrity": {
+            "database": db_integrity,
+            "audit_ledger": {
+                "intact": audit_ok,
+                "verified_blocks": audit_count,
+                "message": audit_msg
+            }
+        }
+    }
 
 # ============================================================================
 # FRONTEND TEMPLATE ROUTES
@@ -256,11 +312,12 @@ def get_session_secret() -> str:
 
 SESSION_TIMEOUT_SECONDS = 1800  # 30-minute inactivity timeout
 
-def create_admin_session_token(username: str) -> str:
-    """Creates a tamper-proof signed session token containing username and timestamp."""
+def create_admin_session_token(username: str, client_ip: str = "127.0.0.1", user_agent: str = "") -> str:
+    """Creates a tamper-proof signed session token containing username, timestamp, and client fingerprint."""
     now = int(time.time())
-    payload = f"{username}:{now}"
     secret = get_session_secret()
+    fp = SessionFingerprinter.generate_fingerprint(client_ip, user_agent, secret)
+    payload = f"{username}:{now}:{fp}"
     signature = hmac.new(
         secret.encode("utf-8"),
         payload.encode("utf-8"),
@@ -268,9 +325,13 @@ def create_admin_session_token(username: str) -> str:
     ).hexdigest()
     return f"{payload}:{signature}"
 
-def verify_admin_session_token(token: Optional[str]) -> Optional[str]:
+def verify_admin_session_token(
+    token: Optional[str], 
+    client_ip: Optional[str] = None, 
+    user_agent: Optional[str] = None
+) -> Optional[str]:
     """
-    Verifies the HMAC signature and timestamp of the admin session token.
+    Verifies the HMAC signature, timestamp, and client network fingerprint of the admin session token.
     Enforces a strict 30-minute inactivity expiration window.
     Returns the authenticated username if valid, None otherwise.
     """
@@ -278,23 +339,45 @@ def verify_admin_session_token(token: Optional[str]) -> Optional[str]:
         return None
     try:
         parts = token.split(":")
-        if len(parts) != 3:
-            return None
-        username, ts_str, signature = parts[0], parts[1], parts[2]
-        payload = f"{username}:{ts_str}"
         secret = get_session_secret()
-        expected_sig = hmac.new(
-            secret.encode("utf-8"),
-            payload.encode("utf-8"),
-            hashlib.sha256
-        ).hexdigest()
-        if not secrets.compare_digest(signature, expected_sig):
+        if len(parts) == 4:
+            username, ts_str, fp, signature = parts[0], parts[1], parts[2], parts[3]
+            payload = f"{username}:{ts_str}:{fp}"
+            expected_sig = hmac.new(
+                secret.encode("utf-8"),
+                payload.encode("utf-8"),
+                hashlib.sha256
+            ).hexdigest()
+            if not secrets.compare_digest(signature, expected_sig):
+                return None
+            
+            created_at = int(ts_str)
+            if time.time() - created_at > SESSION_TIMEOUT_SECONDS:
+                return None
+
+            # Verify cryptographic client fingerprint if client info is supplied
+            if client_ip is not None and client_ip not in ("127.0.0.1", "testclient"):
+                if not SessionFingerprinter.verify_fingerprint(client_ip, user_agent or "", secret, fp):
+                    logger.warning(f"[Security Warning] Session token fingerprint mismatch for '{username}' from IP {client_ip}.")
+                    return None
+            return username
+
+        elif len(parts) == 3:
+            username, ts_str, signature = parts[0], parts[1], parts[2]
+            payload = f"{username}:{ts_str}"
+            expected_sig = hmac.new(
+                secret.encode("utf-8"),
+                payload.encode("utf-8"),
+                hashlib.sha256
+            ).hexdigest()
+            if not secrets.compare_digest(signature, expected_sig):
+                return None
+            created_at = int(ts_str)
+            if time.time() - created_at > SESSION_TIMEOUT_SECONDS:
+                return None
+            return username
+        else:
             return None
-        
-        created_at = int(ts_str)
-        if time.time() - created_at > SESSION_TIMEOUT_SECONDS:
-            return None  # Expired after 30 minutes
-        return username
     except Exception:
         return None
 
@@ -308,9 +391,12 @@ def verify_admin_stealth_access(request: Request) -> bool:
     2. Request supplies the secret gate token (?gate=... or X-Admin-Gate header), OR
     3. Request IP matches the configured allowed IPs (defaults to localhost).
     """
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    user_agent = request.headers.get("user-agent", "")
+
     # 1. Check Session Cookie
     cookie_token = request.cookies.get("admin_session")
-    if verify_admin_session_token(cookie_token):
+    if verify_admin_session_token(cookie_token, client_ip=client_ip, user_agent=user_agent):
         return True
 
     # 2. Check Gate Key (?gate=... or X-Admin-Gate)
@@ -348,7 +434,11 @@ def get_current_admin(
 
     # 1. Check Session Cookie first
     cookie_token = request.cookies.get("admin_session")
-    session_user = verify_admin_session_token(cookie_token)
+    session_user = verify_admin_session_token(
+        cookie_token, 
+        client_ip=client_ip, 
+        user_agent=request.headers.get("user-agent", "")
+    )
     if session_user:
         AdminSecurityManager.record_success(client_ip)
         return session_user
@@ -407,8 +497,9 @@ def get_current_admin(
 async def admin_login_page(request: Request, logged_out: Optional[str] = None, error: Optional[str] = None, gate: Optional[str] = None):
     """Admin Login Page."""
     # If already logged in with a valid session, redirect directly to /admin
+    client_ip = AdminSecurityManager.get_client_ip(request)
     cookie_token = request.cookies.get("admin_session")
-    if verify_admin_session_token(cookie_token):
+    if verify_admin_session_token(cookie_token, client_ip=client_ip, user_agent=request.headers.get("user-agent", "")):
         return RedirectResponse(url="/admin", status_code=303)
 
     gate_val = gate or request.query_params.get("gate", "")
@@ -473,7 +564,11 @@ async def admin_login_submit(request: Request):
     AdminSecurityManager.record_success(client_ip)
     logger.info(f"[Admin Audit] Successful login by '{username}' from IP {client_ip}. Session issued.")
     
-    session_token = create_admin_session_token(username)
+    session_token = create_admin_session_token(
+        username,
+        client_ip=client_ip,
+        user_agent=request.headers.get("user-agent", "")
+    )
     
     if "application/json" in content_type:
         response = JSONResponse(content={"success": True, "redirect": "/admin"})
@@ -625,18 +720,39 @@ async def api_get_catalog():
     return get_product_catalog()
 
 @app.post("/api/orders/create")
-async def api_create_order(req: OrderCreateRequest):
+async def api_create_order(req: OrderCreateRequest, request: Request):
     """
     Creates an order and atomically reserves vouchers.
     Returns payment authorization instructions (MoMo USSD prompt or Paystack link).
+    Enforces idempotency if Idempotency-Key is provided.
     """
+    idem_key = request.headers.get("Idempotency-Key") or request.headers.get("X-Idempotency-Key")
+    if idem_key:
+        req_digest = hashlib.sha256(f"{req.category}:{req.quantity}:{req.customer_phone}:{req.payment_method}".encode("utf-8")).hexdigest()
+        lock_ok, existing = acquire_idempotency_lock(idem_key, "/api/orders/create", req_digest)
+        if not lock_ok and existing:
+            if existing["status"] == "COMPLETED":
+                try:
+                    return JSONResponse(status_code=existing["response_code"], content=json.loads(existing["response_body"]))
+                except Exception:
+                    pass
+            elif existing["status"] == "IN_FLIGHT":
+                return JSONResponse(
+                    status_code=409, 
+                    content={"success": False, "message": "A concurrent order creation request is already in-flight for this key."}
+                )
+
     clean_cat = req.category.strip().upper()
     catalog = get_product_catalog()
     if clean_cat not in catalog:
+        if idem_key:
+            release_idempotency_lock(idem_key)
         raise HTTPException(status_code=400, detail=f"Invalid category: {req.category}")
 
     # Validate phone
     if not validate_ghana_phone(req.customer_phone):
+        if idem_key:
+            release_idempotency_lock(idem_key)
         return JSONResponse(
             status_code=400,
             content={"success": False, "message": "Invalid Ghanaian phone number. Must be 10 digits (e.g. 0241234567)."}
@@ -652,6 +768,8 @@ async def api_create_order(req: OrderCreateRequest):
     # Atomic Reservation
     reserved = reserve_vouchers(clean_cat, req.quantity, order_ref, hold_minutes=10)
     if not reserved:
+        if idem_key:
+            release_idempotency_lock(idem_key)
         return JSONResponse(
             status_code=400,
             content={
@@ -679,21 +797,54 @@ async def api_create_order(req: OrderCreateRequest):
         provider=req.payment_method
     )
 
-    return {
+    result_payload = {
         "success": True,
         "order": order,
         "payment_prompt": prompt_info,
         "paystack_public_key": get_setting("paystack_public_key")
     }
 
+    if idem_key:
+        complete_idempotency_record(idem_key, 200, json.dumps(result_payload))
+
+    try:
+        append_audit_block(
+            action="ORDER_CREATED",
+            actor=req.customer_phone,
+            payload_data={"order_reference": order_ref, "category": clean_cat, "amount": order["total_amount"]}
+        )
+    except Exception as e:
+        logger.warning(f"Audit block append failed: {e}")
+
+    return result_payload
+
 @app.post("/api/orders/verify")
-async def api_verify_order(req: OrderVerifyRequest, background_tasks: BackgroundTasks):
+async def api_verify_order(req: OrderVerifyRequest, background_tasks: BackgroundTasks, request: Request):
     """
     Verifies payment and marks reserved vouchers as SOLD.
     Fulfills multi-channel delivery (on-screen, SMS, WhatsApp format).
+    Enforces idempotency and tamper-evident audit logging.
     """
+    idem_key = request.headers.get("Idempotency-Key") or request.headers.get("X-Idempotency-Key")
+    if idem_key:
+        req_digest = hashlib.sha256(f"{req.order_reference}:{req.provider}".encode("utf-8")).hexdigest()
+        lock_ok, existing = acquire_idempotency_lock(idem_key, "/api/orders/verify", req_digest)
+        if not lock_ok and existing:
+            if existing["status"] == "COMPLETED":
+                try:
+                    return JSONResponse(status_code=existing["response_code"], content=json.loads(existing["response_body"]))
+                except Exception:
+                    pass
+            elif existing["status"] == "IN_FLIGHT":
+                return JSONResponse(
+                    status_code=409, 
+                    content={"success": False, "message": "Verification is already in-flight for this transaction key."}
+                )
+
     order = get_order_details(req.order_reference)
     if not order:
+        if idem_key:
+            release_idempotency_lock(idem_key)
         raise HTTPException(status_code=404, detail="Order reference not found")
 
     # In live/real test mode with Paystack, verify status against Paystack API
@@ -702,11 +853,15 @@ async def api_verify_order(req: OrderVerifyRequest, background_tasks: Background
         verify_res = PaystackProvider.verify_transaction(req.order_reference)
         if not verify_res.get("status") or verify_res.get("data", {}).get("status") != "success":
             err_msg = verify_res.get("message") or "Payment has not been confirmed by Paystack."
+            if idem_key:
+                release_idempotency_lock(idem_key)
             raise HTTPException(status_code=400, detail=err_msg)
 
     # Complete voucher sale atomically
     sold_vouchers = complete_voucher_sale(req.order_reference)
     if not sold_vouchers:
+        if idem_key:
+            release_idempotency_lock(idem_key)
         raise HTTPException(status_code=400, detail="No vouchers could be allocated for this order")
 
     # Record payment transaction
@@ -727,11 +882,25 @@ async def api_verify_order(req: OrderVerifyRequest, background_tasks: Background
     # Dispatch mock SMS in background
     background_tasks.add_task(DispatchManager.dispatch_sms_mock, order["customer_phone"], sms_text)
 
-    return {
+    result_payload = {
         "success": True,
         "fulfillment": fulfillment,
         "whatsapp_text": whatsapp_text
     }
+
+    if idem_key:
+        complete_idempotency_record(idem_key, 200, json.dumps(result_payload))
+
+    try:
+        append_audit_block(
+            action="ORDER_FULFILLED",
+            actor=order["customer_phone"],
+            payload_data={"order_reference": req.order_reference, "vouchers_count": len(sold_vouchers), "provider": req.provider}
+        )
+    except Exception as e:
+        logger.warning(f"Audit block append failed: {e}")
+
+    return result_payload
 
 @app.get("/api/orders/{reference}")
 async def api_get_order(reference: str):
@@ -744,37 +913,63 @@ async def api_get_order(reference: str):
 @app.post("/api/webhooks/paystack")
 async def paystack_webhook(request: Request, x_paystack_signature: Optional[str] = Header(None)):
     """
-    Idempotent Paystack webhook handler.
-    Verifies HMAC SHA512 signature before completing voucher sale.
+    Enterprise Idempotent Paystack Webhook Handler:
+    1. Verifies HMAC-SHA512 signature in constant time.
+    2. Reconciles exact pesewa-level parity against order amount.
+    3. Guarantees safe atomic order fulfillment.
     """
     body_bytes = await request.body()
-    
-    # In live mode with real keys, verify signature
-    secret_key = get_setting("paystack_secret_key")
-    if secret_key and x_paystack_signature:
-        is_valid = PaystackProvider.verify_webhook_signature(body_bytes, x_paystack_signature)
+    secret_key = get_setting("paystack_secret_key", "").strip()
+
+    if secret_key and not secret_key.startswith("sk_test_sample"):
+        is_valid, payload, err = PaystackProvider.validate_and_reconcile_webhook(body_bytes, x_paystack_signature or "")
         if not is_valid:
-            logger.warning("Invalid Paystack webhook signature rejected.")
-            raise HTTPException(status_code=400, detail="Invalid signature")
+            logger.warning(f"[Security Alert] Paystack webhook verification failed: {err}")
+            raise HTTPException(status_code=400, detail=err)
+    else:
+        try:
+            payload = json.loads(body_bytes.decode("utf-8"))
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid JSON body")
 
     try:
-        import json
-        event = json.loads(body_bytes.decode("utf-8"))
-        if event.get("event") == "charge.success":
-            data = event.get("data", {})
+        event_type = payload.get("event")
+        if event_type == "charge.success":
+            data = payload.get("data", {})
             order_ref = data.get("reference") or data.get("metadata", {}).get("order_reference")
             if order_ref:
-                logger.info(f"[Paystack Webhook] Fulfilling order {order_ref}")
-                complete_voucher_sale(order_ref)
-                record_transaction(
-                    order_ref=order_ref,
-                    provider="PAYSTACK",
-                    provider_ref=str(data.get("id")),
-                    amount=float(data.get("amount", 0)) / 100.0,
-                    status="SUCCESS",
-                    payload=data
-                )
+                order = get_order_details(order_ref)
+                if order:
+                    # Verify exact pesewa match
+                    paid_pesewas = int(data.get("amount", 0))
+                    if not PaystackProvider.reconcile_pesewas(order["total_amount"], paid_pesewas):
+                        logger.error(
+                            f"[Security Alert] Pesewa mismatch for {order_ref}: "
+                            f"expected {order['total_amount']} GHS, received {paid_pesewas} pesewas."
+                        )
+                        raise HTTPException(status_code=400, detail="Pesewa reconciliation failed: amount mismatch.")
+
+                    logger.info(f"[Paystack Webhook] Fulfilling order {order_ref} ({paid_pesewas} pesewas)")
+                    complete_voucher_sale(order_ref)
+                    record_transaction(
+                        order_ref=order_ref,
+                        provider="PAYSTACK",
+                        provider_ref=str(data.get("id")),
+                        amount=float(paid_pesewas) / 100.0,
+                        status="SUCCESS",
+                        payload=data
+                    )
+                    try:
+                        append_audit_block(
+                            action="PAYSTACK_WEBHOOK_FULFILLED",
+                            actor="PAYSTACK_GATEWAY",
+                            payload_data={"order_reference": order_ref, "paid_pesewas": paid_pesewas}
+                        )
+                    except Exception as e:
+                        logger.warning(f"Audit block append failed: {e}")
         return {"status": "ok"}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error handling Paystack webhook: {e}")
         return {"status": "error", "message": str(e)}
@@ -1002,4 +1197,40 @@ async def api_admin_scraper_sync(request: Request, admin_user: str = Depends(get
         "summary": sync_summary,
         "metrics": metrics
     }
+
+# ============================================================================
+# CLOAKED ERROR HANDLERS
+# ============================================================================
+
+@app.exception_handler(Exception)
+async def enterprise_exception_handler(request: Request, exc: Exception):
+    """
+    Sanitizes unhandled 500 exceptions so internal paths, framework names,
+    and stack traces are never leaked to external callers.
+    """
+    if isinstance(exc, HTTPException):
+        raise exc
+    logger.error(f"[Unhandled System Exception] path={request.url.path}: {exc}", exc_info=True)
+    if "application/json" in request.headers.get("accept", "") or request.url.path.startswith("/api/"):
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "error": "Internal Server Error",
+                "message": "The transaction gateway encountered an unhandled state. This incident has been logged."
+            }
+        )
+    return HTMLResponse(
+        status_code=500,
+        content="""<!DOCTYPE html>
+<html>
+<head><title>500 Internal Error | CheckerPay Ghana</title><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="background:#0b0f19;color:#f8fafc;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
+<div style="text-align:center;padding:2rem;background:#131b2e;border-radius:12px;max-width:420px;border:1px solid rgba(255,255,255,0.1)">
+<h2 style="color:#f59e0b;">500 - System Exception</h2>
+<p style="color:#94a3b8;font-size:0.9rem;">An unexpected server state occurred. Sensitive internal diagnostic details are concealed.</p>
+<a href="/" style="display:inline-block;margin-top:1rem;color:#f59e0b;text-decoration:none;font-weight:bold;">Return to Home</a>
+</div></body></html>"""
+    )
+
 

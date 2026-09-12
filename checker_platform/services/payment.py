@@ -60,10 +60,55 @@ class PaystackProvider:
 
     @classmethod
     def verify_webhook_signature(cls, payload_bytes: bytes, signature_header: str) -> bool:
-        """Verifies HMAC SHA512 signature on Paystack webhooks."""
+        """Verifies HMAC SHA512 signature on Paystack webhooks in constant time."""
+        if not signature_header or not payload_bytes:
+            return False
         secret = cls.get_secret_key().encode("utf-8")
         computed_hmac = hmac.new(secret, payload_bytes, hashlib.sha512).hexdigest()
-        return hmac.compare_digest(computed_hmac, signature_header)
+        return hmac.compare_digest(computed_hmac, signature_header.strip())
+
+    @classmethod
+    def validate_and_reconcile_webhook(
+        cls, 
+        payload_bytes: bytes, 
+        signature_header: str,
+        max_age_seconds: int = 300
+    ) -> Tuple[bool, Optional[Dict[str, Any]], str]:
+        """
+        Enterprise dual-phase webhook verification:
+        1. Validates HMAC-SHA512 signature in constant time.
+        2. Traps malformed JSON.
+        3. Validates event type and payload integrity.
+        """
+        if not signature_header or not payload_bytes:
+            return False, None, "Missing signature or payload."
+
+        if not cls.verify_webhook_signature(payload_bytes, signature_header):
+            return False, None, "Invalid cryptographic HMAC-SHA512 signature."
+
+        try:
+            payload = json.loads(payload_bytes.decode("utf-8"))
+        except Exception as e:
+            return False, None, f"Malformed JSON payload: {e}"
+
+        event_type = payload.get("event")
+        if event_type != "charge.success":
+            return False, payload, f"Unhandled webhook event type '{event_type}'."
+
+        data = payload.get("data", {})
+        if not data or not data.get("reference"):
+            return False, payload, "Missing transaction data or order reference."
+
+        return True, payload, "Verified successfully."
+
+    @staticmethod
+    def reconcile_pesewas(expected_ghs: float, actual_pesewas: int) -> bool:
+        """
+        Guarantees exact pesewa-level parity.
+        Prevents underpayment manipulation or rounding drift.
+        """
+        expected_pesewas = int(round(expected_ghs * 100))
+        return expected_pesewas == int(actual_pesewas)
 
     @classmethod
     def initialize_transaction(

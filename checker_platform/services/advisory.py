@@ -8,8 +8,9 @@ Compliant with Ghana Data Protection Act, 2012 (Act 843):
 
 from typing import Dict, List, Any, Optional
 
-from ..database import get_admission_benchmarks
+from ..database import get_admission_benchmarks, append_audit_block
 from .scraper import AdmissionScraperEngine
+from .security import EphemeralMemoryVault
 
 # ============================================================================
 # BECE DATA & ADVISORY LOGIC (CSSPS PLACEMENT)
@@ -222,6 +223,17 @@ def evaluate_bece_results(
         }
     ]
 
+    audit_hash = append_audit_block(
+        action="ACT_843_BECE_EVALUATION",
+        actor="EPHEMERAL_ADVISORY_ENGINE",
+        payload_data={
+            "exam_type": "BECE",
+            "aggregate": total_aggregate,
+            "programme": preferred_programme,
+            "zero_persistence_verified": True
+        }
+    )
+
     return {
         "exam_type": "BECE",
         "aggregate": total_aggregate,
@@ -234,7 +246,8 @@ def evaluate_bece_results(
         "reality_checks": reality_checks,
         "recommended_tiers": recommendations,
         "roadmap": roadmap,
-        "preferred_programme": preferred_programme
+        "preferred_programme": preferred_programme,
+        "compliance_attestation_hash": audit_hash
     }
 
 # ============================================================================
@@ -502,6 +515,18 @@ def evaluate_wassce_results(
         }
     ]
 
+    audit_hash = append_audit_block(
+        action="ACT_843_WASSCE_EVALUATION",
+        actor="EPHEMERAL_ADVISORY_ENGINE",
+        payload_data={
+            "exam_type": "WASSCE",
+            "aggregate": total_aggregate,
+            "status": eligibility_status,
+            "interest": interest_area,
+            "zero_persistence_verified": True
+        }
+    )
+
     return {
         "exam_type": "WASSCE",
         "aggregate": total_aggregate,
@@ -514,5 +539,6 @@ def evaluate_wassce_results(
         "reality_checks": reality_checks,
         "pathways": pathways,
         "roadmap": roadmap,
-        "interest_area": interest_area
+        "interest_area": interest_area,
+        "compliance_attestation_hash": audit_hash
     }

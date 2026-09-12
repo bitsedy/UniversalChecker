@@ -749,14 +749,23 @@ class AdmissionScraperEngine:
             "notes": ""
         }
 
+        from .security import SSRFValidator, SSRFSecurityViolation
         try:
-            async with httpx.AsyncClient(timeout=8.0, follow_redirects=True, headers=cls.HEADERS) as client:
+            SSRFValidator.validate_url(resolved_url)
+        except SSRFSecurityViolation as e:
+            logger.warning(f"[SSRF Firewall] Blocked probe to '{resolved_url}': {e}")
+            result["status"] = "SSRF_BLOCKED"
+            result["notes"] = f"Security egress blocked: {e}"
+            return result
+
+        try:
+            async with httpx.AsyncClient(timeout=8.0, follow_redirects=True, max_redirects=2, headers=cls.HEADERS) as client:
                 res = await client.get(resolved_url)
                 latency = int((time.time() - start_t) * 1000)
                 result["latency_ms"] = latency
 
                 if res.status_code == 200:
-                    html = res.text
+                    html = res.text[:2000000] # clamp to 2MB to prevent memory exhaustion
                     result["success"] = True
                     result["status"] = "REACHABLE_200"
 

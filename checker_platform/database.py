@@ -105,6 +105,33 @@ def init_db():
             );
         """)
 
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS idempotency_records (
+                idempotency_key TEXT PRIMARY KEY,
+                request_path TEXT NOT NULL,
+                request_digest TEXT NOT NULL,
+                status TEXT NOT NULL,
+                response_code INTEGER,
+                response_body TEXT,
+                created_at REAL NOT NULL,
+                expires_at REAL NOT NULL
+            );
+        """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS compliance_audit_ledger (
+                block_index INTEGER PRIMARY KEY AUTOINCREMENT,
+                previous_block_hash TEXT NOT NULL,
+                current_block_hash TEXT NOT NULL UNIQUE,
+                timestamp REAL NOT NULL,
+                action_type TEXT NOT NULL,
+                payload_digest TEXT NOT NULL,
+                actor TEXT NOT NULL,
+                nonce TEXT NOT NULL,
+                verification_status TEXT DEFAULT 'VERIFIED'
+            );
+        """)
+
         # Performance and concurrency indexes
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vouchers_cat_status ON vouchers(category, status);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vouchers_order_ref ON vouchers(order_reference);")
@@ -114,6 +141,8 @@ def init_db():
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_adm_type ON admission_benchmarks(institution_type);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_adm_faculty ON admission_benchmarks(faculty_category);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_adm_code ON admission_benchmarks(institution_code);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_idem_expires ON idempotency_records(expires_at);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_audit_hash ON compliance_audit_ledger(current_block_hash);")
 
         # Default pricing in GHS (Ghanaian Cedis)
         default_settings = [
@@ -772,4 +801,207 @@ def get_admissions_summary_metrics() -> Dict[str, Any]:
         }
     finally:
         conn.close()
+
+# ============================================================================
+# ENTERPRISE IDEMPOTENCY & AUDIT LEDGER SERVICES
+# ============================================================================
+
+def acquire_idempotency_lock(
+    key: str, 
+    path: str, 
+    digest: str, 
+    ttl_seconds: int = 300
+) -> Tuple[bool, Optional[Dict[str, Any]]]:
+    """
+    Acquires an atomic idempotency lock.
+    Returns (True, None) if lock acquired.
+    Returns (False, existing_record) if key was already seen or in-flight.
+    """
+    conn = get_db_connection()
+    now = time.time()
+    try:
+        conn.execute("BEGIN IMMEDIATE;")
+        row = conn.execute("SELECT * FROM idempotency_records WHERE idempotency_key = ?", (key,)).fetchone()
+        
+        if row:
+            if row["status"] == "COMPLETED":
+                conn.execute("COMMIT;")
+                return False, {
+                    "status": "COMPLETED",
+                    "response_code": row["response_code"],
+                    "response_body": row["response_body"]
+                }
+            elif row["status"] == "IN_FLIGHT" and row["expires_at"] > now:
+                conn.execute("COMMIT;")
+                return False, {
+                    "status": "IN_FLIGHT",
+                    "response_code": 409,
+                    "response_body": '{"error": "Concurrent request in-flight. Please retry in a moment."}'
+                }
+            # Lock expired; allow takeover
+            conn.execute(
+                """
+                UPDATE idempotency_records 
+                SET request_path = ?, request_digest = ?, status = 'IN_FLIGHT', 
+                    created_at = ?, expires_at = ?
+                WHERE idempotency_key = ?
+                """,
+                (path, digest, now, now + ttl_seconds, key)
+            )
+            conn.execute("COMMIT;")
+            return True, None
+        else:
+            conn.execute(
+                """
+                INSERT INTO idempotency_records (
+                    idempotency_key, request_path, request_digest, status, created_at, expires_at
+                ) VALUES (?, ?, ?, 'IN_FLIGHT', ?, ?)
+                """,
+                (key, path, digest, now, now + ttl_seconds)
+            )
+            conn.execute("COMMIT;")
+            return True, None
+    except Exception as e:
+        try:
+            conn.execute("ROLLBACK;")
+        except Exception:
+            pass
+        raise e
+    finally:
+        conn.close()
+
+def complete_idempotency_record(key: str, response_code: int, response_body: str):
+    """Marks an idempotency record as COMPLETED with its response payload."""
+    conn = get_db_connection()
+    try:
+        conn.execute(
+            """
+            UPDATE idempotency_records 
+            SET status = 'COMPLETED', response_code = ?, response_body = ?
+            WHERE idempotency_key = ?
+            """,
+            (response_code, response_body, key)
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+def release_idempotency_lock(key: str):
+    """Removes an idempotency lock in the event of an early unhandled validation failure."""
+    conn = get_db_connection()
+    try:
+        conn.execute("DELETE FROM idempotency_records WHERE idempotency_key = ? AND status = 'IN_FLIGHT'", (key,))
+        conn.commit()
+    finally:
+        conn.close()
+
+def append_audit_block(action: str, actor: str, payload_data: Any) -> str:
+    """
+    Appends a new block to the tamper-evident SHA-256 compliance audit ledger.
+    Returns the newly minted block hash.
+    """
+    from .services.security import CryptographicAuditLedger, GENESIS_BLOCK_HASH
+    
+    conn = get_db_connection()
+    now = time.time()
+    nonce = os.urandom(8).hex()
+    payload_digest = CryptographicAuditLedger.compute_payload_digest(payload_data)
+
+    try:
+        conn.execute("BEGIN IMMEDIATE;")
+        latest = conn.execute(
+            "SELECT current_block_hash FROM compliance_audit_ledger ORDER BY block_index DESC LIMIT 1"
+        ).fetchone()
+        prev_hash = latest["current_block_hash"] if latest else GENESIS_BLOCK_HASH
+        
+        current_hash = CryptographicAuditLedger.calculate_block_hash(
+            prev_hash=prev_hash,
+            timestamp=now,
+            action=action,
+            payload_digest=payload_digest,
+            nonce=nonce
+        )
+
+        conn.execute(
+            """
+            INSERT INTO compliance_audit_ledger (
+                previous_block_hash, current_block_hash, timestamp, action_type,
+                payload_digest, actor, nonce, verification_status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'VERIFIED')
+            """,
+            (prev_hash, current_hash, now, action, payload_digest, actor, nonce)
+        )
+        conn.execute("COMMIT;")
+        return current_hash
+    except Exception as e:
+        try:
+            conn.execute("ROLLBACK;")
+        except Exception:
+            pass
+        raise e
+    finally:
+        conn.close()
+
+def verify_audit_chain_integrity() -> Tuple[bool, int, str]:
+    """
+    Cryptographically verifies the entire compliance audit ledger from genesis block.
+    Returns (is_valid, count_verified, message).
+    """
+    from .services.security import CryptographicAuditLedger, GENESIS_BLOCK_HASH
+
+    conn = get_db_connection()
+    try:
+        rows = conn.execute("SELECT * FROM compliance_audit_ledger ORDER BY block_index ASC").fetchall()
+        if not rows:
+            return True, 0, "Audit ledger is empty (genesis pending)."
+
+        expected_prev_hash = GENESIS_BLOCK_HASH
+        for row in rows:
+            if row["previous_block_hash"] != expected_prev_hash:
+                return False, row["block_index"], f"Broken chain link at Block #{row['block_index']}."
+
+            recalculated_hash = CryptographicAuditLedger.calculate_block_hash(
+                prev_hash=row["previous_block_hash"],
+                timestamp=row["timestamp"],
+                action=row["action_type"],
+                payload_digest=row["payload_digest"],
+                nonce=row["nonce"]
+            )
+            if recalculated_hash != row["current_block_hash"]:
+                return False, row["block_index"], f"Tampered block hash at Block #{row['block_index']}."
+
+            expected_prev_hash = row["current_block_hash"]
+
+        return True, len(rows), f"All {len(rows)} blocks cryptographically verified and unbroken."
+    finally:
+        conn.close()
+
+def verify_database_integrity() -> Dict[str, Any]:
+    """Performs low-level SQLite integrity and relational structure verification."""
+    conn = get_db_connection()
+    try:
+        quick = conn.execute("PRAGMA quick_check;").fetchone()[0]
+        fks = conn.execute("PRAGMA foreign_key_check;").fetchall()
+        
+        tables = [
+            "vouchers", "orders", "transactions", "site_settings",
+            "admission_benchmarks", "idempotency_records", "compliance_audit_ledger"
+        ]
+        table_counts = {}
+        for t in tables:
+            try:
+                table_counts[t] = conn.execute(f"SELECT COUNT(*) as c FROM {t}").fetchone()["c"]
+            except Exception:
+                table_counts[t] = -1
+
+        is_intact = (quick == "ok" and len(fks) == 0 and all(c >= 0 for c in table_counts.values()))
+        return {
+            "intact": is_intact,
+            "quick_check": quick,
+            "foreign_key_violations": len(fks),
+            "table_counts": table_counts
+        }
+    finally:
+        conn.close()
+
 
