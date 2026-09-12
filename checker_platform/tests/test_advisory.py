@@ -71,6 +71,39 @@ class TestStealthAdminAndAdvisory(unittest.TestCase):
         res = self.client.get("/admin/login", headers={"X-Forwarded-For": "127.0.0.1"})
         self.assertEqual(res.status_code, 200)
 
+    def test_remote_browser_full_login_flow(self):
+        """Verifies that a remote browser using gate parameter can view login, submit credentials, and receive session."""
+        from fastapi.testclient import TestClient
+        from checker_platform.main import app
+        isolated_client = TestClient(app)
+        remote_headers = {
+            "X-Forwarded-For": "41.215.160.77",
+            "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
+            "Accept": "text/html"
+        }
+        # 1. First visit /admin with gate key -> redirects to /admin/login with cookie
+        res1 = isolated_client.get("/admin?gate=ghana2026_gate", headers=remote_headers, follow_redirects=False)
+        self.assertEqual(res1.status_code, 303)
+        self.assertIn("admin_gate_pass=ghana2026_gate", res1.headers.get("set-cookie", ""))
+
+        # 2. View login page
+        res2 = isolated_client.get("/admin/login", headers=remote_headers)
+        self.assertEqual(res2.status_code, 200)
+
+        # 3. Submit credentials (case-insensitive username 'Admin')
+        res3 = isolated_client.post(
+            "/admin/login",
+            data={"username": "Admin", "password": "ghana2026"},
+            headers=remote_headers,
+            follow_redirects=False
+        )
+        self.assertEqual(res3.status_code, 303)
+        self.assertIn("admin_session=", res3.headers.get("set-cookie", ""))
+
+        # 4. Access admin dashboard with session
+        res4 = isolated_client.get("/admin", headers=remote_headers)
+        self.assertEqual(res4.status_code, 200)
+
     # ========================================================================
     # 2. ACT 843 COMPLIANT ADVISORY PORTAL TESTS
     # ========================================================================
