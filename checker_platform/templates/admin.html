@@ -19,11 +19,11 @@
           Sovereign Mission Control &bull; Live Telemetry
         </span>
       </div>
-      <h1 style="font-size: 1.85rem; font-weight: 900; color: #fff; margin: 0;">
+      <h1 style="font-size: 1.85rem; font-weight: 900; color: var(--text-main); margin: 0;">
         Operations &amp; Intelligence Command Center
       </h1>
       <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 0 0;">
-        Logged in as <strong style="color: #cbd5e1;">{{ admin_user }}</strong> &bull; Bank of Ghana &amp; GTEC Institutional Standard
+        Logged in as <strong style="color: var(--text-main);">{{ admin_user }}</strong> &bull; Bank of Ghana &amp; GTEC Institutional Standard
       </p>
     </div>
 
@@ -31,11 +31,11 @@
       <span class="card-badge card-badge-popular" style="padding: 6px 12px; font-size: 0.775rem;">
         WAL Mode Active
       </span>
-      <span style="background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.3); padding: 6px 12px; border-radius: var(--radius-sm); font-size: 0.775rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+      <span style="background: #f0fdf4; color: #047857; border: 1px solid #86efac; padding: 6px 12px; border-radius: var(--radius-sm); font-size: 0.775rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
         <span style="display: inline-block; width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span>
         Merkle Ledger: Verified ({{ analytics.security.total_blocks }} blocks)
       </span>
-      <a href="/admin/logout" style="background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); padding: 6px 14px; border-radius: var(--radius-sm); text-decoration: none; font-size: 0.825rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
+      <a href="/admin/logout" style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; padding: 6px 14px; border-radius: var(--radius-sm); text-decoration: none; font-size: 0.825rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
         <span>🔒</span> Sign Out
       </a>
     </div>
@@ -43,11 +43,11 @@
 
   <!-- SECURITY WARNING IF DEFAULT PASSWORD ACTIVE -->
   {% if settings.is_default_password %}
-  <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid var(--ghana-red); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 12px;">
+  <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 12px;">
     <span style="font-size: 1.5rem; line-height: 1;">⚠️</span>
     <div>
-      <div style="font-weight: 800; color: #fca5a5; font-size: 0.95rem; margin-bottom: 2px;">SECURITY WARNING: Default Admin Password Active!</div>
-      <div style="font-size: 0.825rem; color: #e2e8f0; line-height: 1.45;">
+      <div style="font-weight: 800; color: #b91c1c; font-size: 0.95rem; margin-bottom: 2px;">SECURITY WARNING: Default Admin Password Active!</div>
+      <div style="font-size: 0.825rem; color: var(--text-main); line-height: 1.45;">
         Your platform is currently protected only by the factory default password (<code>ghana2026</code>). 
         Click <strong>Settings &amp; Security</strong> below to set a new password, or set <code>ADMIN_PASSWORD</code> in cloud environment variables.
       </div>
@@ -80,7 +80,7 @@
     <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
       <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
         <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">Time Window:</span>
-        <div style="display: inline-flex; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 2px;">
+        <div style="display: inline-flex; background: #f1f5f9; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 2px;">
           <button type="button" class="analytics-filter-btn" id="btn_win_24h" onclick="changeAnalyticsWindow('24h')">Last 24h</button>
           <button type="button" class="analytics-filter-btn active" id="btn_win_7d" onclick="changeAnalyticsWindow('7d')">Last 7 Days</button>
           <button type="button" class="analytics-filter-btn" id="btn_win_30d" onclick="changeAnalyticsWindow('30d')">Last 30 Days</button>
@@ -107,9 +107,9 @@
             GH₵ {{ "%.2f"|format(analytics.financials.window_revenue) }}
           </div>
         </div>
-        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
           <span>Avg Order Value:</span>
-          <strong id="kpi_aov" style="color: #fff;">GH₵ {{ "%.2f"|format(analytics.financials.average_order_value) }}</strong>
+          <strong id="kpi_aov" style="color: var(--text-main);">GH₵ {{ "%.2f"|format(analytics.financials.average_order_value) }}</strong>
         </div>
       </div>
 
@@ -117,13 +117,13 @@
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
         <div>
           <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Paid Orders Fulfilled</div>
-          <div id="kpi_orders" style="font-size: 1.8rem; font-weight: 900; color: #fff; margin-top: 4px;">
+          <div id="kpi_orders" style="font-size: 1.8rem; font-weight: 900; color: var(--text-main); margin-top: 4px;">
             {{ analytics.financials.window_orders }}
           </div>
         </div>
-        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
           <span>Conversion Rate:</span>
-          <strong id="kpi_conversion" style="color: #34d399;">{{ analytics.financials.conversion_rate_pct }}%</strong>
+          <strong id="kpi_conversion" style="color: #047857;">{{ analytics.financials.conversion_rate_pct }}%</strong>
         </div>
       </div>
 
@@ -131,13 +131,13 @@
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
         <div>
           <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Unsold Stock Depth</div>
-          <div id="kpi_unsold" style="font-size: 1.8rem; font-weight: 900; color: #34d399; margin-top: 4px;">
+          <div id="kpi_unsold" style="font-size: 1.8rem; font-weight: 900; color: #047857; margin-top: 4px;">
             {{ analytics.inventory.total_unsold }}
           </div>
         </div>
-        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
           <span>Capacity Available:</span>
-          <strong id="kpi_stock_pct" style="color: #fff;">{{ analytics.inventory.overall_availability_pct }}%</strong>
+          <strong id="kpi_stock_pct" style="color: var(--text-main);">{{ analytics.inventory.overall_availability_pct }}%</strong>
         </div>
       </div>
 
@@ -145,13 +145,13 @@
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
         <div>
           <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Placement Evaluations</div>
-          <div id="kpi_advisory" style="font-size: 1.8rem; font-weight: 900; color: #38bdf8; margin-top: 4px;">
+          <div id="kpi_advisory" style="font-size: 1.8rem; font-weight: 900; color: #0284c7; margin-top: 4px;">
             {{ analytics.placement_intelligence.total_evaluations }}
           </div>
         </div>
-        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
           <span>Scholarships Matched:</span>
-          <strong id="kpi_schol_count" style="color: var(--ghana-gold);">{{ analytics.placement_intelligence.scholarships_matched }}</strong>
+          <strong id="kpi_schol_count" style="color: #b45309;">{{ analytics.placement_intelligence.scholarships_matched }}</strong>
         </div>
       </div>
 
@@ -159,13 +159,13 @@
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
         <div>
           <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Merkle Ledger &amp; Act 843</div>
-          <div id="kpi_merkle" style="font-size: 1.45rem; font-weight: 900; color: #a855f7; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+          <div id="kpi_merkle" style="font-size: 1.45rem; font-weight: 900; color: #7e22ce; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
             <span>🛡️</span> Verified Intact
           </div>
         </div>
-        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted);">
           <span>Blocks in Chain:</span>
-          <strong id="kpi_blocks" style="color: #fff;">{{ analytics.security.total_blocks }}</strong>
+          <strong id="kpi_blocks" style="color: var(--text-main);">{{ analytics.security.total_blocks }}</strong>
         </div>
       </div>
 
@@ -178,7 +178,7 @@
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
           <div>
-            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0;">
               📈 Sales Velocity &amp; Revenue Timeline
             </h3>
             <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
@@ -195,7 +195,7 @@
       <!-- Chart B: Category Share Doughnut -->
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
         <div style="margin-bottom: 1rem;">
-          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0;">
             🥧 Examination Portal Share
           </h3>
           <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
@@ -216,7 +216,7 @@
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
           <div>
-            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0;">
               📊 Inventory Levels &amp; Fulfillment Ratio
             </h3>
             <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
@@ -234,7 +234,7 @@
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
           <div>
-            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0;">
               🎓 Candidate Academic Aggregate Distribution
             </h3>
             <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
@@ -256,7 +256,7 @@
       <!-- Chart E: Payment Telco Share -->
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
         <div style="margin-bottom: 1rem;">
-          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0;">
             📱 Mobile Money &amp; Payment Channels
           </h3>
           <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
@@ -271,7 +271,7 @@
       <!-- Chart F: Demanded Academic Disciplines -->
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
         <div style="margin-bottom: 1rem;">
-          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0;">
             🏛️ Top Candidate Placement Disciplines
           </h3>
           <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
@@ -292,28 +292,28 @@
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
           <div>
-            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;">
               <span>🔗</span> Cryptographic Merkle Audit Chain (Live Blocks)
             </h3>
             <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
               Immutable SHA-256 ledger proof for Bank of Ghana &amp; GTEC regulatory compliance
             </p>
           </div>
-          <span style="font-size: 0.75rem; color: #34d399; font-weight: 800;">● Tamper-Proof</span>
+          <span style="font-size: 0.75rem; color: #047857; font-weight: 800;">● Tamper-Proof</span>
         </div>
 
         <div id="merkle_blocks_stream" style="display: grid; gap: 6px; font-family: monospace; font-size: 0.75rem; max-height: 250px; overflow-y: auto;">
           {% for blk in analytics.security.recent_ledger_blocks %}
-          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); padding: 8px 12px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+          <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 8px 12px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
             <div>
               <span style="color: var(--ghana-gold); font-weight: 800;">Block #{{ blk.block_index }}</span>
-              <span style="color: #38bdf8; margin-left: 8px;">{{ blk.action_type }}</span>
+              <span style="color: #0284c7; margin-left: 8px;">{{ blk.action_type }}</span>
               <span style="color: var(--text-dim); margin-left: 8px;">by {{ blk.actor }}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="color: #cbd5e1;">Hash: <code>{{ blk.hash_snippet }}</code></span>
+              <span style="color: var(--text-main);">Hash: <code>{{ blk.hash_snippet }}</code></span>
               <span style="color: var(--text-dim); font-size: 0.7rem;">{{ blk.timestamp_str }}</span>
-              <span style="color: #34d399; font-weight: 700; font-size: 0.7rem;">✓</span>
+              <span style="color: #047857; font-weight: 700; font-size: 0.7rem;">✓</span>
             </div>
           </div>
           {% endfor %}
@@ -323,7 +323,7 @@
       <!-- Scraper Fleet Health Card -->
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
         <div>
-          <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0 0 0.5rem 0;">
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0 0 0.5rem 0;">
             🌐 Admissions Fleet Status
           </h3>
           <p style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 1rem;">
@@ -331,21 +331,21 @@
           </p>
 
           <div style="display: grid; gap: 0.75rem; font-size: 0.8rem;">
-            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border-subtle);">
               <span style="color: var(--text-dim);">Institutions Tracked:</span>
-              <strong style="color: #fff;">{{ analytics.scraper_fleet.tracked_institutions }} Portals</strong>
+              <strong style="color: var(--text-main);">{{ analytics.scraper_fleet.tracked_institutions }} Portals</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border-subtle);">
               <span style="color: var(--text-dim);">Live Benchmarks:</span>
-              <strong style="color: var(--ghana-gold);">{{ analytics.scraper_fleet.total_benchmarks }} Programmes</strong>
+              <strong style="color: #b45309;">{{ analytics.scraper_fleet.total_benchmarks }} Programmes</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border-subtle);">
               <span style="color: var(--text-dim);">Open Admissions:</span>
-              <strong style="color: #34d399;">{{ analytics.scraper_fleet.open_admissions }} Open</strong>
+              <strong style="color: #047857;">{{ analytics.scraper_fleet.open_admissions }} Open</strong>
             </div>
             <div style="display: flex; justify-content: space-between; padding: 6px 0;">
               <span style="color: var(--text-dim);">Fleet State:</span>
-              <span style="color: #34d399; font-weight: 700;">● {{ analytics.scraper_fleet.status }}</span>
+              <span style="color: #047857; font-weight: 700;">● {{ analytics.scraper_fleet.status }}</span>
             </div>
           </div>
         </div>
@@ -383,13 +383,13 @@
           </thead>
           <tbody id="inventory_table_body">
             {% for s in analytics.inventory.categories %}
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-              <td style="padding: 0.85rem 1rem; font-weight: 700; color: #fff;">{{ s.category }}</td>
+            <tr style="border-bottom: 1px solid var(--border-subtle);">
+              <td style="padding: 0.85rem 1rem; font-weight: 700; color: var(--text-main);">{{ s.category }}</td>
               <td style="padding: 0.85rem 1rem; color: var(--ghana-gold); font-weight: 800;">{{ s.unsold }}</td>
               <td style="padding: 0.85rem 1rem; color: var(--text-muted);">{{ s.reserved }}</td>
               <td style="padding: 0.85rem 1rem; color: var(--ghana-green); font-weight: 700;">{{ s.sold }}</td>
-              <td style="padding: 0.85rem 1rem; color: #cbd5e1;">{{ s.daily_burn_rate }}/day</td>
-              <td style="padding: 0.85rem 1rem; color: #38bdf8;">{{ s.days_remaining }}</td>
+              <td style="padding: 0.85rem 1rem; color: var(--text-muted);">{{ s.daily_burn_rate }}/day</td>
+              <td style="padding: 0.85rem 1rem; color: #0284c7;">{{ s.days_remaining }}</td>
               <td style="padding: 0.85rem 1rem;">
                 <span style="color: {{ s.health_color }}; font-size: 0.8rem; font-weight: 800;">{{ s.health_status }}</span>
               </td>
@@ -404,7 +404,7 @@
     <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
         <div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
             <span>⚙️</span> Voucher Generation &amp; Inventory Mode
           </h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
@@ -418,11 +418,11 @@
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
         <!-- Option 1: Dynamic Demo Generator -->
-        <label style="background: rgba(0,0,0,0.3); border: 2px solid {% if settings.inventory_mode == 'DEMO_GENERATE' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_demo">
+        <label style="background: #f8fafc; border: 2px solid {% if settings.inventory_mode == 'DEMO_GENERATE' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_demo">
           <div style="display: flex; align-items: flex-start; gap: 12px;">
             <input type="radio" name="cfg_inventory_mode" id="mode_demo" value="DEMO_GENERATE" {% if settings.inventory_mode == 'DEMO_GENERATE' %}checked{% endif %} onchange="updateModeSelection('DEMO_GENERATE')">
             <div>
-              <div style="font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <div style="font-weight: 800; font-size: 1rem; color: var(--text-main); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
                 <span>⚡</span> Dynamic Demo Generator Mode
               </div>
               <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">
@@ -433,11 +433,11 @@
         </label>
 
         <!-- Option 2: Strict Batch Upload -->
-        <label style="background: rgba(0,0,0,0.3); border: 2px solid {% if settings.inventory_mode == 'BATCH' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_batch">
+        <label style="background: #f8fafc; border: 2px solid {% if settings.inventory_mode == 'BATCH' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_batch">
           <div style="display: flex; align-items: flex-start; gap: 12px;">
             <input type="radio" name="cfg_inventory_mode" id="mode_batch" value="BATCH" {% if settings.inventory_mode == 'BATCH' %}checked{% endif %} onchange="updateModeSelection('BATCH')">
             <div>
-              <div style="font-weight: 800; font-size: 1rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <div style="font-weight: 800; font-size: 1rem; color: var(--text-main); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
                 <span>📦</span> Strict Wholesale Batch Mode
               </div>
               <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">
@@ -493,7 +493,7 @@
 
       <!-- EXISTING BATCH UPLOADER -->
       <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem;">
-        <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">
           📥 Wholesale Voucher Upload
         </h3>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
@@ -547,34 +547,34 @@
 
       <!-- Scraper Stats Row -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+        <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
           <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Tracked Programmes</div>
-          <div id="stat_total_programmes" style="font-size: 1.6rem; font-weight: 900; color: #fff; margin-top: 4px;">
+          <div id="stat_total_programmes" style="font-size: 1.6rem; font-weight: 900; color: var(--text-main); margin-top: 4px;">
             {{ admissions_metrics.total_programmes or 37 }}
           </div>
         </div>
-        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+        <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
           <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Open Admissions</div>
-          <div id="stat_open_admissions" style="font-size: 1.6rem; font-weight: 900; color: #34d399; margin-top: 4px;">
+          <div id="stat_open_admissions" style="font-size: 1.6rem; font-weight: 900; color: #059669; margin-top: 4px;">
             {{ admissions_metrics.open_admissions or 33 }}
           </div>
         </div>
-        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+        <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
           <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Institutions Monitored</div>
           <div id="stat_institutions" style="font-size: 1.6rem; font-weight: 900; color: var(--ghana-gold); margin-top: 4px;">
             {{ admissions_metrics.institutions_tracked or 6 }}
           </div>
         </div>
-        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
+        <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 1rem; border-radius: var(--radius-md);">
           <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Scraper Engine Status</div>
-          <div id="scraper_status_badge" style="font-size: 0.9rem; font-weight: 800; color: #38bdf8; margin-top: 8px;">
+          <div id="scraper_status_badge" style="font-size: 0.9rem; font-weight: 800; color: #0284c7; margin-top: 8px;">
             Active &amp; Synced
           </div>
         </div>
       </div>
 
       <!-- Scrape output log area -->
-      <div id="scrape_log_box" style="display: none; background: rgba(0,0,0,0.45); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; font-family: monospace; font-size: 0.8rem; color: #cbd5e1; max-height: 200px; overflow-y: auto;">
+      <div id="scrape_log_box" style="display: none; background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; font-family: monospace; font-size: 0.8rem; color: var(--text-main); max-height: 200px; overflow-y: auto;">
       </div>
     </div>
   </div>
@@ -584,7 +584,7 @@
   <!-- ===================================================================== -->
   <div id="tab_content_settings" style="display: none;">
     <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; max-width: 800px; margin: 0 auto;">
-      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff;">
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">
         ⚙️ Pricing, Gateway &amp; Perimeter Security Settings
       </h3>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
@@ -708,7 +708,7 @@
   transition: all 0.15s ease;
 }
 .analytics-filter-btn:hover {
-  color: #fff;
+  color: var(--text-main);
 }
 .analytics-filter-btn.active {
   background: var(--ghana-gold);
@@ -805,9 +805,9 @@ function initAllCharts(data) {
     return;
   }
 
-  // Global Chart.js Dark Mode Defaults
-  Chart.defaults.color = "#94a3b8";
-  Chart.defaults.borderColor = "rgba(255, 255, 255, 0.06)";
+  // Global Chart.js Light Mode Defaults
+  Chart.defaults.color = "#64748b";
+  Chart.defaults.borderColor = "rgba(0, 0, 0, 0.06)";
   Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
 
   // 1. Revenue & Order Velocity Timeline
@@ -1079,7 +1079,7 @@ function updateChartsData(data) {
     stream.replaceChildren();
     data.security.recent_ledger_blocks.forEach(blk => {
       const row = document.createElement("div");
-      row.style.cssText = "background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;";
+      row.style.cssText = "background:#f8fafc;border:1px solid var(--border-subtle);padding:8px 12px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;";
 
       const left = document.createElement("div");
 
@@ -1088,7 +1088,7 @@ function updateChartsData(data) {
       blockNum.textContent = `Block #${blk.block_index}`;
 
       const actionType = document.createElement("span");
-      actionType.style.cssText = "color:#38bdf8;margin-left:8px;";
+      actionType.style.cssText = "color:#0284c7;margin-left:8px;";
       actionType.textContent = blk.action_type;
 
       const actor = document.createElement("span");
@@ -1103,7 +1103,7 @@ function updateChartsData(data) {
       right.style.cssText = "display:flex;align-items:center;gap:10px;";
 
       const hashSpan = document.createElement("span");
-      hashSpan.style.cssText = "color:#cbd5e1;";
+      hashSpan.style.cssText = "color:var(--text-main);";
       const hashLabel = document.createTextNode("Hash: ");
       const hashCode = document.createElement("code");
       hashCode.textContent = blk.hash_snippet;
@@ -1115,7 +1115,7 @@ function updateChartsData(data) {
       tsSpan.textContent = blk.timestamp_str;
 
       const checkmark = document.createElement("span");
-      checkmark.style.cssText = "color:#34d399;font-weight:700;font-size:0.7rem;";
+      checkmark.style.cssText = "color:#059669;font-weight:700;font-size:0.7rem;";
       checkmark.textContent = "✓";
 
       right.appendChild(hashSpan);

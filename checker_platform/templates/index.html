@@ -191,7 +191,7 @@
       background: transparent !important;
       border: none !important;
       outline: none !important;
-      color: #ffffff !important;
+      color: var(--text-main) !important;
       box-shadow: none !important;
     }
     .faq-question:focus, .faq-question:active {
@@ -458,12 +458,12 @@
         <input type="email" id="customer_email" class="form-input" placeholder="candidate@example.com">
       </div>
 
-      <div style="background: rgba(0, 0, 0, 0.25); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem;">
+      <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem;">
         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">
           <span>Unit Price:</span>
           <span id="modal_unit_price" data-price="22.00">GHS 22.00</span>
         </div>
-        <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; color: #fff;">
+        <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; color: var(--text-main);">
           <span>Total Payable:</span>
           <span id="modal_total_price" style="color: var(--ghana-gold);">GHS 22.00</span>
         </div>
@@ -483,16 +483,16 @@
 
       <div class="momo-ussd-box">
         <div style="font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Network / Recipient</div>
-        <div id="momo_display_network" style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem;">MTN Mobile Money</div>
+        <div id="momo_display_network" style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.25rem;">MTN Mobile Money</div>
         <div id="momo_display_phone" style="font-size: 0.9rem; color: var(--text-muted);">024 000 0000</div>
 
-        <div style="margin: 1rem 0; padding: 0.75rem; background: rgba(0,0,0,0.4); border-radius: 8px;">
+        <div style="margin: 1rem 0; padding: 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
           <div style="font-size: 0.8rem; color: var(--text-dim);">Amount to Authorize:</div>
           <div id="momo_display_amount" style="font-size: 1.5rem; font-weight: 900; color: var(--ghana-gold);">GHS 22.00</div>
           <div style="font-size: 0.75rem; color: var(--text-dim);">Order Ref: <span id="momo_display_order_ref">ORD-12345</span></div>
         </div>
 
-        <div style="font-size: 0.85rem; color: #fff; font-weight: 600; margin-bottom: 0.5rem;" id="momo_prompt_instructions">
+        <div style="font-size: 0.85rem; color: var(--text-main); font-weight: 700; margin-bottom: 0.5rem;" id="momo_prompt_instructions">
           Prompt sent to your phone!
         </div>
         <div style="font-size: 0.78rem; color: var(--text-muted);" id="momo_manual_steps">
@@ -501,7 +501,7 @@
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-        <button id="btn_paystack_pay" class="btn-buy" style="background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%); font-weight: 800;" onclick="payWithPaystack()">
+        <button id="btn_paystack_pay" class="btn-buy" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); font-weight: 800;" onclick="payWithPaystack()">
           💳 Pay via Paystack (MoMo & Cards)
         </button>
         <button id="btn_approve_payment" class="btn-safety-guide" style="text-align: center; cursor: pointer; font-size: 0.85rem;" onclick="approveSimulatedPayment()">
@@ -517,7 +517,7 @@
     <div id="checkout_step_success" style="display: none;">
       <div style="text-align: center; margin-bottom: 1.25rem;">
         <div style="font-size: 2.2rem; color: var(--ghana-green); margin-bottom: 0.15rem;">✓</div>
-        <h2 style="font-size: 1.35rem; font-weight: 800; color: #fff;">Payment Successful!</h2>
+        <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main);">Payment Successful!</h2>
         <p style="font-size: 0.85rem; color: var(--text-muted);">
           Order Reference: <strong id="success_order_ref" style="color: var(--ghana-gold);"></strong>
         </p>
