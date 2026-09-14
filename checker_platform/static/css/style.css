@@ -1151,9 +1151,10 @@ footer {
 }
 
 /* ==========================================================================
-   Live Activity Social Proof Toast (Zero PII - Verified Events)
+   Live Activity Social Proof Toast (Halted during testing stage)
    ========================================================================== */
 .live-activity-toast {
+  display: none !important;
   position: fixed;
   bottom: 24px;
   left: 24px;

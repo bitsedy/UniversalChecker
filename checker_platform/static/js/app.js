@@ -15,7 +15,7 @@ let currentOrder = null;
 document.addEventListener("DOMContentLoaded", () => {
   setupTelcoAutoDetect();
   setupQuantityListeners();
-  initLiveSocialProof();
+  // initLiveSocialProof(); // Halted during testing stage to preserve authenticity
   initScrollEngine();
   setupVoucherCopyDelegation();
 });
@@ -530,6 +530,9 @@ const VERIFIED_ACTIVITY_FEED = [
 
 let socialProofIndex = 0;
 function initLiveSocialProof() {
+  // Halted during testing stage; will be re-enabled when live production officially commences.
+  return;
+
   const toast = document.getElementById("live_activity_toast");
   if (!toast) return;
 
