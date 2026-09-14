@@ -340,6 +340,130 @@ def suggest_best_schools_bece(
 
     return portfolio
 
+def generate_bece_final_verdict(
+    total_aggregate: int,
+    english_grade: int,
+    math_grade: int,
+    science_grade: int,
+    preferred_programme: str
+) -> Dict[str, Any]:
+    """
+    Formulates a brutally honest, non-sugarcoated final verdict for BECE candidates
+    and parents, specifically advising whether to pursue Category A/B, rely on 
+    CSSPS Self-Placement/CTVET, or register for remedial resits.
+    """
+    if english_grade > 6 or math_grade > 6:
+        verdict_type = "CRITICAL_HAZARD"
+        badge_label = "CRITICAL PLACEMENT HAZARD"
+        theme = "danger"
+        headline = "⚠️ High Automated Placement Risk (Stanine > 6 in Core Subjects)"
+        bottom_line = (
+            f"Your grade in {'English Language (' + str(english_grade) + ')' if english_grade > 6 else 'Mathematics (' + str(math_grade) + ')'} "
+            "means the GES automated algorithm will almost certainly skip your choices 1 through 4."
+        )
+        best_actions = [
+            "Prepare for Day 1 CSSPS Self-Placement: When placements drop, log into https://cssps.gov.gh within 24 hours to secure an open Category C school.",
+            "Choose CTVET Technical Track (ATTC, KTI, TTI): Practical engineering and technical institutes give you strong, employable skills regardless of theoretical Stanine setbacks.",
+            "If you scored Grade 8 or 9 in English/Math, consider registering for the WAEC Private BECE examination (remedials) to secure a clean slate for boarding school admission."
+        ]
+        what_not_to_do = [
+            "DO NOT pay any protocol agent or middleman claiming they can 'force' PRESEC, Achimota, or any Category A school to admit you. You will be scammed.",
+            "DO NOT sit idle waiting for an automated placement SMS. Check the CSSPS portal yourself on release day."
+        ]
+    elif total_aggregate <= 9 and english_grade <= 3 and math_grade <= 3:
+        verdict_type = "DIRECT_CATEGORY_A"
+        badge_label = "UNCONDITIONAL TOP-TIER MERIT"
+        theme = "success"
+        headline = "🟢 Target Category A With High Confidence — Do NOT Pay Any Agent"
+        bottom_line = (
+            f"Aggregate {total_aggregate:02d} puts you in the top tier of candidates across Ghana. "
+            "You have demonstrated exceptional mastery across both core and elective subjects."
+        )
+        best_actions = [
+            f"Keep your dream Category A institution (e.g. PRESEC Legon, Achimota, Wesley Girls, Prempeh) as Choice 1 for {preferred_programme}.",
+            "Maintain a solid Category B school (e.g. St. Thomas Aquinas, Ghana National) as your Choice 2 safety net.",
+            "Gather your official BECE Result Slip, NHIS card, and 4 passport pictures for physical registration once placements drop."
+        ]
+        what_not_to_do = [
+            "DO NOT write BECE remedials. Your score is already at national distinction level.",
+            "DO NOT entertain anyone asking for 'protocol fees' to guarantee your placement. Your merit earns your spot legitimately."
+        ]
+    elif total_aggregate <= 18:
+        verdict_type = "CATEGORY_B_TARGET"
+        badge_label = "SOLID REGIONAL MERIT"
+        theme = "info"
+        headline = "🔵 Category B is Your Strategic Sweet Spot"
+        bottom_line = (
+            f"Aggregate {total_aggregate:02d} is a strong, highly respectable pass, but Category A boarding quotas are hyper-competitive. "
+            "Category B schools represent your highest quality-of-education assurance."
+        )
+        best_actions = [
+            "Focus your strategy around renowned Category B schools (St. Thomas Aquinas, Kumasi High, Mawuli, Pope John, Ghana National).",
+            "If you selected a Category A school for Choice 1, be fully prepared for the automated system to place you in Choice 2 or Choice 3.",
+            "Ensure Choice 5 includes your designated Local Day school to take advantage of the guaranteed 30% catchment quota."
+        ]
+        what_not_to_do = [
+            "DO NOT pack your choice form with multiple Category A schools. You are only permitted one Category A choice by GES rules.",
+            "DO NOT panic if not placed in Choice 1. Category B institutions regularly produce top WASSCE performers in Ghana."
+        ]
+    elif total_aggregate <= 30:
+        verdict_type = "COMMUNITY_AND_LOCAL_DAY"
+        badge_label = "COMMUNITY & LOCAL DAY FOCUS"
+        theme = "warning"
+        headline = "🟡 Leverage Category C & 30% Local Day Quota"
+        bottom_line = (
+            f"With Aggregate {total_aggregate:02d}, national boarding placement is unrealistic. "
+            "Your best pathway is securing enrollment in a quality community or district day school."
+        )
+        best_actions = [
+            "Select reputable Category C schools in your immediate municipal district.",
+            "Utilize the GES 30% Local Day quota for candidates living near the school.",
+            "If unplaced during the automated run, immediately access the official CSSPS Self-Placement module within 48 hours."
+        ]
+        what_not_to_do = [
+            "DO NOT consider JHS repetition unless you failed English or Core Math (Grade 8–9).",
+            "DO NOT pay any admission fixer promising boarding admission to Category A or B schools."
+        ]
+    else:
+        verdict_type = "REMEDIAL_OR_TVET"
+        badge_label = "REMEDIAL OR APPRENTICESHIP DIRECTIVE"
+        theme = "danger"
+        headline = "🔴 CTVET Practical Institutes or Private BECE Remedial"
+        bottom_line = (
+            f"Aggregate {total_aggregate:02d} significantly exceeds conventional secondary school admission thresholds. "
+            "A shift in academic strategy is required."
+        )
+        best_actions = [
+            "Option A (Skill & Career Mastery): Enroll directly into a CTVET technical institute (ATTC, KTI, TTI) to learn electrical engineering, computing, or building construction.",
+            "Option B (Academic Resit): Register for the WAEC Private BECE examination to resit and improve your aggregate.",
+            "Explore self-placement options in developing community day schools."
+        ]
+        what_not_to_do = [
+            "DO NOT fall victim to scammers promising secondary school boarding placement for money.",
+            "DO NOT waste months idling at home. Enroll in technical training or remedial classes immediately."
+        ]
+
+    tone = (
+        "CELEBRATORY_AUTHORITATIVE" if theme == "success"
+        else ("CRITICAL_WARNING" if theme == "danger" and verdict_type == "CRITICAL_HAZARD"
+        else ("STRICT_REALISTIC" if "REMEDIAL" in verdict_type or verdict_type == "CRITICAL_HAZARD"
+        else "STRATEGIC_BALANCED"))
+    )
+
+    return {
+        "verdict_type": verdict_type,
+        "category": verdict_type,
+        "badge_label": badge_label,
+        "theme": theme,
+        "tone": tone,
+        "headline": headline,
+        "bottom_line": bottom_line,
+        "best_actions": best_actions,
+        "next_moves": best_actions,
+        "what_not_to_do": what_not_to_do,
+        "costly_mistakes": what_not_to_do
+    }
+
 def evaluate_bece_results(
     cores: Dict[str, int], 
     electives: Dict[str, int], 
@@ -455,7 +579,16 @@ def evaluate_bece_results(
         preferred_programme=preferred_programme
     )
 
-    # 6. Step-by-Step Action Roadmap
+    # 6. Formulate Brutally Honest Final Verdict
+    final_verdict = generate_bece_final_verdict(
+        total_aggregate=total_aggregate,
+        english_grade=english_grade,
+        math_grade=math_grade,
+        science_grade=science_grade,
+        preferred_programme=preferred_programme
+    )
+
+    # 7. Step-by-Step Action Roadmap
     roadmap = [
         {
             "step": 1,
@@ -486,6 +619,7 @@ def evaluate_bece_results(
             "exam_type": "BECE",
             "aggregate": total_aggregate,
             "programme": preferred_programme,
+            "verdict_type": final_verdict["verdict_type"],
             "zero_persistence_verified": True
         }
     )
@@ -499,15 +633,21 @@ def evaluate_bece_results(
     whatsapp_text = (
         "🇬🇭 *CHECKERPAY GHANA | CSSPS PLACEMENT DOSSIER*\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"⚖️ *ADVISOR'S FINAL VERDICT:*\n"
+        f"*{final_verdict['headline']}*\n"
+        f"_{final_verdict['bottom_line']}_\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"🏫 *BECE Aggregate:* {total_aggregate:02d} ({risk_level})\n"
         f"🎯 *Target Programme:* {preferred_programme}\n"
         f"📋 *Score Breakdown:* Cores: {core_aggregate} pts | Best 2 Electives: {elective_aggregate} pts\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
         "🎯 *TOP SUGGESTED SCHOOLS & CHANCES:*\n"
         + top_schools_whatsapp
-        + "\n\n🏛️ *RECOMMENDED PLACEMENT TIERS:*\n"
-        + "\n".join([f"  • *{t['tier_name']}* ({t['status']})" for t in recommendations[:3]])
-        + "\n\n🛡️ *OFFICIAL CSSPS NOTICE:*\n"
+        + "\n\n🚀 *RECOMMENDED ACTIONS:*\n"
+        + "\n".join([f"  • {act}" for act in final_verdict["best_actions"][:2]])
+        + "\n\n🚫 *WHAT NOT TO DO:*\n"
+        + f"  • {final_verdict['what_not_to_do'][0]}\n"
+        + "\n🛡️ *OFFICIAL CSSPS NOTICE:*\n"
         "Never pay unauthorized protocol admission agents.\n"
         "Official self-placement portal: https://cssps.gov.gh\n"
         f"Verification Hash: `{audit_hash[:16]}...`"
@@ -523,6 +663,7 @@ def evaluate_bece_results(
         "best_electives": best_2_electives,
         "risk_level": risk_level,
         "reality_checks": reality_checks,
+        "final_verdict": final_verdict,
         "recommended_tiers": recommendations,
         "suggested_schools": suggested_schools,
         "roadmap": roadmap,
@@ -990,17 +1131,178 @@ def suggest_best_institutions_wassce(
 
     return result
 
+def generate_wassce_final_verdict(
+    total_aggregate: int,
+    eligibility_status: str,
+    selected_cores: List[Tuple[str, str, int]],
+    selected_electives: List[Tuple[str, str, int]],
+    interest_area: str,
+    all_grades: Dict[str, str]
+) -> Dict[str, Any]:
+    """
+    Formulates a brutally honest, non-sugarcoated final verdict for WASSCE candidates
+    and parents, specifically advising whether to buy university degree vouchers,
+    pursue Technical University HND without losing an academic year, or register
+    for targeted NOV/DEC private candidate remedials.
+    """
+    eng_grade = "F9"
+    math_grade = "F9"
+    sci_grade = "F9"
+    for k, v in all_grades.items():
+        k_lower = k.lower()
+        if "english" in k_lower: eng_grade = str(v).strip().upper()
+        elif "core math" in k_lower or k_lower == "mathematics": math_grade = str(v).strip().upper()
+        elif "science" in k_lower and "elective" not in k_lower: sci_grade = str(v).strip().upper()
+
+    eng_val = WASSCE_GRADE_VALUES.get(eng_grade, 9)
+    math_val = WASSCE_GRADE_VALUES.get(math_grade, 9)
+
+    # 1. Critical GTEC Prerequisite Barrier (D7 or E8 in Core Math or English)
+    if eligibility_status == "BARRED_FROM_PUBLIC_DEGREE" or eng_val > 6 or math_val > 6:
+        failed_subj = "English Language" if eng_val > 6 else "Core Mathematics"
+        failed_grade = eng_grade if eng_val > 6 else math_grade
+        verdict_type = "GTEC_PREREQUISITE_BARRIER"
+        badge_label = "DO NOT BUY DEGREE VOUCHERS — D7/E8 DETECTED"
+        theme = "danger"
+        headline = "⚠️ BRUTALLY HONEST REALITY: Barred From 4-Year Public University Degrees"
+        bottom_line = (
+            f"DO NOT waste GH₵ 220–250 buying university degree application forms right now! "
+            f"You scored {failed_grade} in {failed_subj}. Under official GTEC policy, traditional public universities "
+            "(UG Legon, KNUST, UCC) will AUTOMATICALLY REJECT your direct degree application without reviewing your other subjects."
+        )
+        best_actions = [
+            "Option 1 — Zero Academic Years Lost (Technical University HND / B.Tech): Apply immediately to Accra Technical University (ATU), Kumasi Technical University (KsTU), or Takoradi Technical University (TTU). They officially admit candidates with D7/E8 into 3-year HND and applied B.Tech programmes. Upon graduation, you top up directly to Level 200 or 300 of a Bachelor's degree!",
+            f"Option 2 — Targeted NOV/DEC Remedial Resit: Under GTEC's Two-Sitting Combination Policy, universities legally accept results combined from two sittings (e.g. May/June + Nov/Dec). You only need to register and re-sit the ONE bottleneck subject ({failed_subj}) in the upcoming WAEC private exam.",
+            "Option 3 — Accredited Diploma Top-Up: Apply for a 2-year Diploma at UPSA, UCC, or UEW, which admits with D7, then advance straight to degree Level 200."
+        ]
+        what_not_to_do = [
+            "DO NOT buy UG Legon or KNUST degree vouchers hoping for 'special consideration'. The admissions portal software automatically filters out any D7 in Core English or Math.",
+            "DO NOT pay unauthorized 'admission fixers' or protocol syndicates who promise they can bypass GTEC regulations. It is 100% fraudulent."
+        ]
+
+    # 2. Exceeds Aggregate 36 or Multiple F9s
+    elif eligibility_status == "EXCEEDS_AGGREGATE_36" or total_aggregate > 36:
+        verdict_type = "MANDATORY_REMEDIAL"
+        badge_label = "MANDATORY REMEDIAL DIRECTIVE"
+        theme = "danger"
+        headline = "🔴 Direct Tertiary Entry Not Legally Permitted — NOV/DEC Required"
+        bottom_line = (
+            f"Your aggregate is {total_aggregate:02d}, exceeding the national tertiary cutoff ceiling of Aggregate 36. "
+            "No accredited university or college of education in Ghana can legally admit you for a degree this academic year."
+        )
+        best_actions = [
+            "Enroll in an accredited remedial institute immediately and register for the WAEC Private Candidates Examination (NOV/DEC).",
+            "Focus 80% of your revision on the core subjects: Core Mathematics, English Language, and Integrated Science.",
+            "Once you secure A1–C6 in your resit, combine your new result slip with your existing passes under the official GTEC Two-Sitting Policy."
+        ]
+        what_not_to_do = [
+            "DO NOT buy any university or nursing college vouchers this cycle.",
+            "DO NOT fall for unaccredited private tertiary institutions claiming to admit students with Aggregate 38+ without NOV/DEC."
+        ]
+
+    # 3. High Merit / Qualified Degree (Agg 06 - 15, all A1-C6)
+    elif total_aggregate <= 15:
+        verdict_type = "UNCONDITIONAL_DEGREE"
+        badge_label = "UNCONDITIONAL DIRECT DEGREE PATH"
+        theme = "success"
+        headline = "🟢 Apply to University With Full Confidence — Do NOT Write Remedials!"
+        bottom_line = (
+            f"Aggregate {total_aggregate:02d} with clean A1–C6 passes meets all GTEC university matriculation standards. "
+            "Writing NOV/DEC remedials would be a complete waste of your time and money."
+        )
+        best_actions = [
+            "Purchase official admission e-vouchers directly via authorized bank branches or official university USSD codes (e.g. *887# or *389#).",
+            f"Designate your target programme in {interest_area} as First Choice at your preferred institution (UG, KNUST, UCC).",
+            "Select a competitive target or high-assurance alternative as Second Choice to guarantee admission."
+        ]
+        what_not_to_do = [
+            "DO NOT waste money or effort registering for NOV/DEC resits. You are fully degree-qualified.",
+            "DO NOT miss application deadlines (most public universities close admissions between October and November)."
+        ]
+
+    # 4. Qualified Degree Borderline / Diversification (Agg 16 - 24, all A1-C6)
+    elif total_aggregate <= 24:
+        verdict_type = "DEGREE_DIVERSIFICATION"
+        badge_label = "QUALIFIED DEGREE WITH DIVERSIFICATION"
+        theme = "info"
+        headline = "🔵 Degree Eligible — Apply Strategically Beyond Oversubscribed Tracks"
+        bottom_line = (
+            f"With Aggregate {total_aggregate:02d} and zero D7s, you are 100% degree-eligible nationwide. "
+            "However, ultra-competitive courses like Medicine, Computer Science, and Law at Legon/KNUST require Agg 06–12."
+        )
+        best_actions = [
+            "Apply to traditional public universities for Administration, Arts, Humanities, Social Sciences, or Education where your probability is 75%–95%.",
+            "Consider leading regional institutions (UCC, UEW, UDS, UMaT) or 4-Year B.Tech degree tracks at Technical Universities (ATU, KsTU) where your chances are exceptionally high.",
+            "If you are adamant on pursuing Medicine or Engineering, register for targeted NOV/DEC resit to upgrade one or two B/C grades to A1."
+        ]
+        what_not_to_do = [
+            "DO NOT waste your first, second, and third choices on hyper-competitive courses at UG Legon or KNUST (e.g., Medicine + Pharmacy + Law).",
+            "DO NOT listen to anyone advising you to repeat an entire school year when you already hold clean A1–C6 passes."
+        ]
+
+    # 5. Aggregate 25 - 36 (Diplomas, Technical Universities, or Remedial Upgrade)
+    else:
+        verdict_type = "TECHNICAL_OR_DIPLOMA_PATH"
+        badge_label = "TECHNICAL UNIVERSITY & DIPLOMA TRACK"
+        theme = "warning"
+        headline = "🟡 Prioritize Technical University Degrees, HND, or Accredited Diplomas"
+        bottom_line = (
+            f"Aggregate {total_aggregate:02d} is above the typical cutoff for traditional public university degrees (UG/KNUST), "
+            "but opens wide doors for practical Technical University degrees and accredited university diplomas."
+        )
+        best_actions = [
+            "Apply for 4-Year B.Tech or 3-Year HND programmes at Accra Technical University (ATU), KsTU, or TTU where your admission chance is 80%–95%.",
+            "Consider 2-year university Diploma programmes (e.g. at UPSA, UCC, or UEW) which guarantee direct progression to Level 200/300 Bachelor's degree.",
+            "If your heart is set on a traditional degree at Legon or KNUST, enroll in targeted NOV/DEC remedial resits to bring your aggregate below 20."
+        ]
+        what_not_to_do = [
+            "DO NOT spend money applying for direct degrees at UG Legon or KNUST without a safety choice.",
+            "DO NOT patronize unaccredited private colleges."
+        ]
+
+    tone = (
+        "CELEBRATORY_AUTHORITATIVE" if theme == "success"
+        else ("CRITICAL_WARNING" if theme == "danger"
+        else ("STRICT_REALISTIC" if "REMEDIAL" in verdict_type
+        else "STRATEGIC_BALANCED"))
+    )
+
+    return {
+        "verdict_type": verdict_type,
+        "category": verdict_type,
+        "badge_label": badge_label,
+        "theme": theme,
+        "tone": tone,
+        "headline": headline,
+        "bottom_line": bottom_line,
+        "best_actions": best_actions,
+        "next_moves": best_actions,
+        "what_not_to_do": what_not_to_do,
+        "costly_mistakes": what_not_to_do
+    }
+
 def format_wassce_whatsapp_dossier(analysis: Dict[str, Any]) -> str:
     """Formats an executive WhatsApp share text for parents, mentors, and candidates."""
+    verdict = analysis.get("final_verdict", {})
     lines = [
         "🇬🇭 *CHECKERPAY GHANA | ADMISSIONS & PLACEMENT DOSSIER*",
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    ]
+    if verdict:
+        lines.extend([
+            "⚖️ *ADVISOR'S FINAL VERDICT:*",
+            f"*{verdict.get('headline', '')}*",
+            f"_{verdict.get('bottom_line', '')}_",
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        ])
+
+    lines.extend([
         f"📊 *Candidate Status:* {analysis.get('aggregate_string', 'N/A')}",
         f"🎯 *Field of Interest:* {analysis.get('interest_area', 'General')}",
         f"⚖️ *GTEC Qualification:* {analysis.get('eligibility_status', '').replace('_', ' ')}",
         "",
         "📋 *QUALIFYING SUBJECTS SUMMARY:*"
-    ]
+    ])
     for c in analysis.get("selected_cores", []):
         lines.append(f"  • {c[0]}: *{c[1]}*")
     for e in analysis.get("selected_electives", []):
@@ -1013,11 +1315,22 @@ def format_wassce_whatsapp_dossier(analysis: Dict[str, Any]) -> str:
         for inst in suggested_institutions[:3]:
             lines.append(f"  • *{inst['institution_code']}* - {inst['programme_name']}: *{inst['probability_percent']}% Chance* [{inst['tier_label']}]")
 
+    if verdict and verdict.get("best_actions"):
+        lines.append("")
+        lines.append("🚀 *RECOMMENDED ACTIONS:*")
+        for act in verdict["best_actions"][:2]:
+            lines.append(f"  • {act}")
+
+    if verdict and verdict.get("what_not_to_do"):
+        lines.append("")
+        lines.append("🚫 *WHAT NOT TO DO:*")
+        lines.append(f"  • {verdict['what_not_to_do'][0]}")
+
     scholarships = analysis.get("scholarships", [])
     if scholarships:
         lines.append("")
         lines.append(f"💰 *MATCHED SCHOLARSHIPS ({len(scholarships)} Opportunities):*")
-        for s in scholarships[:3]:
+        for s in scholarships[:2]:
             lines.append(f"  ⭐ *{s['name']}*")
             lines.append(f"     Coverage: {s['coverage'][:55]}...")
             lines.append(f"     Portal: {s['portal_url']}")
@@ -1266,6 +1579,16 @@ def evaluate_wassce_results(
         eligibility_status=eligibility_status
     )
 
+    # 8. Formulate Brutally Honest Final Verdict
+    final_verdict = generate_wassce_final_verdict(
+        total_aggregate=total_aggregate,
+        eligibility_status=eligibility_status,
+        selected_cores=selected_cores,
+        selected_electives=selected_electives,
+        interest_area=interest_area,
+        all_grades=all_entered_grades
+    )
+
     audit_hash = append_audit_block(
         action="ACT_843_WASSCE_EVALUATION",
         actor="EPHEMERAL_ADVISORY_ENGINE",
@@ -1274,6 +1597,7 @@ def evaluate_wassce_results(
             "aggregate": total_aggregate,
             "status": eligibility_status,
             "interest": interest_area,
+            "verdict_type": final_verdict["verdict_type"],
             "scholarships_matched": len(matched_scholarships),
             "suggested_institutions_count": len(suggested_institutions),
             "zero_persistence_verified": True
@@ -1291,6 +1615,7 @@ def evaluate_wassce_results(
         "selected_electives": selected_electives,
         "eligibility_status": eligibility_status,
         "reality_checks": reality_checks,
+        "final_verdict": final_verdict,
         "pathways": pathways,
         "suggested_institutions": suggested_institutions,
         "scholarships": matched_scholarships,

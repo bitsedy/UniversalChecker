@@ -360,3 +360,100 @@ class TestStealthAdminAndAdvisory(unittest.TestCase):
                 self.assertEqual(eng["match_tier"], "PREREQUISITE_DEFICIT")
                 self.assertIn("deficit", eng["prerequisite_details"].lower())
 
+    def test_bece_final_verdict_distinction_and_hazard(self):
+        """Verifies brutally honest Final Verdict generation for BECE distinction vs high hazard."""
+        # Distinction (Agg 06)
+        payload_dist = {
+            "exam_type": "BECE",
+            "consent_given": True,
+            "cores": {"English Language": 1, "Mathematics": 1, "Integrated Science": 1, "Social Studies": 1},
+            "electives": {"Information & Comm. Technology": 1, "Religious & Moral Education": 1},
+            "programme": "General Science"
+        }
+        res_dist = self.client.post("/api/advisor/analyze", json=payload_dist)
+        self.assertEqual(res_dist.status_code, 200)
+        analysis_dist = res_dist.json()["analysis"]
+        self.assertIn("final_verdict", analysis_dist)
+        verdict_dist = analysis_dist["final_verdict"]
+        self.assertEqual(verdict_dist["category"], "DIRECT_CATEGORY_A")
+        self.assertEqual(verdict_dist["tone"], "CELEBRATORY_AUTHORITATIVE")
+        self.assertIn("Category A", verdict_dist["headline"])
+        self.assertGreaterEqual(len(verdict_dist["next_moves"]), 2)
+        self.assertIn("FINAL VERDICT", analysis_dist["whatsapp_share_text"])
+
+        # High Hazard (Agg 38)
+        payload_hazard = {
+            "exam_type": "BECE",
+            "consent_given": True,
+            "cores": {"English Language": 6, "Mathematics": 8, "Integrated Science": 7, "Social Studies": 6},
+            "electives": {"Information & Comm. Technology": 6, "Religious & Moral Education": 5},
+            "programme": "General Arts"
+        }
+        res_hazard = self.client.post("/api/advisor/analyze", json=payload_hazard)
+        self.assertEqual(res_hazard.status_code, 200)
+        analysis_hazard = res_hazard.json()["analysis"]
+        verdict_hazard = analysis_hazard["final_verdict"]
+        self.assertIn(verdict_hazard["category"], ["CRITICAL_HAZARD", "REMEDIAL_OR_TVET"])
+        self.assertIn(verdict_hazard["tone"], ["CRITICAL_WARNING", "STRICT_REALISTIC"])
+        self.assertTrue(any("protocol" in m.lower() or "category a" in m.lower() for m in verdict_hazard["costly_mistakes"]))
+
+    def test_wassce_final_verdict_qualified_vs_d7_warning(self):
+        """Verifies brutally honest Final Verdict for WASSCE, especially the D7 GTEC prerequisite barrier."""
+        # Unconditional Degree Qualification
+        payload_qual = {
+            "exam_type": "WASSCE",
+            "consent_given": True,
+            "cores": {
+                "English Language": "A1",
+                "Core Mathematics": "A1",
+                "Integrated Science": "B2",
+                "Social Studies": "A1"
+            },
+            "electives": {
+                "Elective Mathematics": "A1",
+                "Physics": "B2",
+                "Chemistry": "B2"
+            },
+            "programme": "Computer Science & Engineering"
+        }
+        res_qual = self.client.post("/api/advisor/analyze", json=payload_qual)
+        self.assertEqual(res_qual.status_code, 200)
+        verdict_qual = res_qual.json()["analysis"]["final_verdict"]
+        self.assertEqual(verdict_qual["category"], "UNCONDITIONAL_DEGREE")
+        self.assertEqual(verdict_qual["tone"], "CELEBRATORY_AUTHORITATIVE")
+
+        # D7 in Core Math (Common Trap)
+        payload_d7 = {
+            "exam_type": "WASSCE",
+            "consent_given": True,
+            "cores": {
+                "English Language": "B2",
+                "Core Mathematics": "D7",  # Direct degree blocker under GTEC
+                "Integrated Science": "C4",
+                "Social Studies": "B2"
+            },
+            "electives": {
+                "Elective Mathematics": "C4",
+                "Economics": "B3",
+                "Geography": "C4"
+            },
+            "programme": "Business, Finance & Law"
+        }
+        res_d7 = self.client.post("/api/advisor/analyze", json=payload_d7)
+        self.assertEqual(res_d7.status_code, 200)
+        analysis_d7 = res_d7.json()["analysis"]
+        verdict_d7 = analysis_d7["final_verdict"]
+
+        self.assertEqual(verdict_d7["category"], "GTEC_PREREQUISITE_BARRIER")
+        self.assertEqual(verdict_d7["tone"], "CRITICAL_WARNING")
+        self.assertIn("Barred", verdict_d7["headline"])
+        self.assertIn("DO NOT waste", verdict_d7["bottom_line"])
+        self.assertTrue(any("DO NOT buy" in m for m in verdict_d7["costly_mistakes"]))
+        # Must offer Technical University HND and NOV/DEC resit
+        self.assertTrue(any("HND" in move or "Technical" in move for move in verdict_d7["next_moves"]))
+        self.assertTrue(any("NOV/DEC" in move or "Remedial" in move for move in verdict_d7["next_moves"]))
+        # WhatsApp text must display the final verdict directive
+        self.assertIn("ADVISOR'S FINAL VERDICT", analysis_d7["whatsapp_share_text"])
+        self.assertIn("BRUTALLY HONEST REALITY", analysis_d7["whatsapp_share_text"])
+
+

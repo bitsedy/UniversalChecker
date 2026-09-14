@@ -67,6 +67,31 @@
   <!-- Main Advisory Panel (Hidden until consent) -->
   <div id="advisor_main_panel" style="display: none;">
 
+    <!-- 1-2-3 Idiot-Proof Guide -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+      <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-sm);">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: #fef3c7; color: #b45309; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">1</div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.875rem; color: var(--text-main);">Choose Your Exam</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Pick BECE (JHS) or WASSCE (SHS)</div>
+        </div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-sm);">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; color: #0369a1; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">2</div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.875rem; color: var(--text-main);">Enter Your Grades</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Select grades or tap 1-click test profiles</div>
+        </div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-sm);">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: #dcfce7; color: #15803d; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">3</div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.875rem; color: var(--text-main);">Get Brutal Honest Verdict</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Clear directives on schools vs. NOV/DEC</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Exam Selector Tabs -->
     <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; flex-wrap: wrap;">
       <button id="tab_bece" onclick="switchExamTab('BECE')" style="background: none; border: none; font-size: 1.05rem; font-weight: 800; color: var(--ghana-gold); border-bottom: 3px solid var(--ghana-gold); padding: 0.5rem 1.25rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
@@ -90,7 +115,7 @@
               BECE Results Evaluator (Stanine Grades 1 to 9)
             </h2>
             <p style="color: var(--text-muted); font-size: 0.85rem;">
-              Best 4 Core Subjects + Best 2 Electives. Scale: 1 (Highest / Distinction) to 9 (Lowest).
+              Best 4 Core Subjects + Best 2 Electives. Scale: Grade 1 (Highest / Distinction) to Grade 9 (Lowest).
             </p>
           </div>
           <div style="text-align: right;">
@@ -110,12 +135,13 @@
         <!-- Quick Presets for BECE -->
         <div style="background: #fffbeb; border: 1px dashed var(--border-gold); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
-            <span>⚡ Explore Common Profiles:</span>
+            <span>⚡ 1-Click Profile Presets:</span>
           </div>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button type="button" class="btn-copy" onclick="applyBecePreset('distinction')">🌟 Category A (Agg 06)</button>
+            <button type="button" class="btn-copy" onclick="applyBecePreset('distinction')">🌟 Distinction (Agg 06 - Cat A)</button>
             <button type="button" class="btn-copy" onclick="applyBecePreset('competitive')">⚖️ Category B (Agg 12)</button>
-            <button type="button" class="btn-copy" onclick="applyBecePreset('self_placement')">💡 Self-Placement (Agg 24)</button>
+            <button type="button" class="btn-copy" onclick="applyBecePreset('self_placement')">💡 Borderline (Agg 24 - Self-Placement)</button>
+            <button type="button" class="btn-copy" onclick="applyBecePreset('hazard')" style="background: #fef2f2; border-color: #fecaca; color: #b91c1c;">⚠️ High Hazard (Agg 38 - TVET/Remedial)</button>
           </div>
         </div>
 
@@ -128,9 +154,15 @@
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">{{ core }}</label>
             <select id="bece_core_{{ loop.index0 }}" class="form-input bece-grade-input" onchange="calculateLiveBeceAggregate()">
-              {% for g in range(1, 10) %}
-              <option value="{{ g }}" {% if g == 2 %}selected{% endif %}>Grade {{ g }} {% if g <= 2 %}(Distinction){% elif g <= 6 %}(Credit){% elif g <= 8 %}(Pass){% else %}(Fail){% endif %}</option>
-              {% endfor %}
+              <option value="1">Grade 1 - Distinction (Highest)</option>
+              <option value="2" selected>Grade 2 - Distinction</option>
+              <option value="3">Grade 3 - High Credit</option>
+              <option value="4">Grade 4 - Credit</option>
+              <option value="5">Grade 5 - Credit</option>
+              <option value="6">Grade 6 - Pass Threshold</option>
+              <option value="7">Grade 7 - Pass (Caution for Cat A/B)</option>
+              <option value="8">Grade 8 - Weak Pass (TVET / Cat C/D)</option>
+              <option value="9">Grade 9 - Fail (Lowest / Resit)</option>
             </select>
           </div>
           {% endfor %}
@@ -145,22 +177,32 @@
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">{{ elect }}</label>
             <select id="bece_elect_{{ loop.index0 }}" class="form-input bece-grade-input" onchange="calculateLiveBeceAggregate()">
-              {% for g in range(1, 10) %}
-              <option value="{{ g }}" {% if g == 3 %}selected{% endif %}>Grade {{ g }}</option>
-              {% endfor %}
+              <option value="1">Grade 1 - Distinction (Highest)</option>
+              <option value="2">Grade 2 - Distinction</option>
+              <option value="3" selected>Grade 3 - High Credit</option>
+              <option value="4">Grade 4 - Credit</option>
+              <option value="5">Grade 5 - Credit</option>
+              <option value="6">Grade 6 - Pass Threshold</option>
+              <option value="7">Grade 7 - Pass (Caution for Cat A/B)</option>
+              <option value="8">Grade 8 - Weak Pass (TVET / Cat C/D)</option>
+              <option value="9">Grade 9 - Fail (Lowest / Resit)</option>
             </select>
           </div>
           {% endfor %}
         </div>
 
         <!-- Aggregate Preview Banner -->
-        <div style="background: #fffbeb; border: 1px solid var(--border-gold); border-radius: var(--radius-md); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: #fffbeb; border: 1px solid var(--border-gold); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
           <div>
             <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Live Estimated BECE Aggregate</div>
-            <div id="bece_live_agg" style="font-size: 1.8rem; font-weight: 900; color: var(--ghana-gold);">Aggregate 14</div>
+            <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+              <span id="bece_live_agg" style="font-size: 1.9rem; font-weight: 900; color: var(--ghana-gold);">Aggregate 14</span>
+              <span id="bece_live_status" style="font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">Category B Match</span>
+            </div>
+            <div id="bece_live_hint" style="font-size: 0.775rem; color: var(--text-muted); margin-top: 4px;">4 Cores + Best 2 Electives. Lower aggregate = higher placement chance.</div>
           </div>
-          <button type="button" onclick="submitBeceAnalysis()" id="btn_analyze_bece" class="btn-safety-guide" style="padding: 0.8rem 1.75rem; font-size: 0.95rem; font-weight: 800; cursor: pointer;">
-            Run Expert Placement Analysis &rarr;
+          <button type="button" onclick="submitBeceAnalysis()" id="btn_analyze_bece" class="btn-safety-guide" style="padding: 0.85rem 1.85rem; font-size: 0.95rem; font-weight: 800; cursor: pointer; box-shadow: var(--shadow-sm);">
+            Get Brutally Honest Verdict &rarr;
           </button>
         </div>
 
@@ -196,51 +238,76 @@
         <!-- Quick Presets for WASSCE -->
         <div style="background: #fffbeb; border: 1px dashed var(--border-gold); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
-            <span>⚡ Explore Common Profiles:</span>
+            <span>⚡ 1-Click Profile Presets:</span>
           </div>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button type="button" class="btn-copy" onclick="applyWasscePreset('medicine')">🔬 Medicine / Surgery (Agg 07)</button>
-            <button type="button" class="btn-copy" onclick="applyWasscePreset('engineering')">💻 Computer Science (Agg 09)</button>
-            <button type="button" class="btn-copy" onclick="applyWasscePreset('business')">📊 Business Admin (Agg 12)</button>
-            <button type="button" class="btn-copy" onclick="applyWasscePreset('remedial')">⚠️ Remedial Simulation (D7 in Math)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('medicine')">🔬 Medicine (Agg 07)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('engineering')">💻 Computer Sci (Agg 09)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('business')">📊 Business (Agg 14)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('remedial')" style="background: #fef2f2; border-color: #fecaca; color: #b91c1c;">⚠️ D7 in Math (Common Trap)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('weak')" style="background: #fef2f2; border-color: #fecaca; color: #b91c1c;">🚫 Multi-Fail (Remedial)</button>
           </div>
         </div>
 
         <!-- 4 WASSCE Cores -->
         <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
-          <span>📌</span> 4 Core Subjects (English & Core Math are compulsory for degrees)
+          <span>📌</span> 4 Core Subjects (English &amp; Core Math are compulsory for degrees)
         </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">English Language</label>
             <select id="w_core_eng" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
-              {% for g in wassce_grades %}
-              <option value="{{ g }}" {% if g == 'B3' %}selected{% endif %}>{{ g }}</option>
-              {% endfor %}
+              <option value="A1">A1 - Excellent (Agg 1)</option>
+              <option value="B2">B2 - Very Good (Agg 2)</option>
+              <option value="B3" selected>B3 - Good (Agg 3)</option>
+              <option value="C4">C4 - Credit (Agg 4)</option>
+              <option value="C5">C5 - Credit (Agg 5)</option>
+              <option value="C6">C6 - Credit (Degree Min - Agg 6)</option>
+              <option value="D7">D7 - Pass (HND / Tech Only - Agg 7)</option>
+              <option value="E8">E8 - Weak Pass (Remedial - Agg 8)</option>
+              <option value="F9">F9 - Fail (Resit Required - Agg 9)</option>
             </select>
           </div>
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Core Mathematics</label>
             <select id="w_core_math" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
-              {% for g in wassce_grades %}
-              <option value="{{ g }}" {% if g == 'B2' %}selected{% endif %}>{{ g }}</option>
-              {% endfor %}
+              <option value="A1">A1 - Excellent (Agg 1)</option>
+              <option value="B2" selected>B2 - Very Good (Agg 2)</option>
+              <option value="B3">B3 - Good (Agg 3)</option>
+              <option value="C4">C4 - Credit (Agg 4)</option>
+              <option value="C5">C5 - Credit (Agg 5)</option>
+              <option value="C6">C6 - Credit (Degree Min - Agg 6)</option>
+              <option value="D7">D7 - Pass (HND / Tech Only - Agg 7)</option>
+              <option value="E8">E8 - Weak Pass (Remedial - Agg 8)</option>
+              <option value="F9">F9 - Fail (Resit Required - Agg 9)</option>
             </select>
           </div>
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Integrated Science</label>
             <select id="w_core_sci" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
-              {% for g in wassce_grades %}
-              <option value="{{ g }}" {% if g == 'B3' %}selected{% endif %}>{{ g }}</option>
-              {% endfor %}
+              <option value="A1">A1 - Excellent (Agg 1)</option>
+              <option value="B2">B2 - Very Good (Agg 2)</option>
+              <option value="B3" selected>B3 - Good (Agg 3)</option>
+              <option value="C4">C4 - Credit (Agg 4)</option>
+              <option value="C5">C5 - Credit (Agg 5)</option>
+              <option value="C6">C6 - Credit (Degree Min - Agg 6)</option>
+              <option value="D7">D7 - Pass (HND / Tech Only - Agg 7)</option>
+              <option value="E8">E8 - Weak Pass (Remedial - Agg 8)</option>
+              <option value="F9">F9 - Fail (Resit Required - Agg 9)</option>
             </select>
           </div>
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">Social Studies</label>
             <select id="w_core_soc" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
-              {% for g in wassce_grades %}
-              <option value="{{ g }}" {% if g == 'C4' %}selected{% endif %}>{{ g }}</option>
-              {% endfor %}
+              <option value="A1">A1 - Excellent (Agg 1)</option>
+              <option value="B2">B2 - Very Good (Agg 2)</option>
+              <option value="B3">B3 - Good (Agg 3)</option>
+              <option value="C4" selected>C4 - Credit (Agg 4)</option>
+              <option value="C5">C5 - Credit (Agg 5)</option>
+              <option value="C6">C6 - Credit (Degree Min - Agg 6)</option>
+              <option value="D7">D7 - Pass (HND / Tech Only - Agg 7)</option>
+              <option value="E8">E8 - Weak Pass (Remedial - Agg 8)</option>
+              <option value="F9">F9 - Fail (Resit Required - Agg 9)</option>
             </select>
           </div>
         </div>
@@ -253,45 +320,73 @@
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <input type="text" id="w_elect_name_0" class="form-input" value="Elective Mathematics" style="margin-bottom: 6px; font-size: 0.8rem;">
             <select id="w_elect_val_0" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
-              {% for g in wassce_grades %}
-              <option value="{{ g }}" {% if g == 'B3' %}selected{% endif %}>{{ g }}</option>
-              {% endfor %}
+              <option value="A1">A1 - Excellent (Agg 1)</option>
+              <option value="B2">B2 - Very Good (Agg 2)</option>
+              <option value="B3" selected>B3 - Good (Agg 3)</option>
+              <option value="C4">C4 - Credit (Agg 4)</option>
+              <option value="C5">C5 - Credit (Agg 5)</option>
+              <option value="C6">C6 - Credit (Degree Min - Agg 6)</option>
+              <option value="D7">D7 - Pass (HND / Tech Only - Agg 7)</option>
+              <option value="E8">E8 - Weak Pass (Remedial - Agg 8)</option>
+              <option value="F9">F9 - Fail (Resit Required - Agg 9)</option>
             </select>
           </div>
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <input type="text" id="w_elect_name_1" class="form-input" value="Physics" style="margin-bottom: 6px; font-size: 0.8rem;">
             <select id="w_elect_val_1" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
-              {% for g in wassce_grades %}
-              <option value="{{ g }}" {% if g == 'C4' %}selected{% endif %}>{{ g }}</option>
-              {% endfor %}
+              <option value="A1">A1 - Excellent (Agg 1)</option>
+              <option value="B2">B2 - Very Good (Agg 2)</option>
+              <option value="B3">B3 - Good (Agg 3)</option>
+              <option value="C4" selected>C4 - Credit (Agg 4)</option>
+              <option value="C5">C5 - Credit (Agg 5)</option>
+              <option value="C6">C6 - Credit (Degree Min - Agg 6)</option>
+              <option value="D7">D7 - Pass (HND / Tech Only - Agg 7)</option>
+              <option value="E8">E8 - Weak Pass (Remedial - Agg 8)</option>
+              <option value="F9">F9 - Fail (Resit Required - Agg 9)</option>
             </select>
           </div>
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <input type="text" id="w_elect_name_2" class="form-input" value="Chemistry" style="margin-bottom: 6px; font-size: 0.8rem;">
             <select id="w_elect_val_2" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
-              {% for g in wassce_grades %}
-              <option value="{{ g }}" {% if g == 'B3' %}selected{% endif %}>{{ g }}</option>
-              {% endfor %}
+              <option value="A1">A1 - Excellent (Agg 1)</option>
+              <option value="B2">B2 - Very Good (Agg 2)</option>
+              <option value="B3" selected>B3 - Good (Agg 3)</option>
+              <option value="C4">C4 - Credit (Agg 4)</option>
+              <option value="C5">C5 - Credit (Agg 5)</option>
+              <option value="C6">C6 - Credit (Degree Min - Agg 6)</option>
+              <option value="D7">D7 - Pass (HND / Tech Only - Agg 7)</option>
+              <option value="E8">E8 - Weak Pass (Remedial - Agg 8)</option>
+              <option value="F9">F9 - Fail (Resit Required - Agg 9)</option>
             </select>
           </div>
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <input type="text" id="w_elect_name_3" class="form-input" value="Biology / ICT" style="margin-bottom: 6px; font-size: 0.8rem;">
             <select id="w_elect_val_3" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
-              {% for g in wassce_grades %}
-              <option value="{{ g }}" {% if g == 'C5' %}selected{% endif %}>{{ g }}</option>
-              {% endfor %}
+              <option value="A1">A1 - Excellent (Agg 1)</option>
+              <option value="B2">B2 - Very Good (Agg 2)</option>
+              <option value="B3">B3 - Good (Agg 3)</option>
+              <option value="C4">C4 - Credit (Agg 4)</option>
+              <option value="C5" selected>C5 - Credit (Agg 5)</option>
+              <option value="C6">C6 - Credit (Degree Min - Agg 6)</option>
+              <option value="D7">D7 - Pass (HND / Tech Only - Agg 7)</option>
+              <option value="E8">E8 - Weak Pass (Remedial - Agg 8)</option>
+              <option value="F9">F9 - Fail (Resit Required - Agg 9)</option>
             </select>
           </div>
         </div>
 
         <!-- Live Aggregate Preview Banner -->
-        <div style="background: #fffbeb; border: 1px solid var(--border-gold); border-radius: var(--radius-md); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: #fffbeb; border: 1px solid var(--border-gold); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
           <div>
             <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Live Estimated WASSCE Aggregate</div>
-            <div id="wassce_live_agg" style="font-size: 1.8rem; font-weight: 900; color: var(--ghana-gold);">Aggregate 17</div>
+            <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+              <span id="wassce_live_agg" style="font-size: 1.9rem; font-weight: 900; color: var(--ghana-gold);">Aggregate 17</span>
+              <span id="wassce_live_status" style="font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">Public Degree Match</span>
+            </div>
+            <div id="wassce_live_hint" style="font-size: 0.775rem; color: var(--text-muted); margin-top: 4px;">English + Core Math + Best 1 other Core + Best 3 Electives. Minimum C6 per subject required for degrees.</div>
           </div>
-          <button type="button" onclick="submitWassceAnalysis()" id="btn_analyze_wassce" class="btn-safety-guide" style="padding: 0.8rem 1.75rem; font-size: 0.95rem; font-weight: 800; cursor: pointer;">
-            Run Degree & Tertiary Analysis &rarr;
+          <button type="button" onclick="submitWassceAnalysis()" id="btn_analyze_wassce" class="btn-safety-guide" style="padding: 0.85rem 1.85rem; font-size: 0.95rem; font-weight: 800; cursor: pointer; box-shadow: var(--shadow-sm);">
+            Get Brutally Honest Verdict &rarr;
           </button>
         </div>
 
@@ -382,7 +477,8 @@
           <div>
             <span id="res_exam_badge" class="card-badge card-badge-popular" style="margin-bottom: 0.5rem; display: inline-block;">EXAM</span>
             <h2 id="res_aggregate_title" style="font-size: 1.8rem; font-weight: 900; color: var(--text-main); margin-bottom: 0.25rem;">Aggregate Evaluation</h2>
-            <p id="res_breakdown" style="color: var(--text-muted); font-size: 0.875rem;"></p>
+            <p id="res_breakdown" style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 4px;"></p>
+            <div id="res_attestation_hash" style="font-size: 0.75rem; color: var(--text-dim); font-family: monospace;"></div>
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="openDossierModal()" class="btn-safety-guide" style="padding: 0.55rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
@@ -396,6 +492,9 @@
             </button>
           </div>
         </div>
+
+        <!-- BRUTALLY HONEST FINAL VERDICT CARD -->
+        <div id="final_verdict_card" style="margin-bottom: 2rem;"></div>
 
         <!-- Reality Checks / Bottleneck Warnings -->
         <div id="reality_checks_container" style="margin-bottom: 1.75rem;"></div>
@@ -743,14 +842,42 @@ function calculateLiveBeceAggregate() {
   electives.sort((a, b) => a - b);
   const best2Electives = (electives[0] || 9) + (electives[1] || 9);
   const total = coreSum + best2Electives;
-  document.getElementById("bece_live_agg").innerText = `Aggregate ${total < 10 ? '0' + total : total}`;
+  const aggStr = total < 10 ? '0' + total : total;
+  document.getElementById("bece_live_agg").innerText = `Aggregate ${aggStr}`;
+
+  const statusEl = document.getElementById("bece_live_status");
+  const hintEl = document.getElementById("bece_live_hint");
+  if (statusEl) {
+    if (total <= 9) {
+      statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #f0fdf4; color: #16a34a; border: 1px solid #86efac;";
+      statusEl.innerText = "🌟 Category A Eligible (Distinction)";
+      if (hintEl) hintEl.innerText = "Distinction standing! Prime eligibility for national Category A boarding schools.";
+    } else if (total <= 15) {
+      statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;";
+      statusEl.innerText = "⚖️ Category B Competitive Match";
+      if (hintEl) hintEl.innerText = "Solid results. Strong fit for Category B schools with high placement certainty.";
+    } else if (total <= 24) {
+      statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a;";
+      statusEl.innerText = "🏫 Category C & Day Focus";
+      if (hintEl) hintEl.innerText = "Target Category C boarding or local Category D day options to ensure automatic placement.";
+    } else {
+      statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;";
+      statusEl.innerText = "⚠️ High Hazard / Self-Placement";
+      if (hintEl) hintEl.innerText = "High aggregate. Self-placement portal, technical/vocational (TVET), or remedial resit recommended.";
+    }
+  }
 }
 
 function calculateLiveWassceAggregate() {
-  const eng = WASSCE_VALS[document.getElementById("w_core_eng")?.value] || 9;
-  const math = WASSCE_VALS[document.getElementById("w_core_math")?.value] || 9;
-  const sci = WASSCE_VALS[document.getElementById("w_core_sci")?.value] || 9;
-  const soc = WASSCE_VALS[document.getElementById("w_core_soc")?.value] || 9;
+  const engGrade = document.getElementById("w_core_eng")?.value || "C6";
+  const mathGrade = document.getElementById("w_core_math")?.value || "C6";
+  const sciGrade = document.getElementById("w_core_sci")?.value || "C6";
+  const socGrade = document.getElementById("w_core_soc")?.value || "C6";
+
+  const eng = WASSCE_VALS[engGrade] || 9;
+  const math = WASSCE_VALS[mathGrade] || 9;
+  const sci = WASSCE_VALS[sciGrade] || 9;
+  const soc = WASSCE_VALS[socGrade] || 9;
 
   const bestOtherCore = Math.min(sci, soc);
   const coreTotal = eng + math + bestOtherCore;
@@ -763,7 +890,36 @@ function calculateLiveWassceAggregate() {
   electives.sort((a, b) => a - b);
   const best3Electives = (electives[0] || 9) + (electives[1] || 9) + (electives[2] || 9);
   const total = coreTotal + best3Electives;
-  document.getElementById("wassce_live_agg").innerText = `Aggregate ${total < 10 ? '0' + total : total}`;
+  const aggStr = total < 10 ? '0' + total : total;
+  document.getElementById("wassce_live_agg").innerText = `Aggregate ${aggStr}`;
+
+  const statusEl = document.getElementById("wassce_live_status");
+  const hintEl = document.getElementById("wassce_live_hint");
+  const hasCoreBarrier = (math >= 7 || eng >= 7);
+
+  if (statusEl) {
+    if (hasCoreBarrier) {
+      statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;";
+      statusEl.innerText = `⛔ GTEC Barrier: ${math >= 7 ? 'Math ' + mathGrade : ''} ${eng >= 7 ? 'Eng ' + engGrade : ''} Blocks Direct Degree`;
+      if (hintEl) hintEl.innerText = "Warning: Public universities reject D7/E8/F9 in Math/English for Bachelor degrees. HND or NOV/DEC resit needed.";
+    } else if (total <= 10) {
+      statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #f0fdf4; color: #16a34a; border: 1px solid #86efac;";
+      statusEl.innerText = "🌟 High Distinction (Tier 1 Degree Match)";
+      if (hintEl) hintEl.innerText = "Ultra-competitive for Medicine, Computer Science, Law, and Engineering at UG & KNUST.";
+    } else if (total <= 18) {
+      statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;";
+      statusEl.innerText = "⚖️ Public University Degree Qualified";
+      if (hintEl) hintEl.innerText = "Clear standing for standard bachelor degrees across UG, KNUST, UCC, and UPSA.";
+    } else if (total <= 24) {
+      statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a;";
+      statusEl.innerText = "💡 Degree Minimum / Colleges / HND";
+      if (hintEl) hintEl.innerText = "At cutoff threshold for public degrees. Broaden to Technical University HND or Colleges of Education.";
+    } else {
+      statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;";
+      statusEl.innerText = "⚠️ Technical HND / Mandatory NOV/DEC";
+      if (hintEl) hintEl.innerText = "Aggregate above 24. Degree admission unlikely without NOV/DEC resit or Technical HND pathway.";
+    }
+  }
 }
 
 async function submitBeceAnalysis() {
@@ -894,6 +1050,129 @@ function filterSuggestedCards(filterType, btn) {
   });
 }
 
+function renderFinalVerdict(verdict, examType) {
+  const container = document.getElementById("final_verdict_card");
+  if (!container) return;
+  if (!verdict) {
+    container.style.display = "none";
+    return;
+  }
+  container.style.display = "block";
+
+  const isWarning = verdict.tone === "CRITICAL_WARNING" || verdict.tone === "STRICT_REALISTIC" || verdict.tone === "REALISTIC_PROTECTIVE";
+  const isDistinction = verdict.tone === "CELEBRATORY_AUTHORITATIVE";
+
+  let headerBg, borderColor, badgeBg, badgeColor, badgeBorder, badgeIcon, badgeText;
+
+  if (isDistinction) {
+    headerBg = "#f0fdf4";
+    borderColor = "#22c55e";
+    badgeBg = "#dcfce7";
+    badgeColor = "#15803d";
+    badgeBorder = "#86efac";
+    badgeIcon = "🏆";
+    badgeText = "OFFICIAL ADVISORY VERDICT • UNRESTRICTED ELIGIBILITY";
+  } else if (isWarning) {
+    headerBg = "#fef2f2";
+    borderColor = "#ef4444";
+    badgeBg = "#fee2e2";
+    badgeColor = "#b91c1c";
+    badgeBorder = "#fca5a5";
+    badgeIcon = "⚠️";
+    badgeText = "BRUTALLY HONEST FINAL VERDICT • CRITICAL DIRECTIVE";
+  } else {
+    headerBg = "#fffbeb";
+    borderColor = "#f59e0b";
+    badgeBg = "#fef3c7";
+    badgeColor = "#b45309";
+    badgeBorder = "#fde68a";
+    badgeIcon = "⚖️";
+    badgeText = "OFFICIAL ADVISORY VERDICT • STRATEGIC GUIDANCE";
+  }
+
+  const nextMovesHtml = (verdict.next_moves || []).map(move => `
+    <div style="display: flex; align-items: flex-start; gap: 10px; padding: 0.85rem 1rem; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-main); line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+      <span style="font-size: 1.1rem; line-height: 1; flex-shrink: 0; margin-top: 1px;">✅</span>
+      <div>${move}</div>
+    </div>
+  `).join("");
+
+  const mistakesHtml = (verdict.costly_mistakes || []).map(mistake => `
+    <div style="display: flex; align-items: flex-start; gap: 10px; padding: 0.85rem 1rem; background: #ffffff; border: 1px solid #fee2e2; border-left: 4px solid #ef4444; border-radius: 0 var(--radius-md) var(--radius-md) 0; font-size: 0.85rem; color: #991b1b; line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+      <span style="font-size: 1.1rem; line-height: 1; flex-shrink: 0; margin-top: 1px;">🚫</span>
+      <div>${mistake}</div>
+    </div>
+  `).join("");
+
+  container.innerHTML = `
+    <div style="background: #ffffff; border: 2px solid ${borderColor}; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 6px 24px -4px rgba(0, 0, 0, 0.09);">
+      
+      <!-- Top Banner -->
+      <div style="background: ${headerBg}; border-bottom: 1px solid ${borderColor}; padding: 1.5rem 1.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 0.75rem;">
+          <div style="display: inline-flex; align-items: center; gap: 6px; background: ${badgeBg}; color: ${badgeColor}; border: 1px solid ${badgeBorder}; padding: 4px 12px; border-radius: 999px; font-size: 0.775rem; font-weight: 800; letter-spacing: 0.04em;">
+            <span>${badgeIcon}</span>
+            <span>${badgeText}</span>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">Grounded in GES CSSPS &amp; GTEC Rules</span>
+        </div>
+        
+        <h3 style="font-size: 1.35rem; font-weight: 900; color: var(--text-main); margin: 0 0 0.85rem 0; line-height: 1.35;">
+          ${verdict.headline}
+        </h3>
+        
+        <!-- Bottom Line Callout -->
+        <div style="background: #ffffff; border-left: 4px solid ${borderColor}; border-radius: 0 6px 6px 0; padding: 1rem 1.25rem; box-shadow: var(--shadow-sm);">
+          <div style="font-size: 0.725rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; letter-spacing: 0.04em;">
+            The Bottom Line (Student &amp; Parent Takeaway)
+          </div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); line-height: 1.55;">
+            ${verdict.bottom_line}
+          </div>
+        </div>
+      </div>
+
+      <!-- Actionable Directives Grid -->
+      <div style="padding: 1.75rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.5rem; background: #fafafa;">
+        
+        <!-- Next Moves Column -->
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+            <span style="font-size: 1.15rem;">🎯</span>
+            <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin: 0; text-transform: uppercase; letter-spacing: 0.03em;">
+              Best Next Moves (What You Should Do Now)
+            </h4>
+          </div>
+          <div style="display: grid; gap: 0.75rem;">
+            ${nextMovesHtml}
+          </div>
+        </div>
+
+        <!-- Costly Mistakes Column -->
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+            <span style="font-size: 1.15rem;">⚠️</span>
+            <h4 style="font-size: 0.95rem; font-weight: 800; color: #b91c1c; margin: 0; text-transform: uppercase; letter-spacing: 0.03em;">
+              Costly Mistakes To Avoid (What You Must NOT Do)
+            </h4>
+          </div>
+          <div style="display: grid; gap: 0.75rem;">
+            ${mistakesHtml}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Quick Note -->
+      <div style="background: #ffffff; border-top: 1px solid var(--border-subtle); padding: 0.85rem 1.75rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.775rem; color: var(--text-muted); flex-wrap: wrap; gap: 8px;">
+        <span>💡 <strong>Parent Direct Advice:</strong> Tap <strong>"WhatsApp Placement Card"</strong> above to send this exact briefing directly to parents or advisors.</span>
+        <span style="color: var(--ghana-gold); font-weight: 700;">100% In-Memory Act 843 Zero Persistence</span>
+      </div>
+
+    </div>
+  `;
+}
+
 function renderBeceResults(analysis) {
   currentAnalysis = analysis;
   const section = document.getElementById("results_section");
@@ -906,8 +1185,12 @@ function renderBeceResults(analysis) {
     `Core Aggregate: ${analysis.core_aggregate} | Best 2 Electives: ${analysis.elective_aggregate} | Target Programme: ${analysis.preferred_programme}`;
 
   if (analysis.compliance_attestation_hash) {
-    document.getElementById("res_attestation_hash").innerHTML = `Act 843 Ephemeral Proof: <span style="color:#38bdf8;">${analysis.compliance_attestation_hash}</span>`;
+    const hashEl = document.getElementById("res_attestation_hash");
+    if (hashEl) hashEl.innerHTML = `Act 843 Ephemeral Proof: <span style="color:#0284c7;">${analysis.compliance_attestation_hash}</span>`;
   }
+
+  // Render Brutally Honest Final Verdict Card
+  renderFinalVerdict(analysis.final_verdict, "BECE");
 
   // Hide WASSCE-only sections
   const sSection = document.getElementById("scholarships_section");
@@ -1081,8 +1364,12 @@ function renderWassceResults(analysis) {
     `Core Aggregate: ${analysis.core_aggregate} | Best 3 Electives: ${analysis.elective_aggregate} | Field: ${analysis.interest_area}`;
 
   if (analysis.compliance_attestation_hash) {
-    document.getElementById("res_attestation_hash").innerHTML = `Act 843 Ephemeral Proof: <span style="color:#38bdf8;">${analysis.compliance_attestation_hash}</span>`;
+    const hashEl = document.getElementById("res_attestation_hash");
+    if (hashEl) hashEl.innerHTML = `Act 843 Ephemeral Proof: <span style="color:#0284c7;">${analysis.compliance_attestation_hash}</span>`;
   }
+
+  // Render Brutally Honest Final Verdict Card
+  renderFinalVerdict(analysis.final_verdict, "WASSCE");
 
   // Reality Checks
   const rcContainer = document.getElementById("reality_checks_container");
@@ -1473,7 +1760,7 @@ function applyBecePreset(type) {
     }
     const prog = document.getElementById("bece_programme");
     if (prog) prog.value = "General Arts";
-  } else {
+  } else if (type === 'self_placement') {
     for (let i = 0; i < 4; i++) {
       const el = document.getElementById(`bece_core_${i}`);
       if (el) el.value = "4";
@@ -1484,6 +1771,17 @@ function applyBecePreset(type) {
     }
     const prog = document.getElementById("bece_programme");
     if (prog) prog.value = "Business";
+  } else if (type === 'hazard') {
+    for (let i = 0; i < 4; i++) {
+      const el = document.getElementById(`bece_core_${i}`);
+      if (el) el.value = (i === 1) ? "8" : "6";
+    }
+    for (let i = 0; i < BECE_ELECT_NAMES.length; i++) {
+      const el = document.getElementById(`bece_elect_${i}`);
+      if (el) el.value = "7";
+    }
+    const prog = document.getElementById("bece_programme");
+    if (prog) prog.value = "Technical / CTVET";
   }
   calculateLiveBeceAggregate();
 }
@@ -1525,18 +1823,30 @@ function applyWasscePreset(type) {
     document.getElementById("w_elect_name_2").value = "Economics";
     document.getElementById("w_elect_val_2").value = "B3";
     document.getElementById("wassce_programme").value = "Business, Finance & Law";
-  } else {
-    document.getElementById("w_core_eng").value = "C5";
+  } else if (type === 'remedial') {
+    document.getElementById("w_core_eng").value = "B3";
     document.getElementById("w_core_math").value = "D7";
     document.getElementById("w_core_sci").value = "C4";
-    document.getElementById("w_core_soc").value = "B3";
+    document.getElementById("w_core_soc").value = "B2";
     document.getElementById("w_elect_name_0").value = "Elective Mathematics";
     document.getElementById("w_elect_val_0").value = "C4";
     document.getElementById("w_elect_name_1").value = "Economics";
     document.getElementById("w_elect_val_1").value = "B3";
     document.getElementById("w_elect_name_2").value = "Geography";
     document.getElementById("w_elect_val_2").value = "C4";
-    document.getElementById("wassce_programme").value = "Computer Science & Engineering";
+    document.getElementById("wassce_programme").value = "Business, Finance & Law";
+  } else if (type === 'weak') {
+    document.getElementById("w_core_eng").value = "D7";
+    document.getElementById("w_core_math").value = "E8";
+    document.getElementById("w_core_sci").value = "D7";
+    document.getElementById("w_core_soc").value = "E8";
+    document.getElementById("w_elect_name_0").value = "Government";
+    document.getElementById("w_elect_val_0").value = "D7";
+    document.getElementById("w_elect_name_1").value = "History";
+    document.getElementById("w_elect_val_1").value = "E8";
+    document.getElementById("w_elect_name_2").value = "Literature in English";
+    document.getElementById("w_elect_val_2").value = "F9";
+    document.getElementById("wassce_programme").value = "Arts, Humanities & Social Sciences";
   }
   calculateLiveWassceAggregate();
 }
