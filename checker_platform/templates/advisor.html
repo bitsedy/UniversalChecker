@@ -400,6 +400,36 @@
         <!-- Reality Checks / Bottleneck Warnings -->
         <div id="reality_checks_container" style="margin-bottom: 1.75rem;"></div>
 
+        <!-- BEST RECOMMENDED INSTITUTIONS & ADMISSION PROBABILITY (Interactive Section) -->
+        <div id="suggested_institutions_section" style="margin-bottom: 2.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 1.25rem;">
+            <div>
+              <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">
+                <span>🎯</span> Intelligent Match Engine
+              </div>
+              <h3 id="suggested_section_title" style="font-size: 1.25rem; font-weight: 900; color: var(--text-main); margin: 0;">
+                Best Recommended Institutions &amp; Admission Probability
+              </h3>
+              <p id="suggested_section_desc" style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 0 0;">
+                Quantitative probability modeling grounded in official cut-offs, prerequisite verification, and institutional selectivity.
+              </p>
+            </div>
+            
+            <!-- Filter Pills -->
+            <div id="suggested_filters" style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button type="button" class="btn-copy active-suggested-filter" onclick="filterSuggestedCards('ALL', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700; background: rgba(245, 158, 11, 0.15); border-color: var(--ghana-gold); color: var(--text-main);">All Options</button>
+              <button type="button" class="btn-copy" onclick="filterSuggestedCards('HIGH', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700;">🌟 High Chance (&ge;80%)</button>
+              <button type="button" class="btn-copy" onclick="filterSuggestedCards('COMPETITIVE', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700;">⚖️ Target Match (60-79%)</button>
+              <button type="button" class="btn-copy" onclick="filterSuggestedCards('REACH', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700;">🚀 Reach / Dream (35-59%)</button>
+            </div>
+          </div>
+
+          <!-- Cards Grid -->
+          <div id="suggested_institutions_grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+            <!-- Populated dynamically via renderBeceResults or renderWassceResults -->
+          </div>
+        </div>
+
         <!-- Tier / Pathway Matches -->
         <div style="margin-bottom: 2rem;">
           <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
@@ -834,6 +864,36 @@ async function submitWassceAnalysis() {
 
 let currentAnalysis = null;
 
+function filterSuggestedCards(filterType, btn) {
+  const filterBtns = document.querySelectorAll("#suggested_filters button");
+  filterBtns.forEach(b => {
+    b.style.background = "";
+    b.style.borderColor = "";
+    b.style.color = "var(--text-muted)";
+    b.style.fontWeight = "700";
+  });
+  if (btn) {
+    btn.style.background = "rgba(245, 158, 11, 0.15)";
+    btn.style.borderColor = "var(--ghana-gold)";
+    btn.style.color = "var(--text-main)";
+    btn.style.fontWeight = "800";
+  }
+
+  const cards = document.querySelectorAll("#suggested_institutions_grid .suggested-inst-card");
+  cards.forEach(card => {
+    const prob = parseInt(card.getAttribute("data-prob") || "0", 10);
+    if (filterType === "ALL") {
+      card.style.display = "flex";
+    } else if (filterType === "HIGH") {
+      card.style.display = (prob >= 80) ? "flex" : "none";
+    } else if (filterType === "COMPETITIVE") {
+      card.style.display = (prob >= 60 && prob < 80) ? "flex" : "none";
+    } else if (filterType === "REACH") {
+      card.style.display = (prob >= 35 && prob < 60) ? "flex" : "none";
+    }
+  });
+}
+
 function renderBeceResults(analysis) {
   currentAnalysis = analysis;
   const section = document.getElementById("results_section");
@@ -864,6 +924,99 @@ function renderBeceResults(analysis) {
       box.style.cssText = "background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 0.65rem; color: #b91c1c; font-size: 0.85rem; line-height: 1.5;";
       box.innerHTML = check;
       rcContainer.appendChild(box);
+    });
+  }
+
+  // Update section title & description
+  const suggTitle = document.getElementById("suggested_section_title");
+  const suggDesc = document.getElementById("suggested_section_desc");
+  if (suggTitle) suggTitle.innerHTML = `Best Recommended Senior High Schools &amp; Admission Probability`;
+  if (suggDesc) suggDesc.innerHTML = `Grounded in official GES CSSPS 6-tier choice guidelines, candidate Stanine aggregate, and Category A/B/C/D/E competitive thresholds.`;
+
+  // Render Suggested Schools with Probabilities
+  const suggGrid = document.getElementById("suggested_institutions_grid");
+  suggGrid.innerHTML = "";
+  if (analysis.suggested_schools && analysis.suggested_schools.length > 0) {
+    analysis.suggested_schools.forEach(school => {
+      const card = document.createElement("div");
+      card.className = "suggested-inst-card";
+      card.setAttribute("data-prob", school.probability_percent);
+      card.setAttribute("data-tier", school.match_tier);
+      card.style.cssText = "background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.35rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm);";
+
+      let probColor = school.probability_percent >= 80 ? "#16a34a" : (school.probability_percent >= 60 ? "#d97706" : (school.probability_percent >= 35 ? "#2563eb" : "#dc2626"));
+      let probBg = school.probability_percent >= 80 ? "#f0fdf4" : (school.probability_percent >= 60 ? "#fffbeb" : (school.probability_percent >= 35 ? "#eff6ff" : "#fef2f2"));
+      let probBorder = school.probability_percent >= 80 ? "#86efac" : (school.probability_percent >= 60 ? "#fde68a" : (school.probability_percent >= 35 ? "#bfdbfe" : "#fecaca"));
+
+      let prereqBadge = school.prerequisites_met 
+        ? `<span style="font-size: 0.7rem; font-weight: 700; background: #f0fdf4; color: #16a34a; border: 1px solid #86efac; padding: 2px 7px; border-radius: 4px;">✓ Criteria Clear</span>`
+        : `<span style="font-size: 0.7rem; font-weight: 800; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px;">⛔ Prerequisite Deficit</span>`;
+
+      let deltaText = school.delta > 0 
+        ? `<span style="color: #16a34a; font-weight: 800;">+${school.delta} pts ahead</span>`
+        : (school.delta === 0 ? `<span style="color: #d97706; font-weight: 800;">On Cut-off</span>` : `<span style="color: #dc2626; font-weight: 800;">${Math.abs(school.delta)} pts below</span>`);
+
+      let catBadgeColor = school.category_code === "CAT_A" ? "background: rgba(245, 158, 11, 0.15); color: #b45309; border: 1px solid #fde68a;" :
+                          (school.category_code === "CAT_B" ? "background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;" :
+                          "background: #f8fafc; color: var(--text-main); border: 1px solid var(--border-subtle);");
+
+      card.innerHTML = `
+        <div>
+          <!-- Card Header -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+            <span style="font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 999px; ${catBadgeColor}">${school.category}</span>
+            ${prereqBadge}
+          </div>
+
+          <h4 style="font-size: 1.05rem; font-weight: 900; color: var(--text-main); margin: 0 0 4px 0; line-height: 1.3;">
+            ${school.school_name}
+          </h4>
+          <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            <span>📍 ${school.region}</span>
+            <span>&bull;</span>
+            <span>👤 ${school.gender}</span>
+          </div>
+
+          <!-- Probability Gauge -->
+          <div style="background: ${probBg}; border: 1px solid ${probBorder}; border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: ${probColor}; letter-spacing: 0.04em;">
+                ${school.tier_label}
+              </span>
+              <span style="font-size: 1.35rem; font-weight: 900; color: ${probColor};">
+                ${school.probability_percent}% <span style="font-size: 0.75rem; font-weight: 700;">Chance</span>
+              </span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div style="width: 100%; height: 7px; background: rgba(0, 0, 0, 0.06); border-radius: 999px; overflow: hidden; margin-bottom: 6px;">
+              <div style="width: ${school.probability_percent}%; height: 100%; background: ${probColor}; border-radius: 999px; transition: width 0.6s ease-in-out;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim);">
+              <span>Cut-Off: Agg ${school.cutoff_aggregate}</span>
+              <span>${deltaText}</span>
+            </div>
+          </div>
+
+          <!-- Strategic CSSPS Role -->
+          <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <span style="color: var(--ghana-gold);">📌</span> ${school.strategic_role}
+          </div>
+
+          <!-- Rationale -->
+          <div style="font-size: 0.775rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 10px; background: #f8fafc; border-left: 3px solid ${probColor}; padding: 6px 10px; border-radius: 0 4px 4px 0;">
+            ${school.rationale}
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.725rem;">
+          <span style="color: var(--text-dim);">Strong In: <strong>${school.strong_in.slice(0, 2).join(', ')}</strong></span>
+          <span class="card-badge card-badge-fast" style="font-size: 0.68rem;">CSSPS Match</span>
+        </div>
+      `;
+      suggGrid.appendChild(card);
     });
   }
 
@@ -940,6 +1093,100 @@ function renderWassceResults(analysis) {
       box.style.cssText = "background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 0.65rem; color: #b91c1c; font-size: 0.85rem; line-height: 1.5;";
       box.innerHTML = check;
       rcContainer.appendChild(box);
+    });
+  }
+
+  // Update section title & description
+  const suggTitle = document.getElementById("suggested_section_title");
+  const suggDesc = document.getElementById("suggested_section_desc");
+  if (suggTitle) suggTitle.innerHTML = `Best Recommended Tertiary Institutions &amp; Admission Probability`;
+  if (suggDesc) suggDesc.innerHTML = `Data-driven departmental matching grounded in official GTEC benchmarks, live university cut-offs, and mandatory faculty prerequisites.`;
+
+  // Render Suggested Institutions with Probabilities
+  const suggGrid = document.getElementById("suggested_institutions_grid");
+  suggGrid.innerHTML = "";
+  if (analysis.suggested_institutions && analysis.suggested_institutions.length > 0) {
+    analysis.suggested_institutions.forEach(inst => {
+      const card = document.createElement("div");
+      card.className = "suggested-inst-card";
+      card.setAttribute("data-prob", inst.probability_percent);
+      card.setAttribute("data-tier", inst.match_tier);
+      card.style.cssText = "background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.35rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm);";
+
+      let probColor = inst.probability_percent >= 80 ? "#16a34a" : (inst.probability_percent >= 60 ? "#d97706" : (inst.probability_percent >= 35 ? "#2563eb" : "#dc2626"));
+      let probBg = inst.probability_percent >= 80 ? "#f0fdf4" : (inst.probability_percent >= 60 ? "#fffbeb" : (inst.probability_percent >= 35 ? "#eff6ff" : "#fef2f2"));
+      let probBorder = inst.probability_percent >= 80 ? "#86efac" : (inst.probability_percent >= 60 ? "#fde68a" : (inst.probability_percent >= 35 ? "#bfdbfe" : "#fecaca"));
+
+      let prereqBadge = inst.prerequisites_met 
+        ? `<span style="font-size: 0.7rem; font-weight: 700; background: #f0fdf4; color: #16a34a; border: 1px solid #86efac; padding: 2px 7px; border-radius: 4px;">✓ Prerequisites Clear</span>`
+        : `<span style="font-size: 0.7rem; font-weight: 800; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px;">⛔ Prerequisite Deficit</span>`;
+
+      let deltaText = inst.delta > 0 
+        ? `<span style="color: #16a34a; font-weight: 800;">+${inst.delta} pts ahead</span>`
+        : (inst.delta === 0 ? `<span style="color: #d97706; font-weight: 800;">On Cut-off</span>` : `<span style="color: #dc2626; font-weight: 800;">${Math.abs(inst.delta)} pts below</span>`);
+
+      let typeBadgeColor = inst.institution_type === "PUBLIC_DEGREE" 
+        ? "background: rgba(245, 158, 11, 0.15); color: #b45309; border: 1px solid #fde68a;" 
+        : "background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;";
+      let typeLabel = inst.institution_type === "PUBLIC_DEGREE" ? "Public Degree" : "Technical Univ / HND";
+
+      card.innerHTML = `
+        <div>
+          <!-- Card Header -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+            <span style="font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 999px; ${typeBadgeColor}">${inst.institution_code} &bull; ${typeLabel}</span>
+            ${prereqBadge}
+          </div>
+
+          <h4 style="font-size: 1.05rem; font-weight: 900; color: var(--text-main); margin: 0 0 4px 0; line-height: 1.3;">
+            ${inst.programme_name}
+          </h4>
+          <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 12px;">
+            🏛️ ${inst.institution_name}
+          </div>
+
+          <!-- Probability Gauge -->
+          <div style="background: ${probBg}; border: 1px solid ${probBorder}; border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: ${probColor}; letter-spacing: 0.04em;">
+                ${inst.tier_label}
+              </span>
+              <span style="font-size: 1.35rem; font-weight: 900; color: ${probColor};">
+                ${inst.probability_percent}% <span style="font-size: 0.75rem; font-weight: 700;">Chance</span>
+              </span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div style="width: 100%; height: 7px; background: rgba(0, 0, 0, 0.06); border-radius: 999px; overflow: hidden; margin-bottom: 6px;">
+              <div style="width: ${inst.probability_percent}%; height: 100%; background: ${probColor}; border-radius: 999px; transition: width 0.6s ease-in-out;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim);">
+              <span>Cut-Off: Agg ${inst.cutoff_aggregate}</span>
+              <span>${deltaText}</span>
+            </div>
+          </div>
+
+          <!-- Strategic Role -->
+          <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <span style="color: var(--ghana-gold);">📌</span> Strategic Role: ${inst.strategic_role}
+          </div>
+
+          <!-- Rationale -->
+          <div style="font-size: 0.775rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 10px; background: #f8fafc; border-left: 3px solid ${probColor}; padding: 6px 10px; border-radius: 0 4px 4px 0;">
+            ${inst.rationale}
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.725rem; flex-wrap: wrap; gap: 6px;">
+          <span style="color: var(--text-dim);">Deadline: <strong>${inst.application_deadline}</strong> &bull; GH₵ ${Number(inst.voucher_cost_ghs).toFixed(2)}</span>
+          <a href="${inst.portal_url}" target="_blank" rel="noopener noreferrer" style="color: var(--ghana-gold); text-decoration: none; font-weight: 800;">
+            Official Portal ↗
+          </a>
+        </div>
+      `;
+      suggGrid.appendChild(card);
     });
   }
 
@@ -1209,8 +1456,8 @@ function applyBecePreset(type) {
       const el = document.getElementById(`bece_core_${i}`);
       if (el) el.value = "1";
     }
-    for (let i = 0; i < 3; i++) {
-      const el = document.getElementById(`bece_elect_val_${i}`);
+    for (let i = 0; i < BECE_ELECT_NAMES.length; i++) {
+      const el = document.getElementById(`bece_elect_${i}`);
       if (el) el.value = "1";
     }
     const prog = document.getElementById("bece_programme");
@@ -1220,8 +1467,8 @@ function applyBecePreset(type) {
       const el = document.getElementById(`bece_core_${i}`);
       if (el) el.value = "2";
     }
-    for (let i = 0; i < 3; i++) {
-      const el = document.getElementById(`bece_elect_val_${i}`);
+    for (let i = 0; i < BECE_ELECT_NAMES.length; i++) {
+      const el = document.getElementById(`bece_elect_${i}`);
       if (el) el.value = "2";
     }
     const prog = document.getElementById("bece_programme");
@@ -1231,8 +1478,8 @@ function applyBecePreset(type) {
       const el = document.getElementById(`bece_core_${i}`);
       if (el) el.value = "4";
     }
-    for (let i = 0; i < 3; i++) {
-      const el = document.getElementById(`bece_elect_val_${i}`);
+    for (let i = 0; i < BECE_ELECT_NAMES.length; i++) {
+      const el = document.getElementById(`bece_elect_${i}`);
       if (el) el.value = "4";
     }
     const prog = document.getElementById("bece_programme");

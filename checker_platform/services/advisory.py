@@ -93,6 +93,253 @@ BECE_SCHOOL_TIERS = {
     }
 }
 
+# ============================================================================
+# ADMISSION PROBABILITY & INSTITUTIONAL SELECTION ENGINE
+# ============================================================================
+
+BECE_SCHOOL_CUTOFFS = {
+    "Presbyterian Boys' Senior High (PRESEC Legon)": {"General Science": 8, "default": 9},
+    "Wesley Girls' High School": {"General Science": 8, "default": 9},
+    "Prempeh College": {"General Science": 8, "default": 9},
+    "Opoku Ware School": {"General Science": 8, "default": 9},
+    "Holy Child School": {"General Science": 8, "default": 9},
+    "Mfantsipim School": {"General Science": 8, "default": 9},
+    "Achimota School": {"General Science": 9, "default": 10},
+    "Aburi Girls' Senior High": {"General Science": 9, "default": 10},
+    "St. Peter's Boys' Senior High": {"General Science": 9, "default": 10},
+    "St. Rose's Senior High": {"General Science": 9, "default": 10},
+    "St. Augustine's College": {"default": 12},
+    "Pope John Senior High & Minor Seminary": {"default": 12},
+    "Kumasi High School": {"default": 13},
+    "St. Thomas Aquinas Senior High": {"default": 14},
+    "Ghana National College": {"default": 14},
+    "Sunyani Senior High": {"default": 15},
+    "Mawuli School": {"default": 15},
+    "Tamale Senior High": {"default": 16},
+    "Osu Presbyterian Senior High": {"default": 17},
+    "Armed Forces Senior High Technical": {"default": 24},
+    "Nungua Senior High": {"default": 26},
+    "Effiduase Senior High": {"default": 26},
+    "Christian Methodist Senior High": {"default": 28},
+    "Ada Senior High": {"default": 28},
+    "District Designated Day Senior High Schools": {"default": 38},
+    "Accra Technical Training Centre (ATTC)": {"default": 24},
+    "Kumasi Technical Institute (KTI)": {"default": 25},
+    "Takoradi Technical Institute (TTI)": {"default": 26},
+    "Asuansi Technical Institute": {"default": 28},
+}
+
+def calculate_admission_probability(
+    candidate_aggregate: int,
+    cutoff_aggregate: int,
+    prerequisites_met: bool = True,
+    institution_selectivity: str = "NORMAL",
+    is_bece: bool = False
+) -> Dict[str, Any]:
+    """
+    Computes a realistic, non-bluffing admission probability (10% - 98%)
+    based on aggregate delta (cutoff - candidate), prerequisite compliance,
+    and institutional selectivity weighting.
+
+    In Ghanaian grading, lower aggregate indicates higher academic performance.
+    delta = cutoff_aggregate - candidate_aggregate.
+    Positive delta indicates candidate is ahead of cutoff.
+    """
+    delta = cutoff_aggregate - candidate_aggregate
+
+    # 1. Base probability curve based on delta
+    if delta >= 4:
+        base_prob = min(98, 92 + (delta - 4) * 2)
+    elif delta == 3:
+        base_prob = 89
+    elif delta == 2:
+        base_prob = 84
+    elif delta == 1:
+        base_prob = 77
+    elif delta == 0:
+        base_prob = 66
+    elif delta == -1:
+        base_prob = 48
+    elif delta == -2:
+        base_prob = 34
+    elif delta == -3:
+        base_prob = 20
+    else:
+        base_prob = max(10, 18 + (delta + 3) * 2)
+
+    # 2. Selectivity adjustment
+    if institution_selectivity == "HIGH":
+        base_prob = max(10, base_prob - 4)
+    elif institution_selectivity == "MODERATE":
+        base_prob = min(98, base_prob + 4)
+
+    # 3. Prerequisite gatekeeper enforcement
+    if not prerequisites_met:
+        base_prob = min(base_prob, 18)
+
+    final_prob = int(max(10, min(98, round(base_prob))))
+
+    # 4. Tier & Classification
+    if not prerequisites_met:
+        match_tier = "PREREQUISITE_DEFICIT"
+        tier_label = "Prerequisite Deficit"
+        badge_class = "prob-deficit"
+        strategic_role = "Conditional / Remedial Required"
+    elif final_prob >= 80:
+        match_tier = "HIGH_PROBABILITY"
+        tier_label = "High Assurance Match"
+        badge_class = "prob-high"
+        strategic_role = "Safe / Primary Guarantee"
+    elif final_prob >= 60:
+        match_tier = "COMPETITIVE"
+        tier_label = "Competitive Match"
+        badge_class = "prob-med"
+        strategic_role = "Target Match Choice"
+    elif final_prob >= 35:
+        match_tier = "REACH"
+        tier_label = "Reach / Ambitious"
+        badge_class = "prob-reach"
+        strategic_role = "Aspirational Reach"
+    else:
+        match_tier = "LOW_PROBABILITY"
+        tier_label = "Low Probability"
+        badge_class = "prob-low"
+        strategic_role = "High Risk / Backup Alternative"
+
+    return {
+        "probability_percent": final_prob,
+        "delta": delta,
+        "match_tier": match_tier,
+        "tier_label": tier_label,
+        "badge_class": badge_class,
+        "strategic_role": strategic_role
+    }
+
+def suggest_best_schools_bece(
+    total_aggregate: int,
+    english_grade: int,
+    math_grade: int,
+    science_grade: int,
+    preferred_programme: str
+) -> List[Dict[str, Any]]:
+    """
+    Ranks Ghanaian Senior High Schools across GES CSSPS Categories A, B, C, D, and E
+    with calculated admission probability and strategic selection roles.
+    """
+    evaluated_schools = []
+
+    for tier_key, tier_info in BECE_SCHOOL_TIERS.items():
+        cat_display = {
+            "CAT_A": "Category A (National)",
+            "CAT_B": "Category B (Regional)",
+            "CAT_C": "Category C (Community)",
+            "CAT_D": "Category D (Local Day)",
+            "CAT_E": "Category E (CTVET)"
+        }.get(tier_key, tier_key)
+
+        selectivity = "HIGH" if tier_key == "CAT_A" else ("MODERATE" if tier_key in ["CAT_C", "CAT_D", "CAT_E"] else "NORMAL")
+
+        for school in tier_info.get("schools", []):
+            name = school["name"]
+            cutoff_map = BECE_SCHOOL_CUTOFFS.get(name, {})
+            cutoff = cutoff_map.get(preferred_programme, cutoff_map.get("default", tier_info["aggregate_range"][1]))
+
+            # Prerequisite & risk rules
+            prereqs_met = True
+            prereq_note = "Prerequisites satisfied for placement."
+            if tier_key == "CAT_A" and preferred_programme == "General Science" and (science_grade > 3 or math_grade > 3):
+                prereqs_met = False
+                prereq_note = f"Cat A General Science heavily favors Grade 1-2 in Science and Math (Candidate: Sci {science_grade}, Math {math_grade})"
+            elif english_grade > 6:
+                prereqs_met = False
+                prereq_note = f"Stanine {english_grade} in English triggers automated placement failure risk"
+
+            prob_res = calculate_admission_probability(
+                candidate_aggregate=total_aggregate,
+                cutoff_aggregate=cutoff,
+                prerequisites_met=prereqs_met,
+                institution_selectivity=selectivity,
+                is_bece=True
+            )
+
+            # Programme match
+            strong_programmes = school.get("strong_in", [])
+            prog_match = any(preferred_programme.lower() in p.lower() for p in strong_programmes)
+
+            # Rationale
+            delta = prob_res["delta"]
+            if not prereqs_met:
+                rationale = f"Prerequisite concern: {prereq_note}"
+            elif delta >= 3:
+                rationale = f"Outstanding match! Aggregate {total_aggregate:02d} beats {name}'s cut-off ({cutoff:02d}) by {delta} points."
+            elif delta >= 0:
+                rationale = f"Target fit: Aggregate {total_aggregate:02d} meets {name}'s threshold ({cutoff:02d}) with competitive chance."
+            elif delta >= -2:
+                rationale = f"Competitive reach: Aggregate {total_aggregate:02d} is {abs(delta)} points below cut-off ({cutoff:02d}). Possible in secondary CSSPS run."
+            else:
+                rationale = f"High competition: Aggregate {total_aggregate:02d} is {abs(delta)} points beyond typical cutoff ({cutoff:02d})."
+
+            # Formulate strategic CSSPS role
+            if tier_key == "CAT_A":
+                strategic_role = "Choice 1: High-Merit Dream" if prob_res["probability_percent"] < 80 else "Choice 1: Strong National Target"
+            elif tier_key == "CAT_B":
+                strategic_role = "Choice 2: Prime Regional Target" if prob_res["probability_percent"] >= 70 else "Choice 2: Competitive Regional Choice"
+            elif tier_key == "CAT_C":
+                strategic_role = "Choice 3 & 4: Safe Placement Choice"
+            elif tier_key == "CAT_D":
+                strategic_role = "Choice 5: Mandatory 30% Local Day Quota"
+            else:
+                strategic_role = "Choice 6: CTVET Practical Career Track"
+
+            evaluated_schools.append({
+                "school_name": name,
+                "category": cat_display,
+                "category_code": tier_key,
+                "gender": school.get("gender", "Mixed"),
+                "region": school.get("region", "National"),
+                "strong_in": strong_programmes,
+                "programme_match": prog_match,
+                "cutoff_aggregate": cutoff,
+                "probability_percent": prob_res["probability_percent"],
+                "delta": delta,
+                "match_tier": prob_res["match_tier"],
+                "tier_label": prob_res["tier_label"],
+                "badge_class": prob_res["badge_class"],
+                "strategic_role": strategic_role,
+                "prerequisites_met": prereqs_met,
+                "prereq_note": prereq_note,
+                "rationale": rationale
+            })
+
+    # Curate a balanced CSSPS portfolio
+    portfolio = []
+    
+    # 1. Cat A (top 2 options)
+    cat_a_schools = [s for s in evaluated_schools if s["category_code"] == "CAT_A"]
+    cat_a_schools.sort(key=lambda s: (s["programme_match"], s["prerequisites_met"], s["probability_percent"]), reverse=True)
+    portfolio.extend(cat_a_schools[:2])
+
+    # 2. Cat B (top 3 options)
+    cat_b_schools = [s for s in evaluated_schools if s["category_code"] == "CAT_B"]
+    cat_b_schools.sort(key=lambda s: (s["programme_match"], s["prerequisites_met"], s["probability_percent"]), reverse=True)
+    portfolio.extend(cat_b_schools[:3])
+
+    # 3. Cat C (top 2 options)
+    cat_c_schools = [s for s in evaluated_schools if s["category_code"] == "CAT_C"]
+    cat_c_schools.sort(key=lambda s: (s["programme_match"], s["prerequisites_met"], s["probability_percent"]), reverse=True)
+    portfolio.extend(cat_c_schools[:2])
+
+    # 4. Cat D (1 option)
+    cat_d_schools = [s for s in evaluated_schools if s["category_code"] == "CAT_D"]
+    portfolio.extend(cat_d_schools[:1])
+
+    # 5. Cat E (top 2 TVET options)
+    cat_e_schools = [s for s in evaluated_schools if s["category_code"] == "CAT_E"]
+    cat_e_schools.sort(key=lambda s: (s["programme_match"], s["prerequisites_met"], s["probability_percent"]), reverse=True)
+    portfolio.extend(cat_e_schools[:2])
+
+    return portfolio
+
 def evaluate_bece_results(
     cores: Dict[str, int], 
     electives: Dict[str, int], 
@@ -199,7 +446,16 @@ def evaluate_bece_results(
     cat_e["badge"] = "tvet-recommended"
     recommendations.append(cat_e)
 
-    # 5. Step-by-Step Action Roadmap
+    # 5. Suggest Specific Schools with Calculated Probabilities
+    suggested_schools = suggest_best_schools_bece(
+        total_aggregate=total_aggregate,
+        english_grade=english_grade,
+        math_grade=math_grade,
+        science_grade=science_grade,
+        preferred_programme=preferred_programme
+    )
+
+    # 6. Step-by-Step Action Roadmap
     roadmap = [
         {
             "step": 1,
@@ -235,6 +491,11 @@ def evaluate_bece_results(
     )
     log_advisory_telemetry("BECE", total_aggregate, preferred_programme, 0)
 
+    top_schools_whatsapp = "\n".join([
+        f"  • *{s['school_name']}* ({s['category'].split(' ')[0]} {s['category'].split(' ')[1]}): *{s['probability_percent']}% Chance* [{s['tier_label']}]"
+        for s in suggested_schools[:3]
+    ])
+
     whatsapp_text = (
         "🇬🇭 *CHECKERPAY GHANA | CSSPS PLACEMENT DOSSIER*\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
@@ -242,7 +503,9 @@ def evaluate_bece_results(
         f"🎯 *Target Programme:* {preferred_programme}\n"
         f"📋 *Score Breakdown:* Cores: {core_aggregate} pts | Best 2 Electives: {elective_aggregate} pts\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-        "🏛️ *RECOMMENDED PLACEMENT TIERS:*\n"
+        "🎯 *TOP SUGGESTED SCHOOLS & CHANCES:*\n"
+        + top_schools_whatsapp
+        + "\n\n🏛️ *RECOMMENDED PLACEMENT TIERS:*\n"
         + "\n".join([f"  • *{t['tier_name']}* ({t['status']})" for t in recommendations[:3]])
         + "\n\n🛡️ *OFFICIAL CSSPS NOTICE:*\n"
         "Never pay unauthorized protocol admission agents.\n"
@@ -261,6 +524,7 @@ def evaluate_bece_results(
         "risk_level": risk_level,
         "reality_checks": reality_checks,
         "recommended_tiers": recommendations,
+        "suggested_schools": suggested_schools,
         "roadmap": roadmap,
         "preferred_programme": preferred_programme,
         "whatsapp_share_text": whatsapp_text,
@@ -590,6 +854,142 @@ def calculate_wassce_deficits(
         }
     }
 
+def suggest_best_institutions_wassce(
+    total_aggregate: int,
+    interest_area: str,
+    all_grades: Dict[str, str],
+    eligibility_status: str
+) -> List[Dict[str, Any]]:
+    """
+    Evaluates live Ghanaian university and technical university departmental benchmarks,
+    checking prerequisite compliance and computing quantitative admission probabilities.
+    """
+    AdmissionScraperEngine.seed_benchmarks_if_empty()
+    all_benchmarks = get_admission_benchmarks(limit=200)
+
+    evaluated = []
+
+    for b in all_benchmarks:
+        prog_name = b.get("programme_name", "")
+        inst_name = b.get("institution_name", "")
+        inst_code = b.get("institution_code", "")
+        inst_type = b.get("institution_type", "PUBLIC_DEGREE")
+        cutoff = b.get("cutoff_aggregate", 24)
+        faculty = b.get("faculty_category", "")
+
+        # Evaluate faculty prerequisites
+        prereq = evaluate_programme_prerequisites(prog_name, inst_code, all_grades)
+        prereqs_met = prereq["eligible"]
+        prereq_details = prereq["details"]
+
+        # GTEC degree rule
+        if inst_type == "PUBLIC_DEGREE" and eligibility_status in ["BARRED_FROM_PUBLIC_DEGREE", "EXCEEDS_AGGREGATE_36"]:
+            prereqs_met = False
+            prereq_details = "GTEC Rule: Min C6 in Core Math & English required for direct public degree entry."
+
+        if inst_type == "TECHNICAL_UNIVERSITY":
+            # Technical Universities accept D7/E8 in math/science for HND and B.Tech programmes
+            if prereq["status"] != "PREREQUISITE_DEFICIT" or "GTEC Rule" in prereq_details:
+                prereqs_met = True
+                prereq_details = "Eligible under Technical University applied admission criteria."
+
+        selectivity = "HIGH" if inst_code in ["UG", "KNUST"] else ("MODERATE" if inst_type == "TECHNICAL_UNIVERSITY" else "NORMAL")
+
+        prob_data = calculate_admission_probability(
+            candidate_aggregate=total_aggregate,
+            cutoff_aggregate=cutoff,
+            prerequisites_met=prereqs_met,
+            institution_selectivity=selectivity,
+            is_bece=False
+        )
+
+        delta = prob_data["delta"]
+        if not prereqs_met:
+            rationale = f"Prerequisite Deficit: {prereq_details}"
+        elif delta >= 3:
+            rationale = f"Outstanding Match: Aggregate {total_aggregate:02d} beats cutoff ({cutoff:02d}) by {delta} points with all prerequisites met."
+        elif delta >= 1:
+            rationale = f"Strong Standing: Aggregate {total_aggregate:02d} comfortably clears departmental cut-off ({cutoff:02d}) by {delta} points."
+        elif delta == 0:
+            rationale = f"Direct Cut-off Match: Aggregate {total_aggregate:02d} matches departmental cutoff ({cutoff:02d}). Competitive admission."
+        elif delta >= -2:
+            rationale = f"Aspirational Reach: Aggregate {total_aggregate:02d} is {abs(delta)} points shy of cut-off ({cutoff:02d}). Viable in fee-paying or later lists."
+        else:
+            rationale = f"High Selectivity: Aggregate {total_aggregate:02d} is {abs(delta)} points beyond cutoff ({cutoff:02d}). Consider HND or alternative."
+
+        # Strategic portfolio role
+        if not prereqs_met:
+            strategic_role = "Conditional / Remedial Required"
+        elif prob_data["probability_percent"] >= 80:
+            strategic_role = "First Choice / Primary Target" if delta <= 4 else "Guaranteed Safety Match"
+        elif prob_data["probability_percent"] >= 60:
+            strategic_role = "Competitive Target Choice"
+        elif prob_data["probability_percent"] >= 35:
+            strategic_role = "Ambitious Reach Choice"
+        else:
+            strategic_role = "High Risk / Fallback Path"
+
+        # Interest match logic
+        is_interest = False
+        interest_lower = interest_area.lower()
+        prog_lower = prog_name.lower()
+        faculty_lower = faculty.lower()
+        if interest_lower in prog_lower or interest_lower in faculty_lower:
+            is_interest = True
+        elif ("computer" in interest_lower or "engineering" in interest_lower) and any(x in prog_lower for x in ["computer", "engineering", "software", "information", "technology"]):
+            is_interest = True
+        elif ("medicine" in interest_lower or "health" in interest_lower or "nursing" in interest_lower) and any(x in prog_lower for x in ["medicine", "surgery", "nursing", "pharmacy", "health", "midwifery", "optometry", "medical"]):
+            is_interest = True
+        elif ("business" in interest_lower or "law" in interest_lower) and any(x in prog_lower for x in ["administration", "accounting", "finance", "business", "law", "economics", "marketing", "procurement"]):
+            is_interest = True
+
+        evaluated.append({
+            "programme_name": prog_name,
+            "institution_name": inst_name,
+            "institution_code": inst_code,
+            "institution_type": inst_type,
+            "faculty_category": faculty,
+            "cutoff_aggregate": cutoff,
+            "probability_percent": prob_data["probability_percent"],
+            "delta": delta,
+            "match_tier": prob_data["match_tier"],
+            "tier_label": prob_data["tier_label"],
+            "badge_class": prob_data["badge_class"],
+            "strategic_role": strategic_role,
+            "prerequisites_met": prereqs_met,
+            "prerequisite_status": prereq["status"],
+            "prerequisite_details": prereq_details,
+            "rationale": rationale,
+            "mandatory_requirements": b.get("mandatory_requirements", ""),
+            "application_deadline": b.get("application_deadline", "Rolling / Nov 30"),
+            "voucher_cost_ghs": b.get("voucher_cost_ghs", 220.0),
+            "portal_url": b.get("portal_url", "https://admission.ug.edu.gh"),
+            "is_interest_match": is_interest
+        })
+
+    # Sort to produce a high-value, diverse portfolio:
+    evaluated.sort(
+        key=lambda x: (
+            1 if x["is_interest_match"] else 0,
+            1 if x["prerequisites_met"] else 0,
+            x["probability_percent"]
+        ),
+        reverse=True
+    )
+
+    result = []
+    inst_counts = {}
+    for item in evaluated:
+        code = item["institution_code"]
+        count = inst_counts.get(code, 0)
+        if count < 3 or len(result) < 6:
+            result.append(item)
+            inst_counts[code] = count + 1
+        if len(result) >= 12:
+            break
+
+    return result
+
 def format_wassce_whatsapp_dossier(analysis: Dict[str, Any]) -> str:
     """Formats an executive WhatsApp share text for parents, mentors, and candidates."""
     lines = [
@@ -605,6 +1005,13 @@ def format_wassce_whatsapp_dossier(analysis: Dict[str, Any]) -> str:
         lines.append(f"  • {c[0]}: *{c[1]}*")
     for e in analysis.get("selected_electives", []):
         lines.append(f"  • {e[0]}: *{e[1]}*")
+
+    suggested_institutions = analysis.get("suggested_institutions", [])
+    if suggested_institutions:
+        lines.append("")
+        lines.append(f"🎯 *TOP SUGGESTED INSTITUTIONS & CHANCES:*")
+        for inst in suggested_institutions[:3]:
+            lines.append(f"  • *{inst['institution_code']}* - {inst['programme_name']}: *{inst['probability_percent']}% Chance* [{inst['tier_label']}]")
 
     scholarships = analysis.get("scholarships", [])
     if scholarships:
@@ -851,6 +1258,14 @@ def evaluate_wassce_results(
     live_benchmarks_for_deficits = live_degree_benchmarks if 'live_degree_benchmarks' in locals() else get_admission_benchmarks(institution_type="PUBLIC_DEGREE", limit=150)
     deficits_analysis = calculate_wassce_deficits(all_6_subjects, total_aggregate, live_benchmarks_for_deficits)
 
+    # 7. Institutional Recommendations with Admission Probability
+    suggested_institutions = suggest_best_institutions_wassce(
+        total_aggregate=total_aggregate,
+        interest_area=interest_area,
+        all_grades=all_entered_grades,
+        eligibility_status=eligibility_status
+    )
+
     audit_hash = append_audit_block(
         action="ACT_843_WASSCE_EVALUATION",
         actor="EPHEMERAL_ADVISORY_ENGINE",
@@ -860,6 +1275,7 @@ def evaluate_wassce_results(
             "status": eligibility_status,
             "interest": interest_area,
             "scholarships_matched": len(matched_scholarships),
+            "suggested_institutions_count": len(suggested_institutions),
             "zero_persistence_verified": True
         }
     )
@@ -876,6 +1292,7 @@ def evaluate_wassce_results(
         "eligibility_status": eligibility_status,
         "reality_checks": reality_checks,
         "pathways": pathways,
+        "suggested_institutions": suggested_institutions,
         "scholarships": matched_scholarships,
         "deficits_analysis": deficits_analysis,
         "roadmap": roadmap,

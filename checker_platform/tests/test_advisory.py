@@ -244,3 +244,119 @@ class TestStealthAdminAndAdvisory(unittest.TestCase):
         self.assertIn("TECHNICAL_UNIVERSITY_HND", pathway_types)
         self.assertIn("DIPLOMA_TOP_UP", pathway_types)
         self.assertIn("NOV_DEC_REMEDIAL", pathway_types)
+
+    # ========================================================================
+    # 4. INSTITUTIONAL SUGGESTIONS & PROBABILITY ENGINE TESTS
+    # ========================================================================
+
+    def test_bece_suggested_schools_with_probabilities(self):
+        """Verifies BECE evaluation generates specific school suggestions with computed probabilities."""
+        payload = {
+            "exam_type": "BECE",
+            "consent_given": True,
+            "cores": {
+                "English Language": 1,
+                "Mathematics": 1,
+                "Integrated Science": 1,
+                "Social Studies": 1
+            },
+            "electives": {
+                "BDT / Pre-Technical": 1,
+                "Information & Communication Tech (ICT)": 1
+            },
+            "programme": "General Science"
+        }
+        res = self.client.post("/api/advisor/analyze", json=payload)
+        self.assertEqual(res.status_code, 200)
+        analysis = res.json()["analysis"]
+
+        self.assertIn("suggested_schools", analysis)
+        schools = analysis["suggested_schools"]
+        self.assertGreaterEqual(len(schools), 5)
+
+        # High distinction candidate (Agg 06) must have high probability in Cat A/B
+        top_school = schools[0]
+        self.assertIn("school_name", top_school)
+        self.assertIn("probability_percent", top_school)
+        self.assertIn("strategic_role", top_school)
+        self.assertIn("rationale", top_school)
+        self.assertGreaterEqual(top_school["probability_percent"], 80)
+        self.assertEqual(top_school["prerequisites_met"], True)
+
+        # WhatsApp share text must contain the suggestions
+        self.assertIn("TOP SUGGESTED SCHOOLS & CHANCES", analysis["whatsapp_share_text"])
+        self.assertIn("% Chance", analysis["whatsapp_share_text"])
+
+    def test_wassce_suggested_institutions_with_probabilities(self):
+        """Verifies WASSCE evaluation ranks institutions with admission probabilities and strategic roles."""
+        payload = {
+            "exam_type": "WASSCE",
+            "consent_given": True,
+            "cores": {
+                "English Language": "A1",
+                "Core Mathematics": "A1",
+                "Integrated Science": "B2",
+                "Social Studies": "A1"
+            },
+            "electives": {
+                "Elective Mathematics": "A1",
+                "Physics": "B2",
+                "Chemistry": "B3"
+            },
+            "programme": "Computer Science & Engineering"
+        }
+        res = self.client.post("/api/advisor/analyze", json=payload)
+        self.assertEqual(res.status_code, 200)
+        analysis = res.json()["analysis"]
+
+        self.assertIn("suggested_institutions", analysis)
+        institutions = analysis["suggested_institutions"]
+        self.assertGreaterEqual(len(institutions), 5)
+
+        # Agg 08 with A1 Math should have high admission probability in STEM
+        top_inst = institutions[0]
+        self.assertIn("programme_name", top_inst)
+        self.assertIn("institution_code", top_inst)
+        self.assertIn("probability_percent", top_inst)
+        self.assertIn("strategic_role", top_inst)
+        self.assertIn("rationale", top_inst)
+        self.assertGreaterEqual(top_inst["probability_percent"], 80)
+        self.assertEqual(top_inst["prerequisites_met"], True)
+
+        # WhatsApp dossier must include suggested institutions
+        self.assertIn("TOP SUGGESTED INSTITUTIONS & CHANCES", analysis["whatsapp_share_text"])
+
+    def test_wassce_prerequisite_deficit_drops_probability(self):
+        """Failing a required prerequisite (e.g. D7 in Elective Math for Engineering) drops probability."""
+        payload = {
+            "exam_type": "WASSCE",
+            "consent_given": True,
+            "cores": {
+                "English Language": "B2",
+                "Core Mathematics": "B2",
+                "Integrated Science": "B3",
+                "Social Studies": "A1"
+            },
+            "electives": {
+                "Elective Mathematics": "D7",  # Engineering prerequisite failure (requires min C6)
+                "Physics": "B3",
+                "Chemistry": "C4"
+            },
+            "programme": "Computer Science & Engineering"
+        }
+        res = self.client.post("/api/advisor/analyze", json=payload)
+        self.assertEqual(res.status_code, 200)
+        analysis = res.json()["analysis"]
+
+        institutions = analysis["suggested_institutions"]
+        # Find any public degree Engineering/CS programme that requires Elective Math
+        eng_degrees = [i for i in institutions if "Engineering" in i["programme_name"] or "Computer Science" in i["programme_name"]]
+        self.assertTrue(len(eng_degrees) > 0)
+        
+        for eng in eng_degrees:
+            if eng["institution_type"] == "PUBLIC_DEGREE":
+                self.assertFalse(eng["prerequisites_met"])
+                self.assertLessEqual(eng["probability_percent"], 25)
+                self.assertEqual(eng["match_tier"], "PREREQUISITE_DEFICIT")
+                self.assertIn("deficit", eng["prerequisite_details"].lower())
+
