@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Digital Delivery & Returns Policy | CheckerPay Ghana{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 960px;">
+  
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <div class="hero-pill" style="margin-bottom: 1rem;">
+      <span>Fulfillment &amp; Consumer Protection SLA</span>
+    </div>
+    <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.75rem; color: var(--text-main);">
+      Delivery &amp; Returns Policy
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1rem; max-width: 720px; margin: 0 auto;">
+      Clear, transparent terms regarding instant digital voucher fulfillment, self-service recovery, and our guaranteed defect replacement procedure.
+    </p>
+    <div style="font-size: 0.85rem; color: var(--text-dim); margin-top: 0.5rem;">
+      Instant 100% Digital Fulfillment | Zero Physical Mail Delay | Concurrency Locked
+    </div>
+  </div>
+
+  <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-lg); line-height: 1.7; color: var(--text-muted);">
+    
+    <!-- 1. Digital Delivery Method & Speed -->
+    <section style="margin-bottom: 2.5rem;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+        <span style="font-size: 1.5rem;">⚡</span>
+        <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">1. 100% Instant Digital Delivery</h2>
+      </div>
+      <p style="margin-bottom: 1rem;">
+        All products sold on <strong>CheckerPay Ghana</strong> are electronic examination vouchers (Serial Numbers and confidential PINs). <strong>We do not ship physical scratch cards via courier or postal mail.</strong>
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem;">
+        <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;">
+          <h4 style="color: var(--ghana-green); font-weight: 800; margin-bottom: 0.35rem;">1. Instant On-Screen Display</h4>
+          <p style="font-size: 0.9rem; line-height: 1.5;">
+            The moment your Mobile Money or card payment is approved, your unique Serial Number and PIN are revealed directly on your device screen with a 1-click copy button and quick portal link.
+          </p>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;">
+          <h4 style="color: var(--ghana-green); font-weight: 800; margin-bottom: 0.35rem;">2. Simultaneous SMS Dispatch</h4>
+          <p style="font-size: 0.9rem; line-height: 1.5;">
+            An SMS confirmation containing your Order Reference, Serial, and PIN is automatically sent to the Mobile Money phone number entered at checkout.
+          </p>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;">
+          <h4 style="color: var(--ghana-green); font-weight: 800; margin-bottom: 0.35rem;">3. Delivery Speed SLA</h4>
+          <p style="font-size: 0.9rem; line-height: 1.5;">
+            Target delivery speed is <strong>under 5 seconds</strong> post-payment confirmation. During peak release nights with high telecom traffic, delivery occurs within 30 to 60 seconds.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Self-Service Voucher Recovery -->
+    <section style="margin-bottom: 2.5rem;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+        <span style="font-size: 1.5rem;">🔍</span>
+        <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">2. Self-Service Voucher Recovery (Lost or Closed Tabs)</h2>
+      </div>
+      <p style="margin-bottom: 1rem;">
+        If your phone battery died, your browser crashed, or you closed your tab before writing down your PIN, you can retrieve your voucher at any time of day or night without waiting for customer support:
+      </p>
+
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1rem;">
+        <div style="font-weight: 700; color: var(--ghana-green); margin-bottom: 0.5rem;">How to Retrieve Your Voucher:</div>
+        <ol style="padding-left: 1.25rem; font-size: 0.925rem; display: flex; flex-direction: column; gap: 0.35rem;">
+          <li>Visit our dedicated recovery portal at <a href="/lookup" style="color: var(--ghana-green); font-weight: 700;">checkerpay.com.gh/lookup</a>.</li>
+          <li>Enter the Mobile Money phone number used during purchase or your Order Reference (e.g. <code>ORD-2026...</code>).</li>
+          <li>Your full order details and unmasked vouchers will be retrieved immediately.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 3. Returns & Refunds Policy -->
+    <section style="margin-bottom: 2.5rem;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+        <span style="font-size: 1.5rem;">🔄</span>
+        <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">3. Returns &amp; Refund Restrictions for Digital Goods</h2>
+      </div>
+      <p style="margin-bottom: 0.75rem;">
+        Under Section 38 of the <strong>Ghana Electronic Transactions Act, 2008 (Act 772)</strong>, the statutory cooling-off cancellation period does NOT apply to digital services or electronic unsealed goods where execution has commenced with the customer’s consent.
+      </p>
+      <p style="margin-bottom: 1rem;">
+        Because examination voucher PINs are irreversible confidential credentials that cannot be "returned" to an unviewed state once revealed, <strong>completed voucher purchases are final and non-refundable</strong>, except under the verified defect scenarios detailed below.
+      </p>
+    </section>
+
+    <!-- 4. Defective Vouchers & Instant Replacement Guarantee -->
+    <section style="margin-bottom: 2.5rem;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+        <span style="font-size: 1.5rem;">🛡️</span>
+        <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">4. 100% Replacement Guarantee for Defective Vouchers</h2>
+      </div>
+      <p style="margin-bottom: 1rem;">
+        We guarantee that every voucher sold is fresh, active, and uncompromised. In the extremely rare event that a voucher fails on an official examination portal:
+      </p>
+
+      <div style="border: 1px solid #fee2e2; background: #fff5f5; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem;">
+        <h4 style="color: var(--ghana-red); font-weight: 800; margin-bottom: 0.35rem;">Qualifying Defect Scenarios:</h4>
+        <ul style="padding-left: 1.25rem; font-size: 0.925rem; display: flex; flex-direction: column; gap: 0.35rem;">
+          <li>Official portal responds: <em>"Card Already Used"</em> or <em>"Invalid Serial/PIN"</em> on the candidate's first attempt.</li>
+          <li>PIN or Serial format does not match official specification.</li>
+        </ul>
+      </div>
+
+      <h4 style="font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">How to Claim a Replacement:</h4>
+      <ol style="padding-left: 1.25rem; font-size: 0.925rem; display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem;">
+        <li>Take a clear, full screenshot of the official portal showing the error message and the voucher details entered.</li>
+        <li>Send your Order Reference, Serial Number, and the screenshot to our support desk on WhatsApp or email.</li>
+        <li>Our technical team audits the card log against portal timestamps. Once verified as a pre-existing defect, <strong>an instant replacement voucher is issued immediately</strong> at zero additional charge.</li>
+      </ol>
+      <div style="font-size: 0.875rem; color: var(--text-dim);">
+        <em>Note: Vouchers that were successfully checked 3 times by the candidate or locked to another student's index number by candidate error do not qualify for replacement.</em>
+      </div>
+    </section>
+
+    <!-- 5. Duplicate Charges & Payment Glitches -->
+    <section>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+        <span style="font-size: 1.5rem;">💰</span>
+        <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">5. Duplicate Telecom Debits &amp; Failed Orders</h2>
+      </div>
+      <p style="margin-bottom: 0.75rem;">
+        If a telecom network latency issue causes your Mobile Money account to be debited twice for a single order:
+      </p>
+      <ul style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.95rem;">
+        <li>Our automated reconciliation engine detects duplicate payments matching the same customer transaction reference.</li>
+        <li>If an order was debited without a voucher being assigned, our system will either auto-fulfill the order or trigger an immediate telecom reversal.</li>
+        <li>Direct refunds are credited back to the originating Mobile Money wallet within 24 to 48 banking hours.</li>
+      </ul>
+    </section>
+
+  </div>
+</div>
+{% endblock %}

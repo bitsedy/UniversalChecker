@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}About Us | CheckerPay Ghana - Sovereign Digital Examination Gateway{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 960px;">
+  
+  <!-- Hero Section -->
+  <div style="text-align: center; margin-bottom: 3.5rem;">
+    <div class="hero-pill" style="margin-bottom: 1rem;">
+      <span>🇬🇭 Sovereign Digital Gateway</span>
+    </div>
+    <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 1rem; color: var(--text-main); line-height: 1.2;">
+      Democratizing Access to Ghanaian Educational Milestones
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 760px; margin: 0 auto; line-height: 1.6;">
+      CheckerPay Ghana is a purpose-built, high-concurrency digital voucher distribution platform and educational pathway advisor engineered specifically for Ghanaian students, parents, and educators.
+    </p>
+  </div>
+
+  <!-- Mission & Vision Cards -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-lg);">
+      <div style="font-size: 2rem; margin-bottom: 1rem;">🎯</div>
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">Our Mission</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+        To eliminate the friction, price gouging, and panic of examination result days by providing instant, guaranteed, 24/7 digital delivery of authentic WAEC, CSSPS, and CTVET vouchers to every corner of Ghana.
+      </p>
+    </div>
+
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-lg);">
+      <div style="font-size: 2rem; margin-bottom: 1rem;">🔭</div>
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">Our Vision</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+        To become West Africa’s most trusted educational fintech and intelligence infrastructure—bridging the gap between secondary school completion, placement transparency, and tertiary matriculation.
+      </p>
+    </div>
+
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-lg);">
+      <div style="font-size: 2rem; margin-bottom: 1rem;">🛡️</div>
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">Sovereign Trust</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+        Built in strict compliance with the Ghana Data Protection Act, 2012 (Act 843) and the Electronic Transactions Act, 2008 (Act 772). We believe student privacy and credential safety are non-negotiable human rights.
+      </p>
+    </div>
+  </div>
+
+  <!-- The Problem We Solved -->
+  <section style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2.5rem; margin-bottom: 3rem; box-shadow: var(--shadow-lg);">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem;">
+      <span style="font-size: 1.75rem;">💡</span>
+      <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--text-main);">The Challenge We Solved</h2>
+    </div>
+    <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.7; margin-bottom: 1.25rem;">
+      Every year, when the West African Examinations Council (WAEC) or the Ministry of Education releases WASSCE, BECE, or CSSPS placement results, over 500,000 Ghanaian households rush to verify their academic futures simultaneously.
+    </p>
+    <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.7; margin-bottom: 1.5rem;">
+      Traditionally, this triggered severe bottlenecks: internet cafes ran out of physical scratch cards, unscrupulous roadside vendors doubled prices from GH₵ 25 to GH₵ 60, and buggy online portals suffered double-billing errors or lost transactions. CheckerPay was engineered from the ground up to solve these exact problems.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem;">
+      <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;">
+        <div style="color: var(--ghana-green); font-weight: 800; font-size: 1rem; margin-bottom: 0.35rem;">✓ Concurrency-Safe Inventory</div>
+        <p style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.5;">
+          Our database uses atomic immediate-locking transactions. It is mathematically impossible for two students to ever be allocated the same voucher PIN or Serial.
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;">
+        <div style="color: var(--ghana-green); font-weight: 800; font-size: 1rem; margin-bottom: 0.35rem;">✓ Instant Dual Fulfillment</div>
+        <p style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.5;">
+          Vouchers are displayed on-screen instantly upon MoMo confirmation AND simultaneously dispatched via SMS to ensure you never lose your credentials.
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;">
+        <div style="color: var(--ghana-green); font-weight: 800; font-size: 1rem; margin-bottom: 0.35rem;">✓ Zero-Hassle Self-Service Recovery</div>
+        <p style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.5;">
+          Accidentally closed your tab? Phone battery died? Simply use our <a href="/lookup" style="color: var(--ghana-gold); font-weight: 700; text-decoration: none;">Voucher Lookup tool</a> to retrieve your Serial and PIN in seconds.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architectural & Security Pillars -->
+  <section style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2.5rem; margin-bottom: 3rem; box-shadow: var(--shadow-lg);">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem;">
+      <span style="font-size: 1.75rem;">⚙️</span>
+      <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--text-main);">Engineered for Peak Concurrency &amp; Reliability</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <div style="display: flex; gap: 1rem; align-items: flex-start;">
+        <div style="background: rgba(217, 119, 6, 0.1); color: var(--ghana-gold); font-weight: 900; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</div>
+        <div>
+          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">Sub-Millisecond Mobile Money Processing</h4>
+          <p style="color: var(--text-muted); font-size: 0.925rem; line-height: 1.6;">
+            We interface directly with Ghanaian telecom payment aggregators (MTN Mobile Money, Telecel Cash, and AT Money). Webhook callbacks and client-side status polling operate with cryptographic SHA-512 signatures to prevent tampering.
+          </p>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; align-items: flex-start;">
+        <div style="background: rgba(5, 150, 105, 0.1); color: var(--ghana-green); font-weight: 900; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</div>
+        <div>
+          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">Statutory Privacy by Design (Ghana Act 843)</h4>
+          <p style="color: var(--text-muted); font-size: 0.925rem; line-height: 1.6;">
+            When using our <strong>Placement &amp; Pathway Advisor</strong>, candidate examination results (grades, core scores, aggregates) are evaluated purely in ephemeral RAM and immediately discarded. No personal academic transcripts are ever stored in our databases.
+          </p>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; align-items: flex-start;">
+        <div style="background: rgba(220, 38, 38, 0.1); color: var(--ghana-red); font-weight: 900; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</div>
+        <div>
+          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">Tamper-Evident SHA-256 Audit Ledger</h4>
+          <p style="color: var(--text-muted); font-size: 0.925rem; line-height: 1.6;">
+            Every administrative action, price adjustment, and inventory movement is linked into a cryptographically verified hash chain, providing full accounting accountability and auditability.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border: 1.5px solid #bbf7d0; border-radius: var(--radius-lg); padding: 2.5rem; text-align: center; box-shadow: var(--shadow-lg);">
+    <h3 style="font-size: 1.5rem; font-weight: 900; color: var(--text-main); margin-bottom: 0.75rem;">Ready to Check Your Results?</h3>
+    <p style="color: var(--text-muted); font-size: 1rem; max-width: 580px; margin: 0 auto 1.5rem auto; line-height: 1.5;">
+      Get your authentic WAEC, BECE, CSSPS, or CTVET voucher delivered to your screen and phone in less than 30 seconds.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="/" style="background: var(--ghana-green); color: #ffffff; padding: 0.85rem 1.75rem; border-radius: var(--radius-md); font-weight: 700; text-decoration: none; display: inline-block;">
+        ⚡ Buy Result Checker Now
+      </a>
+      <a href="/advisor" style="background: #ffffff; color: var(--text-main); border: 1px solid var(--border-subtle); padding: 0.85rem 1.75rem; border-radius: var(--radius-md); font-weight: 700; text-decoration: none; display: inline-block;">
+        🎓 Explore Pathway Advisor
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

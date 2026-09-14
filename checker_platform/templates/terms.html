@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service | CheckerPay Ghana - Legal & Regulatory Compliance{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 960px;">
+  
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <div class="hero-pill" style="margin-bottom: 1rem;">
+      <span>Ghana Statutory Legal Agreement</span>
+    </div>
+    <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.75rem; color: var(--text-main);">
+      Terms of Service
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1rem; max-width: 720px; margin: 0 auto;">
+      Governed under the laws of the Republic of Ghana, specifically the Electronic Transactions Act, 2008 (Act 772) and the Cybersecurity Act, 2020 (Act 1038).
+    </p>
+    <div style="font-size: 0.85rem; color: var(--text-dim); margin-top: 0.5rem;">
+      Last Updated: September 2026 | Applicable to all transactions initiated on CheckerPay Ghana
+    </div>
+  </div>
+
+  <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-lg); line-height: 1.7; color: var(--text-muted);">
+    
+    <section style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">1. Acceptance of Terms &amp; Digital Mandate</h2>
+      <p style="margin-bottom: 0.75rem;">
+        By accessing, browsing, or purchasing examination vouchers through <strong>CheckerPay Ghana</strong> ("the Platform"), you ("the Customer" or "Candidate") enter into a legally binding electronic contract with CheckerPay under Sections 19, 20, and 24 of the <strong>Electronic Transactions Act, 2008 (Act 772)</strong> of the Republic of Ghana.
+      </p>
+      <p>
+        If you do not agree to these terms in their entirety, you must immediately terminate use of the platform and refrain from initiating Mobile Money or card payment authorizations.
+      </p>
+    </section>
+
+    <section style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">2. Nature of Digital Vouchers &amp; Instant Fulfillment</h2>
+      <p style="margin-bottom: 0.75rem;">
+        CheckerPay Ghana operates as an authorized secondary digital reseller of electronic scratch card vouchers (including WAEC WASSCE, BECE, CSSPS School Placement, and CTVET Examination vouchers).
+      </p>
+      <ul style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.95rem;">
+        <li><strong>Immediate Delivery:</strong> Electronic vouchers are intangible digital assets. Upon successful Mobile Money or payment authorization, the Serial Number and confidential PIN are immediately displayed on your screen and dispatched via SMS.</li>
+        <li><strong>One-Time Allocation:</strong> Each voucher code is cryptographically unique and reserved exclusively for your order using atomic inventory locking. Once revealed or sent to your designated phone number, the transaction is deemed fully executed and delivered.</li>
+        <li><strong>Single-Candidate Binding:</strong> As mandated by WAEC and CSSPS portal architectures, the first lookup executed on an examination portal binds that voucher to the student's candidate index number. CheckerPay has no authority or technological capability to unbind or transfer a card to another candidate once submitted.</li>
+      </ul>
+    </section>
+
+    <section style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">3. Pricing, Mobile Money &amp; Currency Regulations</h2>
+      <p style="margin-bottom: 0.75rem;">
+        All voucher prices displayed on the platform are denominated in <strong>Ghanaian Cedis (GH₵ / GHS)</strong> in strict conformity with Bank of Ghana currency regulations.
+      </p>
+      <ul style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.95rem;">
+        <li><strong>Authorization:</strong> When authorizing a Mobile Money payment (MTN MoMo, Telecel Cash, or AT Money), you confirm that you are the lawful owner or authorized custodian of the payment wallet.</li>
+        <li><strong>Failed or Delayed Debits:</strong> In the event of telecom network latency where funds are deducted but your voucher is not rendered, our automated reconciliation engine or self-service <a href="/lookup" style="color: var(--ghana-green); font-weight: 700;">Voucher Recovery</a> will resolve your order upon receipt of the telecom webhook.</li>
+      </ul>
+    </section>
+
+    <section style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">4. Refund &amp; Replacement Policy</h2>
+      <p style="margin-bottom: 0.75rem;">
+        Under Section 38 of the Electronic Transactions Act (Act 772), the standard right of return does not apply to digitally supplied goods that have been accessed or unsealed by the consumer.
+      </p>
+      <p style="margin-bottom: 0.75rem;">
+        Consequently, <strong>purchased vouchers are strictly non-refundable</strong> once revealed, except in the specific instance of a verified technical defect (e.g., a card showing "Already Used" prior to the customer's initial lookup). Detailed procedures for defect remediation are outlined in our <a href="/delivery-returns" style="color: var(--ghana-gold); font-weight: 700;">Delivery &amp; Returns Policy</a>.
+      </p>
+    </section>
+
+    <section style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">5. Educational Pathway &amp; Placement Advisor Disclaimer</h2>
+      <p style="margin-bottom: 0.75rem;">
+        The <strong>Educational Placement &amp; Pathway Advisor</strong> provided on this platform provides predictive, heuristic, and statistical estimations based on historical cut-off aggregates, institutional quotas, and program capacities across Ghanaian universities and senior high schools.
+      </p>
+      <div style="background: #fffbeb; border: 1px solid #fef3c7; border-left: 4px solid var(--ghana-gold); border-radius: var(--radius-md); padding: 1rem; margin-top: 0.5rem;">
+        <strong style="color: #b45309;">Important Notice:</strong> While our algorithms are calibrated against real Ghanaian benchmark data, final admission and school placement decisions remain the exclusive statutory prerogative of the Academic Boards of individual universities (e.g., UG, KNUST, UCC) and the CSSPS Secretariat under the Ministry of Education. CheckerPay does not guarantee institutional matriculation or specific school placement.
+      </div>
+    </section>
+
+    <section style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">6. Cybersecurity, Anti-Tampering &amp; Fraud</h2>
+      <p style="margin-bottom: 0.75rem;">
+        Under the <strong>Cybersecurity Act, 2020 (Act 1038)</strong>, any unauthorized attempt to interfere with the platform's inventory, scrape private voucher data, execute denial-of-service (DoS) attacks, forge Mobile Money callback webhooks, or fraudulently dispute legitimate digital deliveries will be prosecuted to the fullest extent of Ghanaian law and reported to the Cyber Security Authority (CSA) and law enforcement agencies.
+      </p>
+    </section>
+
+    <section>
+      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">7. Governing Law &amp; Dispute Resolution</h2>
+      <p>
+        These Terms shall be interpreted, construed, and enforced in accordance with the laws of the Republic of Ghana. Any dispute arising out of or in connection with these Terms shall first be submitted to informal dispute resolution via our support channels. If unresolved within thirty (30) business days, the dispute shall be submitted to the exclusive jurisdiction of the competent courts sitting in Accra, Ghana.
+      </p>
+    </section>
+
+  </div>
+</div>
+{% endblock %}

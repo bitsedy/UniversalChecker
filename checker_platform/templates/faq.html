@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}Frequently Asked Questions & Customer Feedback | CheckerPay Ghana{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 960px;">
+  
+  <!-- Header -->
+  <div style="text-align: center; margin-bottom: 3.5rem;">
+    <div class="hero-pill" style="margin-bottom: 1rem;">
+      <span>Help Center &amp; Community Feedback</span>
+    </div>
+    <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.75rem; color: var(--text-main);">
+      Frequently Asked Questions
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 680px; margin: 0 auto;">
+      Everything you need to know about purchasing, receiving, using, and recovering your Ghanaian examination vouchers.
+    </p>
+  </div>
+
+  <!-- Quick Navigation Buttons -->
+  <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem;">
+    <a href="#vouchers" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">🎟️ Vouchers &amp; Usage</a>
+    <a href="#payments" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">💳 MoMo &amp; Payments</a>
+    <a href="#recovery" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">🔍 Lost Vouchers &amp; Delivery</a>
+    <a href="#advisor-faq" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">🎓 Pathway Advisor</a>
+    <a href="#feedback-section" style="background: var(--ghana-green); color: #ffffff; padding: 8px 16px; border-radius: 9999px; font-weight: 700; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+      ⭐ Submit Customer Review
+    </a>
+  </div>
+
+  <!-- FAQ SECTION 1: VOUCHERS -->
+  <div id="vouchers" style="margin-bottom: 2.5rem;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
+      <span style="font-size: 1.5rem;">🎟️</span>
+      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Vouchers, Authenticity &amp; Usage</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>Are CheckerPay vouchers authentic and accepted on official portals?</span>
+          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
+        </summary>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          <strong>Yes, absolutely 100%.</strong> All vouchers sold on CheckerPay are officially issued batches sourced directly through accredited educational distribution agreements. They are fully recognized and validated on <a href="https://ghana.waecdirect.org" target="_blank" style="color: var(--ghana-gold); font-weight: 600;">ghana.waecdirect.org</a>, <a href="https://cssps.gov.gh" target="_blank" style="color: var(--ghana-gold); font-weight: 600;">cssps.gov.gh</a>, and <a href="https://ctvet.gov.gh" target="_blank" style="color: var(--ghana-gold); font-weight: 600;">ctvet.gov.gh</a>.
+        </p>
+      </details>
+
+      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>How many times can I use a WAEC Result Checker card?</span>
+          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
+        </summary>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          A WAEC voucher allows a strict maximum of <strong>3 successful lookups</strong> for one specific candidate. The moment you enter your Index Number and check your result, the card is permanently locked to your index number. It cannot be used for any other student.
+        </p>
+      </details>
+
+      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>What is the difference between WASSCE School and WASSCE Private?</span>
+          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
+        </summary>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          <strong>WASSCE (School)</strong> is for candidates who wrote their examination through an accredited senior high school (regular May/June session).<br>
+          <strong>WASSCE (Private)</strong> is for candidates who registered independently as private candidates (often called NOV/DEC). On the WAEC portal, make sure you select the matching exam type dropdown.
+        </p>
+      </details>
+    </div>
+  </div>
+
+  <!-- FAQ SECTION 2: PAYMENTS -->
+  <div id="payments" style="margin-bottom: 2.5rem;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
+      <span style="font-size: 1.5rem;">💳</span>
+      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Mobile Money &amp; Payments</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>Which payment methods are supported?</span>
+          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
+        </summary>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          We accept all Ghanaian Mobile Money wallets: <strong>MTN Mobile Money (*170#)</strong>, <strong>Telecel Cash (*110#)</strong>, and <strong>AT Money (*110#)</strong>. We also support debit/credit cards (Visa and Mastercard) through our secure Paystack checkout.
+        </p>
+      </details>
+
+      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>My MoMo was debited, but I closed the tab before copying my PIN. What do I do?</span>
+          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
+        </summary>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          Don't panic! Your voucher was automatically saved. Simply go to our <a href="/lookup" style="color: var(--ghana-green); font-weight: 700;">Voucher Recovery Page</a>, type in your Mobile Money phone number or Order Reference, and your complete Serial Number and PIN will be displayed immediately.
+        </p>
+      </details>
+
+      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>How long does the payment approval prompt take to appear on my phone?</span>
+          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
+        </summary>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          Usually within 5 to 15 seconds. If you are using <strong>Telecel Cash</strong> or <strong>MTN MoMo</strong> and the prompt does not pop up automatically, dial <code>*170#</code> &rarr; Option 6 (My Wallet) &rarr; Option 3 (Approvals) to approve the pending transaction manually.
+        </p>
+      </details>
+    </div>
+  </div>
+
+  <!-- FAQ SECTION 3: RECOVERY & DELIVERY -->
+  <div id="recovery" style="margin-bottom: 2.5rem;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
+      <span style="font-size: 1.5rem;">🔍</span>
+      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Digital Delivery &amp; Voucher Recovery</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>How quickly will I receive my Serial Number and PIN?</span>
+          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
+        </summary>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          <strong>Instantaneous (under 3 seconds).</strong> As soon as your Mobile Money authorization is confirmed, the Serial Number and PIN appear right on your device screen with a 1-click copy button. An SMS receipt containing the details is also dispatched to the phone number you provided.
+        </p>
+      </details>
+
+      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>What should I do if a PIN shows "Card Already Used" on the WAEC portal?</span>
+          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
+        </summary>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          Because our inventory is concurrency-locked, pre-used cards are virtually unheard of. However, if this rare circumstance occurs, contact our support immediately with your Order Reference and a screenshot of the error. Once verified against our telemetry logs, an instant replacement voucher will be issued immediately under our <a href="/delivery-returns" style="color: var(--ghana-gold); font-weight: 600;">Delivery &amp; Returns SLA</a>.
+        </p>
+      </details>
+    </div>
+  </div>
+
+  <!-- FAQ SECTION 4: ADVISOR -->
+  <div id="advisor-faq" style="margin-bottom: 3.5rem;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
+      <span style="font-size: 1.5rem;">🎓</span>
+      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Placement &amp; Pathway Advisor</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>How does the Pathway Advisor compute school and university chances?</span>
+          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
+        </summary>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          The Pathway Advisor calculates your Best-6 aggregate according to Ghanaian standards (Core Math, English, Science/Social Studies + 3 best electives for WASSCE; 4 cores + 2 best electives for BECE). It then matches your profile against real historical cut-off aggregates across UG Legon, KNUST, UCC, UPSA, and Category A/B/C SHS institutions, providing realistic acceptance probabilities (High, Moderate, Reach).
+        </p>
+      </details>
+
+      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+          <span>Is my student examination data recorded or stored?</span>
+          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
+        </summary>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          <strong>No.</strong> In strict compliance with Section 20 of the Ghana Data Protection Act, 2012 (Act 843), all grades and subject entries are processed exclusively in volatile computer memory (RAM) and vaporized immediately once your advice report is returned. We do not store your grades.
+        </p>
+      </details>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE CUSTOMER FEEDBACK SECTION -->
+  <div id="feedback-section" style="background: var(--bg-card); border: 1.5px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-lg);">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <div class="hero-pill" style="margin-bottom: 0.75rem; background: rgba(5, 150, 105, 0.1); color: var(--ghana-green);">
+        <span>Voice of the Student &amp; Parent</span>
+      </div>
+      <h2 style="font-size: 1.8rem; font-weight: 900; color: var(--text-main); margin-bottom: 0.5rem;">
+        Rate Your Experience &amp; Share Feedback
+      </h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto;">
+        Did your voucher deliver smoothly? Was our Pathway Advisor helpful? Your honest review helps us keep CheckerPay Ghana fast, reliable, and accessible for everyone.
+      </p>
+    </div>
+
+    <form id="feedback_form" onsubmit="submitCustomerFeedback(event)" style="max-width: 640px; margin: 0 auto;">
+      
+      <!-- Star Rating Selection -->
+      <div style="text-align: center; margin-bottom: 1.75rem;">
+        <label style="display: block; font-weight: 700; font-size: 0.95rem; color: var(--text-main); margin-bottom: 0.5rem;">
+          Overall Rating <span style="color: var(--ghana-red);">*</span>
+        </label>
+        <div id="star_container" style="display: inline-flex; gap: 8px; font-size: 2rem; cursor: pointer;" aria-label="Rating selection">
+          <span class="star-btn" data-star="1" onclick="setFeedbackRating(1)" title="1 Star: Poor">★</span>
+          <span class="star-btn" data-star="2" onclick="setFeedbackRating(2)" title="2 Stars: Fair">★</span>
+          <span class="star-btn" data-star="3" onclick="setFeedbackRating(3)" title="3 Stars: Good">★</span>
+          <span class="star-btn" data-star="4" onclick="setFeedbackRating(4)" title="4 Stars: Very Good">★</span>
+          <span class="star-btn active" data-star="5" onclick="setFeedbackRating(5)" title="5 Stars: Excellent">★</span>
+        </div>
+        <input type="hidden" id="feedback_rating" name="rating" value="5">
+        <div id="rating_label" style="font-size: 0.85rem; font-weight: 700; color: var(--ghana-green); margin-top: 0.35rem;">5 Stars: Excellent</div>
+      </div>
+
+      <!-- Feedback Category -->
+      <div style="margin-bottom: 1.25rem;">
+        <label for="feedback_category" style="display: block; font-weight: 700; font-size: 0.875rem; color: var(--text-main); margin-bottom: 0.35rem;">
+          What are you reviewing? <span style="color: var(--ghana-red);">*</span>
+        </label>
+        <select id="feedback_category" name="category" required style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--bg-input); font-size: 0.95rem; color: var(--text-main); font-family: inherit;">
+          <option value="VOUCHER_DELIVERY">Voucher Purchase &amp; Instant Delivery</option>
+          <option value="PAYMENT_EXPERIENCE">Mobile Money / Payment Experience</option>
+          <option value="ADVISOR_HELPFULNESS">Placement &amp; Pathway Advisor</option>
+          <option value="CUSTOMER_SUPPORT">Customer Support Assistance</option>
+          <option value="GENERAL_FEEDBACK">General Feedback &amp; Suggestions</option>
+        </select>
+      </div>
+
+      <!-- Optional Identification Details -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+          <label for="feedback_name" style="display: block; font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.35rem;">
+            Your Name (Optional)
+          </label>
+          <input type="text" id="feedback_name" name="customer_name" placeholder="e.g. Kwame Mensah" style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--bg-input); font-size: 0.9rem; color: var(--text-main);">
+        </div>
+        <div>
+          <label for="feedback_phone" style="display: block; font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.35rem;">
+            Phone Number (Optional)
+          </label>
+          <input type="tel" id="feedback_phone" name="customer_phone" placeholder="024 XXX XXXX" style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--bg-input); font-size: 0.9rem; color: var(--text-main);">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label for="feedback_order_ref" style="display: block; font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.35rem;">
+          Order Reference (Optional, e.g. ORD-XXXX)
+        </label>
+        <input type="text" id="feedback_order_ref" name="order_reference" placeholder="ORD-2026..." style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--bg-input); font-size: 0.9rem; color: var(--text-main);">
+      </div>
+
+      <!-- Feedback Message -->
+      <div style="margin-bottom: 1.5rem;">
+        <label for="feedback_message" style="display: block; font-weight: 700; font-size: 0.875rem; color: var(--text-main); margin-bottom: 0.35rem;">
+          Your Comments / Review <span style="color: var(--ghana-red);">*</span>
+        </label>
+        <textarea id="feedback_message" name="message" rows="4" required minlength="5" placeholder="Tell us how we did or what we can do better..." style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); background: var(--bg-input); font-size: 0.925rem; color: var(--text-main); font-family: inherit; line-height: 1.5; resize: vertical;"></textarea>
+      </div>
+
+      <!-- Status Alert Box -->
+      <div id="feedback_alert" style="display: none; padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; font-size: 0.9rem; font-weight: 600;"></div>
+
+      <!-- Submit Button -->
+      <button type="submit" id="feedback_submit_btn" style="width: 100%; padding: 0.85rem; background: var(--ghana-green); color: #ffffff; border: none; border-radius: var(--radius-md); font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s ease;">
+        <span>🚀 Submit Review</span>
+      </button>
+    </form>
+  </div>
+
+</div>
+
+<style>
+.star-btn {
+  color: #cbd5e1;
+  transition: color 0.15s ease, transform 0.15s ease;
+  user-select: none;
+}
+.star-btn.active, .star-btn:hover {
+  color: var(--ghana-gold);
+  transform: scale(1.1);
+}
+details summary::-webkit-details-marker {
+  display: none;
+}
+</style>
+
+<script>
+let currentSelectedRating = 5;
+
+function setFeedbackRating(stars) {
+  currentSelectedRating = stars;
+  document.getElementById('feedback_rating').value = stars;
+  
+  const starEls = document.querySelectorAll('.star-btn');
+  const labels = {
+    1: '1 Star: Poor',
+    2: '2 Stars: Fair',
+    3: '3 Stars: Good',
+    4: '4 Stars: Very Good',
+    5: '5 Stars: Excellent'
+  };
+  
+  starEls.forEach((el, index) => {
+    if (index < stars) {
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
+  });
+
+  const labelEl = document.getElementById('rating_label');
+  labelEl.textContent = labels[stars] || `${stars} Stars`;
+  labelEl.style.color = stars >= 4 ? 'var(--ghana-green)' : (stars >= 3 ? 'var(--ghana-gold)' : 'var(--ghana-red)');
+}
+
+async function submitCustomerFeedback(e) {
+  e.preventDefault();
+  const btn = document.getElementById('feedback_submit_btn');
+  const alertBox = document.getElementById('feedback_alert');
+  
+  const rating = parseInt(document.getElementById('feedback_rating').value, 10);
+  const category = document.getElementById('feedback_category').value;
+  const message = document.getElementById('feedback_message').value.trim();
+  const customer_name = document.getElementById('feedback_name').value.trim() || null;
+  const customer_phone = document.getElementById('feedback_phone').value.trim() || null;
+  const order_reference = document.getElementById('feedback_order_ref').value.trim() || null;
+
+  if (message.length < 5) {
+    alertBox.style.display = 'block';
+    alertBox.style.background = '#fef2f2';
+    alertBox.style.border = '1px solid #fee2e2';
+    alertBox.style.color = 'var(--ghana-red)';
+    alertBox.textContent = 'Please provide a message with at least 5 characters.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳ Submitting Review...</span>';
+  alertBox.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        rating,
+        category,
+        message,
+        customer_name,
+        customer_phone,
+        order_reference
+      })
+    });
+
+    const data = await res.json();
+    alertBox.style.display = 'block';
+
+    if (res.ok && data.success) {
+      alertBox.style.background = '#f0fdf4';
+      alertBox.style.border = '1px solid #bbf7d0';
+      alertBox.style.color = 'var(--ghana-green)';
+      alertBox.textContent = data.message || 'Thank you! Your feedback has been recorded.';
+      document.getElementById('feedback_form').reset();
+      setFeedbackRating(5);
+    } else {
+      alertBox.style.background = '#fef2f2';
+      alertBox.style.border = '1px solid #fee2e2';
+      alertBox.style.color = 'var(--ghana-red)';
+      alertBox.textContent = data.message || 'Failed to submit feedback. Please try again.';
+    }
+  } catch (err) {
+    alertBox.style.display = 'block';
+    alertBox.style.background = '#fef2f2';
+    alertBox.style.border = '1px solid #fee2e2';
+    alertBox.style.color = 'var(--ghana-red)';
+    alertBox.textContent = 'Network connection error. Please check your internet connection.';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>🚀 Submit Review</span>';
+  }
+}
+
+// Auto-scroll to feedback if requested
+const shouldScrollToFeedback = {{ 'true' if scroll_to_feedback else 'false' }};
+document.addEventListener('DOMContentLoaded', () => {
+  if (shouldScrollToFeedback) {
+    const el = document.getElementById('feedback-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+});
+</script>
+{% endblock %}

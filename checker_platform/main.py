@@ -44,7 +44,9 @@ from .database import (
     release_idempotency_lock,
     append_audit_block,
     verify_audit_chain_integrity,
-    verify_database_integrity
+    verify_database_integrity,
+    save_customer_feedback,
+    get_customer_feedback
 )
 from .services.payment import (
     GhanaMoMoSimulator,
@@ -243,6 +245,114 @@ async def guides_page(request: Request):
         name="guides.html",
         context={"active_page": "guides"}
     )
+
+@app.get("/about", response_class=HTMLResponse)
+async def about_page(request: Request):
+    """Company background, mission, high-concurrency architecture, and security pillars."""
+    return templates.TemplateResponse(
+        request=request,
+        name="about.html",
+        context={"active_page": "about"}
+    )
+
+@app.get("/faq", response_class=HTMLResponse)
+async def faq_page(request: Request):
+    """Frequently Asked Questions and customer feedback portal."""
+    return templates.TemplateResponse(
+        request=request,
+        name="faq.html",
+        context={"active_page": "faq", "scroll_to_feedback": False}
+    )
+
+@app.get("/feedback", response_class=HTMLResponse)
+async def feedback_page(request: Request):
+    """Direct route to customer feedback section within FAQ portal."""
+    return templates.TemplateResponse(
+        request=request,
+        name="faq.html",
+        context={"active_page": "faq", "scroll_to_feedback": True}
+    )
+
+@app.get("/terms", response_class=HTMLResponse)
+async def terms_page(request: Request):
+    """Terms of Service grounded in Ghana Electronic Transactions Act (Act 772)."""
+    return templates.TemplateResponse(
+        request=request,
+        name="terms.html",
+        context={"active_page": "terms"}
+    )
+
+@app.get("/privacy", response_class=HTMLResponse)
+async def privacy_page(request: Request):
+    """Privacy Policy grounded in Ghana Data Protection Act (Act 843)."""
+    return templates.TemplateResponse(
+        request=request,
+        name="privacy.html",
+        context={"active_page": "privacy"}
+    )
+
+@app.get("/delivery-returns", response_class=HTMLResponse)
+async def delivery_returns_page(request: Request):
+    """Digital Voucher Delivery & Returns Policy."""
+    return templates.TemplateResponse(
+        request=request,
+        name="delivery_returns.html",
+        context={"active_page": "delivery_returns"}
+    )
+
+class CustomerFeedbackRequest(BaseModel):
+    rating: int = Field(..., ge=1, le=5, description="Customer rating from 1 to 5 stars")
+    category: str = Field(..., min_length=2, max_length=50, description="Feedback category")
+    message: str = Field(..., min_length=5, max_length=2000, description="Feedback message")
+    order_reference: Optional[str] = Field(None, max_length=50)
+    customer_phone: Optional[str] = Field(None, max_length=30)
+    customer_name: Optional[str] = Field(None, max_length=100)
+
+_FEEDBACK_RATE_LIMIT: Dict[str, List[float]] = {}
+
+@app.post("/api/feedback")
+async def api_submit_feedback(req: CustomerFeedbackRequest, request: Request):
+    """
+    Submits customer feedback with rate-limiting protection.
+    """
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    now = time.time()
+    
+    # Rate limit: max 5 submissions per 10 minutes per IP
+    recent_attempts = [t for t in _FEEDBACK_RATE_LIMIT.get(client_ip, []) if now - t < 600]
+    if len(recent_attempts) >= 5:
+        return JSONResponse(
+            status_code=429,
+            content={
+                "success": False,
+                "message": "Too many feedback submissions from this connection. Please wait a few minutes before trying again."
+            }
+        )
+    recent_attempts.append(now)
+    _FEEDBACK_RATE_LIMIT[client_ip] = recent_attempts
+
+    try:
+        feedback_id = save_customer_feedback(
+            rating=req.rating,
+            category=req.category,
+            message=req.message,
+            order_reference=req.order_reference,
+            customer_phone=req.customer_phone,
+            customer_name=req.customer_name,
+            client_ip=client_ip
+        )
+        return {
+            "success": True,
+            "feedback_id": feedback_id,
+            "message": "Thank you for your feedback! Your review helps us keep CheckerPay fast and reliable."
+        }
+    except Exception as e:
+        logger.error(f"[Feedback Submission Error] {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": "Failed to submit feedback. Please try again later."}
+        )
+
 
 admin_security = HTTPBasic(auto_error=False)
 
@@ -1414,11 +1524,11 @@ async def enterprise_exception_handler(request: Request, exc: Exception):
         content="""<!DOCTYPE html>
 <html>
 <head><title>500 Internal Error | CheckerPay Ghana</title><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="background:#0b0f19;color:#f8fafc;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
-<div style="text-align:center;padding:2rem;background:#131b2e;border-radius:12px;max-width:420px;border:1px solid rgba(255,255,255,0.1)">
-<h2 style="color:#f59e0b;">500 - System Exception</h2>
-<p style="color:#94a3b8;font-size:0.9rem;">An unexpected server state occurred. Sensitive internal diagnostic details are concealed.</p>
-<a href="/" style="display:inline-block;margin-top:1rem;color:#f59e0b;text-decoration:none;font-weight:bold;">Return to Home</a>
+<body style="background:#f8fafc;color:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
+<div style="text-align:center;padding:2.5rem 2rem;background:#ffffff;border-radius:16px;max-width:440px;border:1px solid #e2e8f0;box-shadow:0 10px 25px -5px rgba(0,0,0,0.06);">
+<h2 style="color:#d97706;margin-top:0;">500 - System Exception</h2>
+<p style="color:#64748b;font-size:0.95rem;line-height:1.5;">An unexpected server state occurred. Sensitive internal diagnostic details are safely concealed.</p>
+<a href="/" style="display:inline-block;margin-top:1.2rem;background:#059669;color:#ffffff;padding:0.75rem 1.5rem;border-radius:10px;text-decoration:none;font-weight:600;font-size:0.9rem;">Return to Home</a>
 </div></body></html>"""
     )
 

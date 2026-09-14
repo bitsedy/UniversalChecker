@@ -144,6 +144,21 @@ def init_db():
             );
         """)
 
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS customer_feedback (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                order_reference TEXT,
+                customer_phone TEXT,
+                customer_name TEXT,
+                rating INTEGER NOT NULL,
+                category TEXT NOT NULL,
+                message TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                client_ip TEXT,
+                status TEXT DEFAULT 'NEW'
+            );
+        """)
+
         # Performance and concurrency indexes
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vouchers_cat_status ON vouchers(category, status);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vouchers_order_ref ON vouchers(order_reference);")
@@ -157,6 +172,8 @@ def init_db():
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_audit_hash ON compliance_audit_ledger(current_block_hash);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_adv_tel_time ON advisory_telemetry(timestamp);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_adv_tel_exam ON advisory_telemetry(exam_type);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_feedback_created ON customer_feedback(created_at);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_feedback_rating ON customer_feedback(rating);")
 
         # Default pricing in GHS (Ghanaian Cedis)
         default_settings = [
@@ -1009,7 +1026,7 @@ def verify_database_integrity() -> Dict[str, Any]:
         tables = [
             "vouchers", "orders", "transactions", "site_settings",
             "admission_benchmarks", "idempotency_records", "compliance_audit_ledger",
-            "advisory_telemetry"
+            "advisory_telemetry", "customer_feedback"
         ]
         table_counts = {}
         for t in tables:
@@ -1108,4 +1125,64 @@ def seed_advisory_telemetry_if_empty() -> int:
     finally:
         conn.close()
 
+# ============================================================================
+# CUSTOMER FEEDBACK SERVICES
+# ============================================================================
 
+def save_customer_feedback(
+    rating: int,
+    category: str,
+    message: str,
+    order_reference: Optional[str] = None,
+    customer_phone: Optional[str] = None,
+    customer_name: Optional[str] = None,
+    client_ip: Optional[str] = None
+) -> int:
+    """
+    Saves customer feedback to the database.
+    Returns the new feedback row ID.
+    """
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO customer_feedback (
+                order_reference, customer_phone, customer_name,
+                rating, category, message, client_ip
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                order_reference.strip() if order_reference else None,
+                customer_phone.strip() if customer_phone else None,
+                customer_name.strip() if customer_name else None,
+                int(rating),
+                category.strip(),
+                message.strip(),
+                client_ip
+            )
+        )
+        conn.commit()
+        return cursor.lastrowid
+    finally:
+        conn.close()
+
+def get_customer_feedback(limit: int = 50, status: Optional[str] = None) -> List[Dict[str, Any]]:
+    """
+    Retrieves recent customer feedback records.
+    """
+    conn = get_db_connection()
+    try:
+        if status:
+            rows = conn.execute(
+                "SELECT * FROM customer_feedback WHERE status = ? ORDER BY id DESC LIMIT ?",
+                (status, limit)
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT * FROM customer_feedback ORDER BY id DESC LIMIT ?",
+                (limit,)
+            ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()

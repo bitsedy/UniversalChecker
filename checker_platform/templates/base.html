@@ -48,10 +48,16 @@
           <span>🏠</span> Home
         </a>
         <a href="/advisor" class="nav-link {% if active_page == 'advisor' %}active{% endif %}" style="display: inline-flex; align-items: center; gap: 6px;">
-          <span>🎓</span> Placement &amp; Pathway Advisor
+          <span>🎓</span> Pathway Advisor
         </a>
         <a href="/guides" class="nav-link {% if active_page == 'guides' %}active{% endif %}">
-          <span>📖</span> Portal Guides &amp; Rules
+          <span>📖</span> Guides &amp; Rules
+        </a>
+        <a href="/faq" class="nav-link {% if active_page == 'faq' %}active{% endif %}">
+          <span>❓</span> FAQs &amp; Support
+        </a>
+        <a href="/about" class="nav-link {% if active_page == 'about' %}active{% endif %}">
+          <span>🏢</span> About Us
         </a>
         <a href="/lookup" class="btn-nav-lookup">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -70,41 +76,59 @@
   </main>
 
   <!-- Footer -->
-  <footer>
+  <footer style="background: #ffffff; border-top: 1px solid var(--border-subtle); padding: 3.5rem 0 2rem 0; margin-top: 4rem;">
     <div class="container">
-      <div class="footer-content">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2.5rem; margin-bottom: 2.5rem;">
+        
+        <!-- Column 1: Brand & Mission -->
         <div>
-          <div style="font-weight: 800; font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
-            <span>🇬🇭</span> CheckerPay Ghana Digital Services
+          <div style="font-weight: 800; font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px;">
+            <span>🇬🇭</span> CheckerPay Ghana
           </div>
-          <p class="footer-legal" style="max-width: 550px;">
-            Authorized digital distributor of authentic WAEC, CSSPS, and CTVET verification vouchers. 
-            All result checking occurs on the respective official government examination portals. Compliant with Ghana Data Protection Act, 2012 (Act 843).
+          <p style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.6; margin-bottom: 1rem;">
+            Authorized digital distributor of authentic WAEC, CSSPS, and CTVET examination verification vouchers in Ghana. Concurrency-safe, instant dual delivery.
           </p>
+          <a href="/about" style="color: var(--ghana-green); font-size: 0.85rem; font-weight: 700; text-decoration: none;">
+            Read Our Story &amp; Tech &rarr;
+          </a>
         </div>
 
-        <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-          <div>
-            <div style="font-weight: 800; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.5rem; text-transform: uppercase;">Official Portals</div>
-            <ul style="list-style: none; font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px;">
-              <li><a href="https://ghana.waecdirect.org" target="_blank" style="color: var(--text-muted); text-decoration: none;">WAEC Direct Ghana ↗</a></li>
-              <li><a href="https://cssps.gov.gh" target="_blank" style="color: var(--text-muted); text-decoration: none;">CSSPS Placement Portal ↗</a></li>
-              <li><a href="https://ctvet.gov.gh" target="_blank" style="color: var(--text-muted); text-decoration: none;">CTVET Examination Portal ↗</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <div style="font-weight: 800; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.5rem; text-transform: uppercase;">Navigation</div>
-            <ul style="list-style: none; font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px;">
-              <li><a href="/advisor" style="color: var(--text-muted); text-decoration: none;">🎓 Placement & Pathway Advisor</a></li>
-              <li><a href="/guides" style="color: var(--text-muted); text-decoration: none;">Avoid Voucher Burn Guide</a></li>
-              <li><a href="/lookup" style="color: var(--text-muted); text-decoration: none;">Find Lost Serial & PIN</a></li>
-            </ul>
-          </div>
+        <!-- Column 2: Customer Support & Tools -->
+        <div>
+          <div style="font-weight: 800; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Customer Support</div>
+          <ul style="list-style: none; font-size: 0.875rem; display: flex; flex-direction: column; gap: 8px;">
+            <li><a href="/lookup" style="color: var(--text-muted); text-decoration: none;">🔍 Retrieve Lost Voucher</a></li>
+            <li><a href="/faq" style="color: var(--text-muted); text-decoration: none;">❓ Frequently Asked Questions</a></li>
+            <li><a href="/feedback" style="color: var(--text-muted); text-decoration: none;">⭐ Share Feedback / Review</a></li>
+            <li><a href="/guides" style="color: var(--text-muted); text-decoration: none;">📖 Avoid Voucher Burn Guide</a></li>
+          </ul>
         </div>
+
+        <!-- Column 3: Legal & Regulatory -->
+        <div>
+          <div style="font-weight: 800; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Legal &amp; Compliance</div>
+          <ul style="list-style: none; font-size: 0.875rem; display: flex; flex-direction: column; gap: 8px;">
+            <li><a href="/terms" style="color: var(--text-muted); text-decoration: none;">Terms of Service (Act 772)</a></li>
+            <li><a href="/privacy" style="color: var(--text-muted); text-decoration: none;">Privacy Policy (Act 843)</a></li>
+            <li><a href="/delivery-returns" style="color: var(--text-muted); text-decoration: none;">Delivery &amp; Returns Policy</a></li>
+            <li><a href="/advisor" style="color: var(--text-muted); text-decoration: none;">Pathway Advisor Portal</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Official Portals -->
+        <div>
+          <div style="font-weight: 800; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Official Portals</div>
+          <ul style="list-style: none; font-size: 0.875rem; display: flex; flex-direction: column; gap: 8px;">
+            <li><a href="https://ghana.waecdirect.org" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); text-decoration: none;">WAEC Direct Ghana ↗</a></li>
+            <li><a href="https://cssps.gov.gh" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); text-decoration: none;">CSSPS Placement Portal ↗</a></li>
+            <li><a href="https://ctvet.gov.gh" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); text-decoration: none;">CTVET Examination Portal ↗</a></li>
+          </ul>
+        </div>
+
       </div>
-      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.775rem; color: var(--text-dim);">
-        <div>&copy; 2026 CheckerPay Ghana. All Rights Reserved.</div>
+
+      <div style="padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; color: var(--text-dim);">
+        <div>&copy; 2026 CheckerPay Ghana. All Rights Reserved. Fully compliant with Ghana Data Protection Act, 2012 (Act 843).</div>
         <div>Fast, Concurrency-Safe Voucher Distribution</div>
       </div>
     </div>
