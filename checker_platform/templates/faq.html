@@ -20,19 +20,19 @@
 
   <!-- Quick Navigation Buttons -->
   <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem;">
-    <a href="#vouchers" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">🎟️ Vouchers &amp; Usage</a>
-    <a href="#payments" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">💳 MoMo &amp; Payments</a>
-    <a href="#recovery" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">🔍 Lost Vouchers &amp; Delivery</a>
-    <a href="#advisor-faq" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">🎓 Pathway Advisor</a>
+    <a href="#vouchers" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">Vouchers &amp; Usage</a>
+    <a href="#payments" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">MoMo &amp; Payments</a>
+    <a href="#recovery" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">Lost Vouchers &amp; Delivery</a>
+    <a href="#advisor-faq" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">Pathway Advisor</a>
     <a href="#feedback-section" style="background: var(--ghana-green); color: #ffffff; padding: 8px 16px; border-radius: 9999px; font-weight: 700; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-      ⭐ Submit Customer Review
+      Submit Customer Review &rarr;
     </a>
   </div>
 
   <!-- FAQ SECTION 1: VOUCHERS -->
   <div id="vouchers" style="margin-bottom: 2.5rem;">
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
-      <span style="font-size: 1.5rem;">🎟️</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-gold); display: block;"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
       <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Vouchers, Authenticity &amp; Usage</h2>
     </div>
 
@@ -73,7 +73,7 @@
   <!-- FAQ SECTION 2: PAYMENTS -->
   <div id="payments" style="margin-bottom: 2.5rem;">
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
-      <span style="font-size: 1.5rem;">💳</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-green); display: block;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
       <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Mobile Money &amp; Payments</h2>
     </div>
 
@@ -113,7 +113,7 @@
   <!-- FAQ SECTION 3: RECOVERY & DELIVERY -->
   <div id="recovery" style="margin-bottom: 2.5rem;">
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
-      <span style="font-size: 1.5rem;">🔍</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-blue); display: block;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Digital Delivery &amp; Voucher Recovery</h2>
     </div>
 
@@ -143,7 +143,7 @@
   <!-- FAQ SECTION 4: ADVISOR -->
   <div id="advisor-faq" style="margin-bottom: 3.5rem;">
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
-      <span style="font-size: 1.5rem;">🎓</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-gold); display: block;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
       <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Placement &amp; Pathway Advisor</h2>
     </div>
 
@@ -252,7 +252,7 @@
 
       <!-- Submit Button -->
       <button type="submit" id="feedback_submit_btn" style="width: 100%; padding: 0.85rem; background: var(--ghana-green); color: #ffffff; border: none; border-radius: var(--radius-md); font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s ease;">
-        <span>🚀 Submit Review</span>
+        <span>Submit Review &rarr;</span>
       </button>
     </form>
   </div>
@@ -325,7 +325,7 @@ async function submitCustomerFeedback(e) {
   }
 
   btn.disabled = true;
-  btn.innerHTML = '<span>⏳ Submitting Review...</span>';
+  btn.innerHTML = '<span>Submitting Review...</span>';
   alertBox.style.display = 'none';
 
   try {
@@ -366,7 +366,7 @@ async function submitCustomerFeedback(e) {
     alertBox.textContent = 'Network connection error. Please check your internet connection.';
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<span>🚀 Submit Review</span>';
+    btn.innerHTML = '<span>Submit Review &rarr;</span>';
   }
 }
 

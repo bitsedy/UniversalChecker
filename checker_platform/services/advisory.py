@@ -356,7 +356,7 @@ def generate_bece_final_verdict(
         verdict_type = "CRITICAL_HAZARD"
         badge_label = "CRITICAL PLACEMENT HAZARD"
         theme = "danger"
-        headline = "⚠️ High Automated Placement Risk (Stanine > 6 in Core Subjects)"
+        headline = "High Automated Placement Risk (Stanine > 6 in Core Subjects)"
         bottom_line = (
             f"Your grade in {'English Language (' + str(english_grade) + ')' if english_grade > 6 else 'Mathematics (' + str(math_grade) + ')'} "
             "means the GES automated algorithm will almost certainly skip your choices 1 through 4."
@@ -374,7 +374,7 @@ def generate_bece_final_verdict(
         verdict_type = "DIRECT_CATEGORY_A"
         badge_label = "UNCONDITIONAL TOP-TIER MERIT"
         theme = "success"
-        headline = "🟢 Target Category A With High Confidence — Do NOT Pay Any Agent"
+        headline = "Target Category A With High Confidence — Do NOT Pay Any Agent"
         bottom_line = (
             f"Aggregate {total_aggregate:02d} puts you in the top tier of candidates across Ghana. "
             "You have demonstrated exceptional mastery across both core and elective subjects."
@@ -392,7 +392,7 @@ def generate_bece_final_verdict(
         verdict_type = "CATEGORY_B_TARGET"
         badge_label = "SOLID REGIONAL MERIT"
         theme = "info"
-        headline = "🔵 Category B is Your Strategic Sweet Spot"
+        headline = "Category B is Your Strategic Sweet Spot"
         bottom_line = (
             f"Aggregate {total_aggregate:02d} is a strong, highly respectable pass, but Category A boarding quotas are hyper-competitive. "
             "Category B schools represent your highest quality-of-education assurance."
@@ -410,7 +410,7 @@ def generate_bece_final_verdict(
         verdict_type = "COMMUNITY_AND_LOCAL_DAY"
         badge_label = "COMMUNITY & LOCAL DAY FOCUS"
         theme = "warning"
-        headline = "🟡 Leverage Category C & 30% Local Day Quota"
+        headline = "Leverage Category C & 30% Local Day Quota"
         bottom_line = (
             f"With Aggregate {total_aggregate:02d}, national boarding placement is unrealistic. "
             "Your best pathway is securing enrollment in a quality community or district day school."
@@ -428,7 +428,7 @@ def generate_bece_final_verdict(
         verdict_type = "REMEDIAL_OR_TVET"
         badge_label = "REMEDIAL OR APPRENTICESHIP DIRECTIVE"
         theme = "danger"
-        headline = "🔴 CTVET Practical Institutes or Private BECE Remedial"
+        headline = "CTVET Practical Institutes or Private BECE Remedial"
         bottom_line = (
             f"Aggregate {total_aggregate:02d} significantly exceeds conventional secondary school admission thresholds. "
             "A shift in academic strategy is required."
@@ -510,17 +510,17 @@ def evaluate_bece_results(
     if english_grade > 6:
         risk_level = "HIGH"
         reality_checks.append(
-            f"⚠️ Critical Risk: English Language grade is {english_grade} (Stanine > 6). Under CSSPS automated rules, candidates with Grade 7-9 in English Language frequently miss automated placement and must utilize Self-Placement."
+            f"Critical Risk: English Language grade is {english_grade} (Stanine > 6). Under CSSPS automated rules, candidates with Grade 7-9 in English Language frequently miss automated placement and must utilize Self-Placement."
         )
     if math_grade > 6:
         if risk_level != "HIGH":
             risk_level = "MODERATE"
         reality_checks.append(
-            f"⚠️ Mathematics grade is {math_grade} (Stanine > 6). This restricts placement into General Science and Business programmes."
+            f"Mathematics grade is {math_grade} (Stanine > 6). This restricts placement into General Science and Business programmes."
         )
     if preferred_programme == "General Science" and (science_grade > 3 or math_grade > 3):
         reality_checks.append(
-            f"ℹ️ General Science Reality Check: Category A & B schools heavily favor candidates with Grade 1 or 2 in Integrated Science and Mathematics. Your grades (Science: {science_grade}, Math: {math_grade}) may require choosing Category B or C schools for this programme."
+            f"General Science Reality Check: Category A & B schools heavily favor candidates with Grade 1 or 2 in Integrated Science and Mathematics. Your grades (Science: {science_grade}, Math: {math_grade}) may require choosing Category B or C schools for this programme."
         )
 
     # 4. Determine Placement Probabilities Across Categories
@@ -631,23 +631,23 @@ def evaluate_bece_results(
     ])
 
     whatsapp_text = (
-        "🇬🇭 *CHECKERPAY GHANA | CSSPS PLACEMENT DOSSIER*\n"
+        "*CHECKERPAY GHANA | CSSPS PLACEMENT DOSSIER*\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"⚖️ *ADVISOR'S FINAL VERDICT:*\n"
+        f"*ADVISOR'S FINAL VERDICT:*\n"
         f"*{final_verdict['headline']}*\n"
         f"_{final_verdict['bottom_line']}_\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"🏫 *BECE Aggregate:* {total_aggregate:02d} ({risk_level})\n"
-        f"🎯 *Target Programme:* {preferred_programme}\n"
-        f"📋 *Score Breakdown:* Cores: {core_aggregate} pts | Best 2 Electives: {elective_aggregate} pts\n"
+        f"*BECE Aggregate:* {total_aggregate:02d} ({risk_level})\n"
+        f"*Target Programme:* {preferred_programme}\n"
+        f"*Score Breakdown:* Cores: {core_aggregate} pts | Best 2 Electives: {elective_aggregate} pts\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-        "🎯 *TOP SUGGESTED SCHOOLS & CHANCES:*\n"
+        "*TOP SUGGESTED SCHOOLS & CHANCES:*\n"
         + top_schools_whatsapp
-        + "\n\n🚀 *RECOMMENDED ACTIONS:*\n"
+        + "\n\n*RECOMMENDED ACTIONS:*\n"
         + "\n".join([f"  • {act}" for act in final_verdict["best_actions"][:2]])
-        + "\n\n🚫 *WHAT NOT TO DO:*\n"
+        + "\n\n*WHAT NOT TO DO:*\n"
         + f"  • {final_verdict['what_not_to_do'][0]}\n"
-        + "\n🛡️ *OFFICIAL CSSPS NOTICE:*\n"
+        + "\n*OFFICIAL CSSPS NOTICE:*\n"
         "Never pay unauthorized protocol admission agents.\n"
         "Official self-placement portal: https://cssps.gov.gh\n"
         f"Verification Hash: `{audit_hash[:16]}...`"
@@ -1164,7 +1164,7 @@ def generate_wassce_final_verdict(
         verdict_type = "GTEC_PREREQUISITE_BARRIER"
         badge_label = "DO NOT BUY DEGREE VOUCHERS — D7/E8 DETECTED"
         theme = "danger"
-        headline = "⚠️ BRUTALLY HONEST REALITY: Barred From 4-Year Public University Degrees"
+        headline = "BRUTALLY HONEST REALITY: Barred From 4-Year Public University Degrees"
         bottom_line = (
             f"DO NOT waste GH₵ 220–250 buying university degree application forms right now! "
             f"You scored {failed_grade} in {failed_subj}. Under official GTEC policy, traditional public universities "
@@ -1185,7 +1185,7 @@ def generate_wassce_final_verdict(
         verdict_type = "MANDATORY_REMEDIAL"
         badge_label = "MANDATORY REMEDIAL DIRECTIVE"
         theme = "danger"
-        headline = "🔴 Direct Tertiary Entry Not Legally Permitted — NOV/DEC Required"
+        headline = "Direct Tertiary Entry Not Legally Permitted — NOV/DEC Required"
         bottom_line = (
             f"Your aggregate is {total_aggregate:02d}, exceeding the national tertiary cutoff ceiling of Aggregate 36. "
             "No accredited university or college of education in Ghana can legally admit you for a degree this academic year."
@@ -1205,7 +1205,7 @@ def generate_wassce_final_verdict(
         verdict_type = "UNCONDITIONAL_DEGREE"
         badge_label = "UNCONDITIONAL DIRECT DEGREE PATH"
         theme = "success"
-        headline = "🟢 Apply to University With Full Confidence — Do NOT Write Remedials!"
+        headline = "Apply to University With Full Confidence — Do NOT Write Remedials!"
         bottom_line = (
             f"Aggregate {total_aggregate:02d} with clean A1–C6 passes meets all GTEC university matriculation standards. "
             "Writing NOV/DEC remedials would be a complete waste of your time and money."
@@ -1225,7 +1225,7 @@ def generate_wassce_final_verdict(
         verdict_type = "DEGREE_DIVERSIFICATION"
         badge_label = "QUALIFIED DEGREE WITH DIVERSIFICATION"
         theme = "info"
-        headline = "🔵 Degree Eligible — Apply Strategically Beyond Oversubscribed Tracks"
+        headline = "Degree Eligible — Apply Strategically Beyond Oversubscribed Tracks"
         bottom_line = (
             f"With Aggregate {total_aggregate:02d} and zero D7s, you are 100% degree-eligible nationwide. "
             "However, ultra-competitive courses like Medicine, Computer Science, and Law at Legon/KNUST require Agg 06–12."
@@ -1245,7 +1245,7 @@ def generate_wassce_final_verdict(
         verdict_type = "TECHNICAL_OR_DIPLOMA_PATH"
         badge_label = "TECHNICAL UNIVERSITY & DIPLOMA TRACK"
         theme = "warning"
-        headline = "🟡 Prioritize Technical University Degrees, HND, or Accredited Diplomas"
+        headline = "Prioritize Technical University Degrees, HND, or Accredited Diplomas"
         bottom_line = (
             f"Aggregate {total_aggregate:02d} is above the typical cutoff for traditional public university degrees (UG/KNUST), "
             "but opens wide doors for practical Technical University degrees and accredited university diplomas."
@@ -1285,23 +1285,23 @@ def format_wassce_whatsapp_dossier(analysis: Dict[str, Any]) -> str:
     """Formats an executive WhatsApp share text for parents, mentors, and candidates."""
     verdict = analysis.get("final_verdict", {})
     lines = [
-        "🇬🇭 *CHECKERPAY GHANA | ADMISSIONS & PLACEMENT DOSSIER*",
+        "*CHECKERPAY GHANA | ADMISSIONS & PLACEMENT DOSSIER*",
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     ]
     if verdict:
         lines.extend([
-            "⚖️ *ADVISOR'S FINAL VERDICT:*",
+            "*ADVISOR'S FINAL VERDICT:*",
             f"*{verdict.get('headline', '')}*",
             f"_{verdict.get('bottom_line', '')}_",
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         ])
 
     lines.extend([
-        f"📊 *Candidate Status:* {analysis.get('aggregate_string', 'N/A')}",
-        f"🎯 *Field of Interest:* {analysis.get('interest_area', 'General')}",
-        f"⚖️ *GTEC Qualification:* {analysis.get('eligibility_status', '').replace('_', ' ')}",
+        f"*Candidate Status:* {analysis.get('aggregate_string', 'N/A')}",
+        f"*Field of Interest:* {analysis.get('interest_area', 'General')}",
+        f"*GTEC Qualification:* {analysis.get('eligibility_status', '').replace('_', ' ')}",
         "",
-        "📋 *QUALIFYING SUBJECTS SUMMARY:*"
+        "*QUALIFYING SUBJECTS SUMMARY:*"
     ])
     for c in analysis.get("selected_cores", []):
         lines.append(f"  • {c[0]}: *{c[1]}*")
@@ -1311,27 +1311,27 @@ def format_wassce_whatsapp_dossier(analysis: Dict[str, Any]) -> str:
     suggested_institutions = analysis.get("suggested_institutions", [])
     if suggested_institutions:
         lines.append("")
-        lines.append(f"🎯 *TOP SUGGESTED INSTITUTIONS & CHANCES:*")
+        lines.append(f"*TOP SUGGESTED INSTITUTIONS & CHANCES:*")
         for inst in suggested_institutions[:3]:
             lines.append(f"  • *{inst['institution_code']}* - {inst['programme_name']}: *{inst['probability_percent']}% Chance* [{inst['tier_label']}]")
 
     if verdict and verdict.get("best_actions"):
         lines.append("")
-        lines.append("🚀 *RECOMMENDED ACTIONS:*")
+        lines.append("*RECOMMENDED ACTIONS:*")
         for act in verdict["best_actions"][:2]:
             lines.append(f"  • {act}")
 
     if verdict and verdict.get("what_not_to_do"):
         lines.append("")
-        lines.append("🚫 *WHAT NOT TO DO:*")
+        lines.append("*WHAT NOT TO DO:*")
         lines.append(f"  • {verdict['what_not_to_do'][0]}")
 
     scholarships = analysis.get("scholarships", [])
     if scholarships:
         lines.append("")
-        lines.append(f"💰 *MATCHED SCHOLARSHIPS ({len(scholarships)} Opportunities):*")
+        lines.append(f"*MATCHED SCHOLARSHIPS ({len(scholarships)} Opportunities):*")
         for s in scholarships[:2]:
-            lines.append(f"  ⭐ *{s['name']}*")
+            lines.append(f"  • *{s['name']}*")
             lines.append(f"     Coverage: {s['coverage'][:55]}...")
             lines.append(f"     Portal: {s['portal_url']}")
 
@@ -1339,12 +1339,12 @@ def format_wassce_whatsapp_dossier(analysis: Dict[str, Any]) -> str:
     if deficits.get("has_deficits") and deficits.get("scenarios"):
         top = deficits["scenarios"][0]
         lines.append("")
-        lines.append("🚀 *STRATEGIC REMEDIAL PROJECTION (NOV/DEC):*")
-        lines.append(f"  Upgrading *{top['subject']}* ({top['current_grade']} ➔ {top['target_grade']}) shifts aggregate from *{analysis['aggregate']}* to *{top['projected_aggregate']}*, unlocking *+{top['additional_programmes_unlocked']} degree programmes* at Legon & KNUST!")
+        lines.append("*STRATEGIC REMEDIAL PROJECTION (NOV/DEC):*")
+        lines.append(f"  Upgrading *{top['subject']}* ({top['current_grade']} -> {top['target_grade']}) shifts aggregate from *{analysis['aggregate']}* to *{top['projected_aggregate']}*, unlocking *+{top['additional_programmes_unlocked']} degree programmes* at Legon & KNUST!")
 
     lines.extend([
         "",
-        "🔒 *VERIFIED INTEGRITY ATTENUATION:*",
+        "*VERIFIED INTEGRITY ATTENUATION:*",
         f"Proof Hash: `{analysis.get('compliance_attestation_hash', '')[:16]}...`",
         "Grounded in official GTEC/WAEC benchmarks under Ghana Act 843.",
         "Check live admissions: https://checkerpay.onrender.com/advisor"
@@ -1407,22 +1407,22 @@ def evaluate_wassce_results(
     if eng_val > 6:
         eligibility_status = "BARRED_FROM_PUBLIC_DEGREE"
         reality_checks.append(
-            f"🚫 Critical GTEC Rule: English Language is {eng_grade} (Value: {eng_val}). Traditional public universities (UG, KNUST, UCC) strictly DO NOT grant direct admission for 4-year degree programmes with a grade below C6 in English."
+            f"Critical GTEC Rule: English Language is {eng_grade} (Value: {eng_val}). Traditional public universities (UG, KNUST, UCC) strictly DO NOT grant direct admission for 4-year degree programmes with a grade below C6 in English."
         )
     if math_val > 6:
         if eligibility_status == "QUALIFIED_DEGREE":
             eligibility_status = "BARRED_FROM_PUBLIC_DEGREE"
         reality_checks.append(
-            f"🚫 Critical GTEC Rule: Core Mathematics is {math_grade} (Value: {math_val}). This prevents direct entry into science, engineering, business, and economics degrees across all traditional public universities."
+            f"Critical GTEC Rule: Core Mathematics is {math_grade} (Value: {math_val}). This prevents direct entry into science, engineering, business, and economics degrees across all traditional public universities."
         )
     if sci_val > 6 and "Science" in interest_area:
         reality_checks.append(
-            f"⚠️ Integrated Science is {sci_grade}. Most science, nursing, and engineering faculties require minimum C6 in Integrated Science."
+            f"Integrated Science is {sci_grade}. Most science, nursing, and engineering faculties require minimum C6 in Integrated Science."
         )
     if total_aggregate > 36:
         eligibility_status = "EXCEEDS_AGGREGATE_36"
         reality_checks.append(
-            f"⚠️ Aggregate {total_aggregate} exceeds the official national university eligibility threshold of Aggregate 36. Direct degree entry is not possible this academic cycle."
+            f"Aggregate {total_aggregate} exceeds the official national university eligibility threshold of Aggregate 36. Direct degree entry is not possible this academic cycle."
         )
 
     # 4. Realistic Pathway Recommendations

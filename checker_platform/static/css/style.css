@@ -27,6 +27,12 @@
   --shadow-gold: 0 10px 25px -5px rgba(217, 119, 6, 0.15);
   --radius-lg: 16px;
   --radius-md: 10px;
+
+  /* Classic Authoritative Editorial Typography System */
+  --font-classic: 'Lora', Georgia, 'Times New Roman', serif;
+  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-brand: 'Cinzel', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 }
 
 html {
@@ -276,16 +282,17 @@ html {
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-classic);
   background-color: var(--bg-main, #f8fafc);
   color: var(--text-main);
   color-scheme: light;
-  line-height: 1.6;
+  line-height: 1.68;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
   position: relative;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Atmospheric Ambient Mesh Glow */
@@ -303,9 +310,29 @@ body::before {
   z-index: 0;
 }
 
-/* Global Headings High-Contrast Legibility */
-h1, h2, h3, h4, h5, h6 {
+/* Classic Headings High-Contrast Legibility */
+h1, h2, h3, h4, h5, h6,
+.hero-title,
+.section-title,
+.product-name,
+.advisor-card-title,
+.verdict-headline {
+  font-family: var(--font-heading);
+  letter-spacing: -0.015em;
   color: var(--text-main);
+}
+
+.brand-title,
+.brand-ghana-tag,
+.badge-pill,
+.trust-seal-title {
+  font-family: var(--font-brand);
+}
+
+.voucher-pin,
+.voucher-serial,
+.mono-code {
+  font-family: var(--font-mono) !important;
 }
 
 /* Subtle Kente Geometric Top Ribbon */
@@ -535,15 +562,26 @@ h1, h2, h3, h4, h5, h6 {
 .telco-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
+  gap: 8px;
+  font-size: 0.85rem;
   font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
 }
 
-.telco-mtn { color: #d97706; }
-.telco-telecel { color: #dc2626; }
-.telco-at { color: #0284c7; }
-.telco-card { color: #475569; }
+.telco-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.telco-mtn { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.telco-telecel { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.telco-at { background: #f0f9ff; border-color: #bae6fd; color: #0369a1; }
+.telco-card { background: #f8fafc; border-color: #e2e8f0; color: #334155; }
 
 /* Product Grid */
 .products-grid {
@@ -710,7 +748,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .safety-icon {
-  font-size: 2.2rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.safety-icon svg {
+  width: 42px;
+  height: 42px;
+  display: block;
 }
 
 .safety-content h3 {
@@ -1256,13 +1305,18 @@ footer {
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background: rgba(217, 119, 6, 0.1);
+  background: rgba(217, 119, 6, 0.08);
   border: 1px solid var(--border-gold);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.35rem;
   flex-shrink: 0;
+}
+
+.trust-seal-icon svg {
+  width: 26px;
+  height: 26px;
+  display: block;
 }
 
 .trust-seal-info h4 {
@@ -1435,6 +1489,12 @@ footer {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   transition: all 0.3s ease;
+}
+
+.faq-q-icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 .faq-item.open .faq-q-icon {

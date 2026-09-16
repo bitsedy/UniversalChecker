@@ -21,23 +21,32 @@
     <div class="telco-banner">
       <span class="telco-label">Supported Payments:</span>
       <div class="telco-item telco-mtn">
-        <span>🟡 MTN MoMo (*170#)</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="4" fill="#fbbf24" stroke="#d97706"/><circle cx="8" cy="12" r="2" fill="#78350f"/><circle cx="16" cy="12" r="2" fill="#78350f"/><path d="M11 12h2" stroke="#78350f" stroke-width="2"/></svg>
+        <span>MTN MoMo (*170#)</span>
       </div>
       <div class="telco-item telco-telecel">
-        <span>🔴 Telecel Cash (*110#)</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" fill="#ef4444" stroke="#dc2626"/><path d="M8 12h8M12 8v8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <span>Telecel Cash (*110#)</span>
       </div>
       <div class="telco-item telco-at">
-        <span>🔵 AT Money (*110#)</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="4" fill="#0284c7" stroke="#0369a1"/><path d="M7 15l5-8 5 8M9 13h6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>AT Money (*110#)</span>
       </div>
       <div class="telco-item telco-card">
-        <span>💳 Visa / Mastercard</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="15" r="1" fill="currentColor"/></svg>
+        <span>Visa / Mastercard</span>
       </div>
     </div>
   </section>
 
   <!-- Trap Prevention Notice Banner -->
   <div class="safety-banner">
-    <div class="safety-icon">🛡️</div>
+    <div class="safety-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(217, 119, 6, 0.15)"/>
+        <path d="M9 12l2 2 4-4" stroke="#059669" stroke-width="2.5"/>
+      </svg>
+    </div>
     <div class="safety-content">
       <h3>Avoid Portal Pitfalls & Voucher Burn</h3>
       <p>
@@ -81,11 +90,11 @@
 
         <div class="rules-preview">
           <div class="rule-item">
-            <span>ℹ️</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ghana-gold)" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
             <span><strong>Check Limit:</strong> {% if cat.check_limit == 999 %}Unlimited checks for same candidate{% else %}Strictly {{ cat.check_limit }} checks{% endif %}</span>
           </div>
           <div class="rule-item">
-            <span>ℹ️</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ghana-gold)" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
             <span><strong>Index:</strong> {{ cat.index_format }}</span>
           </div>
         </div>
@@ -115,7 +124,11 @@
     </h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem;">
       <div>
-        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">⚡</div>
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(217, 119, 6, 0.1); border: 1px solid var(--border-gold); display: flex; align-items: center; justify-content: center; margin-bottom: 0.85rem;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ghana-gold)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
         <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Instant On-Screen Reveal</h4>
         <p style="font-size: 0.85rem; color: var(--text-muted);">
           Never wait for SMS delays during national exam rushes. Your Serial Number and PIN appear immediately upon Mobile Money approval.
@@ -123,7 +136,12 @@
       </div>
 
       <div>
-        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🔒</div>
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(5, 150, 105, 0.1); border: 1px solid rgba(5, 150, 105, 0.3); display: flex; align-items: center; justify-content: center; margin-bottom: 0.85rem;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ghana-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
         <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Zero Double-Allocation</h4>
         <p style="font-size: 0.85rem; color: var(--text-muted);">
           Our concurrency-safe locking engine reserves your voucher for 10 minutes, ensuring no two buyers are ever sold the same PIN.
@@ -131,7 +149,12 @@
       </div>
 
       <div>
-        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📱</div>
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(2, 132, 199, 0.1); border: 1px solid rgba(2, 132, 199, 0.3); display: flex; align-items: center; justify-content: center; margin-bottom: 0.85rem;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+        </div>
         <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Multi-Channel Delivery</h4>
         <p style="font-size: 0.85rem; color: var(--text-muted);">
           Download a printable digital receipt card or share the card directly to your WhatsApp with official checking portal links.
@@ -139,7 +162,12 @@
       </div>
 
       <div>
-        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🔍</div>
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(217, 119, 6, 0.1); border: 1px solid var(--border-gold); display: flex; align-items: center; justify-content: center; margin-bottom: 0.85rem;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ghana-gold)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </div>
         <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">24/7 Self-Service Recovery</h4>
         <p style="font-size: 0.85rem; color: var(--text-muted);">
           Misplaced your phone or closed your browser? Enter your phone number anytime in the "Retrieve My Voucher" portal to view all past PINs.
@@ -151,7 +179,12 @@
   <!-- Institutional Trust Seals & Guarantees Bar -->
   <div class="trust-seals-grid">
     <div class="trust-seal-card">
-      <div class="trust-seal-icon">🛡️</div>
+      <div class="trust-seal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(217, 119, 6, 0.12)"/>
+          <path d="M9 12l2 2 4-4" stroke="#059669" stroke-width="2.5"/>
+        </svg>
+      </div>
       <div class="trust-seal-info">
         <h4>Bank of Ghana Standard</h4>
         <p>AES-256 / SHA-512 cryptographic encryption and instant MoMo USSD settlement.</p>
@@ -159,7 +192,11 @@
     </div>
 
     <div class="trust-seal-card">
-      <div class="trust-seal-icon">⚡</div>
+      <div class="trust-seal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(217, 119, 6, 0.2)"/>
+        </svg>
+      </div>
       <div class="trust-seal-info">
         <h4>10-Second Instant Delivery</h4>
         <p>Immediate on-screen reveal plus automated SMS and WhatsApp confirmation.</p>
@@ -167,7 +204,12 @@
     </div>
 
     <div class="trust-seal-card">
-      <div class="trust-seal-icon">🔒</div>
+      <div class="trust-seal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" fill="rgba(5, 150, 105, 0.12)"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
       <div class="trust-seal-info">
         <h4>Zero Double-Allocation</h4>
         <p>Concurrency-safe database engine guarantees that every Serial &amp; PIN is uniquely yours.</p>
@@ -175,7 +217,22 @@
     </div>
 
     <div class="trust-seal-card">
-      <div class="trust-seal-icon">🇬🇭</div>
+      <div class="trust-seal-icon" style="background: rgba(5, 150, 105, 0.08); border-color: rgba(5, 150, 105, 0.35);">
+        <svg viewBox="0 0 100 100" width="28" height="28">
+          <defs>
+            <linearGradient id="sealGhanaFlag" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ef4444"/>
+              <stop offset="33%" stop-color="#ef4444"/>
+              <stop offset="33%" stop-color="#f59e0b"/>
+              <stop offset="66%" stop-color="#f59e0b"/>
+              <stop offset="66%" stop-color="#10b981"/>
+              <stop offset="100%" stop-color="#10b981"/>
+            </linearGradient>
+          </defs>
+          <path d="M50 8 L88 24 L88 62 C88 78 70 92 50 96 C30 92 12 78 12 62 L12 24 Z" fill="url(#sealGhanaFlag)" stroke="#d97706" stroke-width="3"/>
+          <polygon points="50,32 54,43 65,43 56,50 59,61 50,54 41,61 44,50 35,43 46,43" fill="#090d16" stroke="#f59e0b" stroke-width="1"/>
+        </svg>
+      </div>
       <div class="trust-seal-info">
         <h4>100% Authentic WAEC &amp; CSSPS</h4>
         <p>Direct wholesale inventory fully verifiable on official government examination portals.</p>
@@ -204,7 +261,7 @@
   <section class="faq-section" id="faq">
     <div class="faq-header">
       <div class="faq-badge">
-        <span>💡</span> 24/7 Candidate &amp; Parent Help
+        24/7 Candidate &amp; Parent Help
       </div>
       <h2>Frequently Asked Questions</h2>
       <p>
@@ -215,16 +272,16 @@
     <!-- Category Filter Tabs -->
     <div class="faq-categories">
       <button type="button" class="faq-category-btn active" onclick="filterFaq('all', this)">
-        <span>✨</span> All Questions
+        All Questions
       </button>
       <button type="button" class="faq-category-btn" onclick="filterFaq('delivery', this)">
-        <span>⚡</span> Instant Delivery &amp; Recovery
+        Instant Delivery &amp; Recovery
       </button>
       <button type="button" class="faq-category-btn" onclick="filterFaq('rules', this)">
-        <span>📜</span> Official Exam Rules
+        Official Exam Rules
       </button>
       <button type="button" class="faq-category-btn" onclick="filterFaq('security', this)">
-        <span>🛡️</span> Security &amp; Bulk Orders
+        Security &amp; Bulk Orders
       </button>
     </div>
 
@@ -233,7 +290,9 @@
       <div class="faq-item" data-category="delivery">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
           <div class="faq-q-left">
-            <div class="faq-q-icon gold">⚡</div>
+            <div class="faq-q-icon gold">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
             <span class="faq-q-text">How quickly do I receive my voucher Serial Number and PIN?</span>
           </div>
           <div class="faq-chevron">
@@ -245,7 +304,6 @@
             <strong>Immediately on-screen in under 3 seconds!</strong> The moment you approve your Mobile Money prompt (MTN MoMo, Telecel Cash, or AT Money), the transaction completes atomically and your unique Serial Number and PIN are revealed directly on your device.
           </p>
           <div class="faq-pro-tip">
-            <span>💡</span>
             <div><strong>Instant Access:</strong> You do not need to wait for SMS or email. The credentials unlock right on your browser with 1-click copy buttons, and an automated backup copy is dispatched to your phone via SMS.</div>
           </div>
         </div>
@@ -255,7 +313,9 @@
       <div class="faq-item" data-category="delivery">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
           <div class="faq-q-left">
-            <div class="faq-q-icon emerald">🔍</div>
+            <div class="faq-q-icon emerald">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
             <span class="faq-q-text">What should I do if I close my browser before copying my PIN?</span>
           </div>
           <div class="faq-chevron">
@@ -267,7 +327,7 @@
             <strong>Zero stress.</strong> Every purchased voucher is permanently registered to your mobile phone number. Simply navigate to the self-service voucher recovery tool, enter the phone number you used during checkout, and the system will immediately display all active serial numbers and PINs issued to your number.
           </p>
           <a href="/lookup" class="faq-action-link">
-            <span>🔍</span> Open Instant Voucher Lookup Tool &rarr;
+            Open Instant Voucher Lookup Tool &rarr;
           </a>
         </div>
       </div>
@@ -276,7 +336,9 @@
       <div class="faq-item" data-category="rules">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
           <div class="faq-q-left">
-            <div class="faq-q-icon blue">🛡️</div>
+            <div class="faq-q-icon blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
             <span class="faq-q-text">How many times can I use a WAEC Result Checker voucher?</span>
           </div>
           <div class="faq-chevron">
@@ -288,7 +350,6 @@
             Under official WAEC regulations, each result checker voucher allows a maximum of <strong>3 checks</strong> for one specific candidate index number. The first time you check your results, WAEC's portal permanently binds that voucher's serial number to your candidate index number.
           </p>
           <div class="faq-pro-tip">
-            <span>⚠️</span>
             <div><strong>Avoid Burning Checks:</strong> Always take a screenshot, save a PDF, or print your statement of results during your very first check so you don't exhaust remaining attempts on simple re-views.</div>
           </div>
         </div>
@@ -298,7 +359,9 @@
       <div class="faq-item" data-category="rules">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
           <div class="faq-q-left">
-            <div class="faq-q-icon purple">🆔</div>
+            <div class="faq-q-icon purple">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><line x1="15" y1="8" x2="17" y2="8"/><line x1="15" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="17" y2="16"/></svg>
+            </div>
             <span class="faq-q-text">What is the difference between 10-digit and 12-digit Index Numbers?</span>
           </div>
           <div class="faq-chevron">
@@ -313,7 +376,6 @@
             For <strong>CSSPS SHS Placement</strong>, the Ministry of Education requires a 12-digit index by appending your 2-digit completion year directly to your index (e.g. Index <code>0010123456</code> completed in 2026 becomes <code>001012345626</code>).
           </p>
           <div class="faq-pro-tip emerald">
-            <span>💡</span>
             <div><strong>Rule of Thumb:</strong> WAEC portals require 10 digits; CSSPS placement portal requires 12 digits.</div>
           </div>
         </div>
@@ -323,7 +385,9 @@
       <div class="faq-item" data-category="security">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
           <div class="faq-q-left">
-            <div class="faq-q-icon emerald">🔒</div>
+            <div class="faq-q-icon emerald">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
             <span class="faq-q-text">Is paying with Mobile Money secure on CheckerPay Ghana?</span>
           </div>
           <div class="faq-chevron">
@@ -344,7 +408,9 @@
       <div class="faq-item" data-category="security">
         <button type="button" class="faq-question" onclick="toggleFaq(this)">
           <div class="faq-q-left">
-            <div class="faq-q-icon gold">📦</div>
+            <div class="faq-q-icon gold">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+            </div>
             <span class="faq-q-text">Can I purchase in bulk for my school, cyber café, or siblings?</span>
           </div>
           <div class="faq-chevron">
@@ -356,7 +422,6 @@
             <strong>Yes!</strong> You can select quantities of up to 10 vouchers in a single checkout transaction. All distinct Serial Numbers and PINs are delivered simultaneously in a structured, exportable batch table with individual 1-click copy buttons.
           </p>
           <div class="faq-pro-tip">
-            <span>🏫</span>
             <div><strong>Heads of Schools &amp; Café Operators:</strong> If you require wholesale batches of 50 to 500+ vouchers at institutional rates, contact our merchant desk on WhatsApp.</div>
           </div>
         </div>
@@ -367,7 +432,7 @@
     <div class="faq-support-banner">
       <div class="faq-support-left">
         <div class="faq-support-avatar">
-          <span>🎧</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
           <div class="faq-support-status" title="Support Team Online"></div>
         </div>
         <div class="faq-support-text">
@@ -378,10 +443,10 @@
 
       <div class="faq-support-actions">
         <a href="https://wa.me/{{ support_whatsapp|default('233240000000') }}?text=Hello%20CheckerPay%20Support,%20I%20need%20help%20with%20my%20result%20checker" target="_blank" rel="noopener" class="faq-btn-whatsapp">
-          <span>💬</span> Chat on WhatsApp
+          Chat on WhatsApp
         </a>
         <a href="/guides" class="faq-btn-guide">
-          <span>📖</span> Portal Safety Guide &rarr;
+          Portal Safety Guide &rarr;
         </a>
       </div>
     </div>
@@ -430,7 +495,7 @@
           <label class="telco-radio-card">
             <input type="radio" name="payment_network" id="radio_mtn" value="MOMO_MTN" checked>
             <div class="telco-radio-box" id="box_mtn">
-              <span style="color: #ffcc00; display: block; font-size: 1.1rem; margin-bottom: 2px;">🟡</span>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: block; margin: 0 auto 4px auto;"><rect x="2" y="4" width="20" height="16" rx="4" fill="#fbbf24" stroke="#d97706"/><circle cx="8" cy="12" r="2" fill="#78350f"/><circle cx="16" cy="12" r="2" fill="#78350f"/><path d="M11 12h2" stroke="#78350f" stroke-width="2"/></svg>
               MTN MoMo
             </div>
           </label>
@@ -438,7 +503,7 @@
           <label class="telco-radio-card">
             <input type="radio" name="payment_network" id="radio_telecel" value="MOMO_TELECEL">
             <div class="telco-radio-box" id="box_telecel">
-              <span style="color: #ef4444; display: block; font-size: 1.1rem; margin-bottom: 2px;">🔴</span>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: block; margin: 0 auto 4px auto;"><circle cx="12" cy="12" r="10" fill="#ef4444" stroke="#dc2626"/><path d="M8 12h8M12 8v8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/></svg>
               Telecel Cash
             </div>
           </label>
@@ -446,7 +511,7 @@
           <label class="telco-radio-card">
             <input type="radio" name="payment_network" id="radio_at" value="MOMO_AT">
             <div class="telco-radio-box" id="box_at">
-              <span style="color: #38bdf8; display: block; font-size: 1.1rem; margin-bottom: 2px;">🔵</span>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: block; margin: 0 auto 4px auto;"><rect x="2" y="4" width="20" height="16" rx="4" fill="#0284c7" stroke="#0369a1"/><path d="M7 15l5-8 5 8M9 13h6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg>
               AT Money
             </div>
           </label>
@@ -502,10 +567,10 @@
 
       <div style="display: flex; flex-direction: column; gap: 0.75rem;">
         <button id="btn_paystack_pay" class="btn-buy" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); font-weight: 800;" onclick="payWithPaystack()">
-          💳 Pay via Paystack (MoMo & Cards)
+          Pay via Paystack (MoMo &amp; Cards)
         </button>
         <button id="btn_approve_payment" class="btn-safety-guide" style="text-align: center; cursor: pointer; font-size: 0.85rem;" onclick="approveSimulatedPayment()">
-          ⚡ Quick Sandbox Test (Simulate MoMo Approval)
+          Quick Sandbox Test (Simulate MoMo Approval)
         </button>
         <button class="btn-print" onclick="document.getElementById('checkout_step_payment').style.display='none'; document.getElementById('checkout_step_details').style.display='block';">
           &larr; Back to Order Details
@@ -516,7 +581,9 @@
     <!-- STEP 3: VOUCHER REVEALED -->
     <div id="checkout_step_success" style="display: none;">
       <div style="text-align: center; margin-bottom: 1.25rem;">
-        <div style="font-size: 2.2rem; color: var(--ghana-green); margin-bottom: 0.15rem;">✓</div>
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: #ecfdf5; border: 2px solid #86efac; color: var(--ghana-green); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem auto;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
         <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main);">Payment Successful!</h2>
         <p style="font-size: 0.85rem; color: var(--text-muted);">
           Order Reference: <strong id="success_order_ref" style="color: var(--ghana-gold);"></strong>
@@ -554,7 +621,7 @@
       </div>
 
       <div style="background: #fef2f2; border: 1px solid #fee2e2; border-left: 4px solid var(--ghana-red); border-radius: var(--radius-md); padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.8rem; color: #b91c1c;">
-        ⚠️ <strong>Important:</strong> Do not share your PIN with unauthorized parties. Take a screenshot or click "Save / Print Receipt" below.
+        <strong>Security Notice:</strong> Do not share your PIN with unauthorized parties. Take a screenshot or click "Save / Print Official Slip" below.
       </div>
 
       <div class="btn-action-group">
@@ -562,13 +629,13 @@
           Check on Official Portal &rarr;
         </a>
         <button class="btn-print" onclick="window.print()">
-          🖨️ Print / Save Slip
+          Print / Save Official Slip
         </button>
       </div>
 
       <div style="margin-top: 1rem; text-align: center;">
         <a id="btn_share_whatsapp" href="#" target="_blank" style="font-size: 0.85rem; color: var(--ghana-green); text-decoration: none; font-weight: 600;">
-          📲 Share Voucher to WhatsApp &rarr;
+          Share Voucher to WhatsApp &rarr;
         </a>
       </div>
     </div>

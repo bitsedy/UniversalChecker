@@ -142,8 +142,8 @@ class DispatchManager:
             lines.append(f"• *Serial Number:* `{v['serial_number']}`")
             lines.append(f"• *PIN:* `{v['pin']}`")
             
-        lines.append(f"\n🌐 *Check Official Portal:* {portal['portal_url']}")
-        lines.append("⚠️ *Reminder:* Check official guidelines to avoid burning your attempts.")
+        lines.append(f"\n*Check Official Portal:* {portal['portal_url']}")
+        lines.append("*Reminder:* Check official guidelines to avoid burning your attempts.")
         return "\n".join(lines)
 
     @classmethod

@@ -185,7 +185,7 @@ function showPaymentPrompt(data) {
 function payWithPaystack() {
   if (!currentOrder) return;
   if (!currentPaystackKey || currentPaystackKey.includes("sample")) {
-    alert("Paystack Notice:\nYou currently have default sample keys configured.\n\nTo accept live or test payments via Paystack popup:\n1. Go to /admin\n2. Paste your Paystack Public Key (pk_test_... or pk_live_...)\n3. Click 'Save Settings & Prices'\n\nFor now, you can click '⚡ Quick Sandbox Test' below to test the instant voucher delivery!");
+    alert("Paystack Notice:\nYou currently have default sample keys configured.\n\nTo accept live or test payments via Paystack popup:\n1. Go to /admin\n2. Paste your Paystack Public Key (pk_test_... or pk_live_...)\n3. Click 'Save Settings & Prices'\n\nFor now, you can click 'Quick Sandbox Test' below to test the instant voucher delivery!");
     return;
   }
   if (typeof PaystackPop === "undefined") {
@@ -236,7 +236,7 @@ async function verifyPaystackPayment(orderRef) {
     if (!res.ok || !data.success) {
       alert(data.message || "Paystack payment verification failed.");
       if (btn) {
-        btn.innerText = "💳 Pay via Paystack (MoMo & Cards)";
+        btn.innerText = "Pay via Paystack (MoMo & Cards)";
         btn.disabled = false;
       }
       return;
@@ -245,7 +245,7 @@ async function verifyPaystackPayment(orderRef) {
   } catch (err) {
     alert("Payment verification error: " + err.message);
     if (btn) {
-      btn.innerText = "💳 Pay via Paystack (MoMo & Cards)";
+      btn.innerText = "Pay via Paystack (MoMo & Cards)";
       btn.disabled = false;
     }
   }
@@ -271,7 +271,7 @@ async function approveSimulatedPayment() {
     const data = await res.json();
     if (!res.ok || !data.success) {
       alert(data.message || "Verification failed.");
-      btn.innerText = "⚡ Quick Sandbox Test (Simulate MoMo Approval)";
+      btn.innerText = "Quick Sandbox Test (Simulate MoMo Approval)";
       btn.disabled = false;
       return;
     }
@@ -279,7 +279,7 @@ async function approveSimulatedPayment() {
     showSuccessVouchers(data);
   } catch (err) {
     alert("Verification error: " + err.message);
-    btn.innerText = "⚡ Quick Sandbox Test (Simulate MoMo Approval)";
+    btn.innerText = "Quick Sandbox Test (Simulate MoMo Approval)";
     btn.disabled = false;
   }
 }

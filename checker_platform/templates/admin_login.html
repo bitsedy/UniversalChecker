@@ -21,7 +21,7 @@
     <!-- Logged out notification -->
     {% if logged_out %}
     <div style="background: rgba(5, 150, 105, 0.08); border: 1px solid var(--ghana-green); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
-      <span style="font-size: 1.2rem;">✅</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-green); flex-shrink: 0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
       <div style="font-size: 0.85rem; color: #065f46; font-weight: 700;">
         You have been signed out. Enter credentials to sign in again.
       </div>
@@ -31,7 +31,7 @@
     <!-- Error notification -->
     {% if error %}
     <div style="background: rgba(220, 38, 38, 0.08); border: 1px solid var(--ghana-red); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
-      <span style="font-size: 1.2rem;">⚠️</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-red); flex-shrink: 0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
       <div style="font-size: 0.85rem; color: #991b1b; font-weight: 700;">
         {{ error }}
       </div>
@@ -63,7 +63,7 @@
 
     <div style="margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); text-align: center;">
       <div style="font-size: 0.775rem; color: var(--text-dim); margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
-        <span>🛡️</span> 30-min auto-logout &bull; Salted PBKDF2 Encryption
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-gold); display: inline-block; vertical-align: -1px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> 30-min auto-logout &bull; Salted PBKDF2 Encryption
       </div>
       <a href="/" style="color: var(--text-muted); font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s;" onmouseover="this.style.color='var(--ghana-gold)'" onmouseout="this.style.color='var(--text-muted)'">
         &larr; Return to Storefront

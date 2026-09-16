@@ -8,13 +8,13 @@
   <!-- Hero Header -->
   <div style="text-align: center; max-width: 820px; margin: 0 auto 2.5rem auto;">
     <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--border-gold); padding: 0.35rem 1rem; border-radius: 999px; margin-bottom: 1rem;">
-      <span>🇬🇭</span>
+      <img src="/static/img/logo-symbol.svg" alt="CheckerPay Ghana Emblem" width="18" height="18" style="display: block;">
       <span style="font-size: 0.8rem; font-weight: 700; color: var(--ghana-gold); text-transform: uppercase; letter-spacing: 0.05em;">
-        Official Ghana Placement & Tertiary Advisor
+        Official Ghana Placement &amp; Tertiary Advisor
       </span>
     </div>
     <h1 style="font-size: 2.3rem; font-weight: 900; line-height: 1.2; margin-bottom: 1rem; color: var(--text-main);">
-      Know Your Real Placement Chances & Tertiary Pathways
+      Know Your Real Placement Chances &amp; Tertiary Pathways
     </h1>
     <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.6;">
       No bluffing or false promises. Expert-level evaluations strictly grounded in 
@@ -26,7 +26,9 @@
   <!-- Ghana Data Protection Act 843 Consent Box -->
   <div style="background: #ffffff; border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 2.5rem; box-shadow: var(--shadow-sm);">
     <div style="display: flex; align-items: flex-start; gap: 1rem;">
-      <div style="font-size: 1.8rem; line-height: 1;">🛡️</div>
+      <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(5, 150, 105, 0.08); border: 1px solid rgba(5, 150, 105, 0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-green);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
       <div style="flex: 1;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.4rem;">
           <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0;">
@@ -51,7 +53,11 @@
 
   <!-- Locked State / Warning if consent not yet checked -->
   <div id="consent_overlay_msg" style="text-align: center; padding: 2rem; background: #f8fafc; border: 1px dashed var(--border-subtle); border-radius: var(--radius-lg); margin-bottom: 2rem; display: block;">
-    <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🔒</span>
+    <div style="margin-bottom: 0.75rem; display: flex; justify-content: center;">
+      <div style="width: 44px; height: 44px; border-radius: 50%; background: #f1f5f9; border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+    </div>
     <h4 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.35rem;">Advisory Portal Locked</h4>
     <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.75rem;">
       Please check the Data Protection Act (Act 843) consent box above to unlock the personalized grade evaluator.
@@ -95,13 +101,13 @@
     <!-- Exam Selector Tabs -->
     <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; flex-wrap: wrap;">
       <button id="tab_bece" onclick="switchExamTab('BECE')" style="background: none; border: none; font-size: 1.05rem; font-weight: 800; color: var(--ghana-gold); border-bottom: 3px solid var(--ghana-gold); padding: 0.5rem 1.25rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <span>🏫</span> BECE &rarr; CSSPS Senior High Placement
+        BECE &rarr; CSSPS Senior High Placement
       </button>
       <button id="tab_wassce" onclick="switchExamTab('WASSCE')" style="background: none; border: none; font-size: 1.05rem; font-weight: 800; color: var(--text-muted); padding: 0.5rem 1.25rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <span>🏛️</span> WASSCE &rarr; University & Tertiary Pathways
+        WASSCE &rarr; University &amp; Tertiary Pathways
       </button>
       <button id="tab_explorer" onclick="switchExamTab('EXPLORER')" style="background: none; border: none; font-size: 1.05rem; font-weight: 800; color: var(--text-muted); padding: 0.5rem 1.25rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <span>🌐</span> Live Admissions &amp; Cut-Offs Explorer
+        Live Admissions &amp; Cut-Offs Explorer
       </button>
     </div>
 
@@ -135,19 +141,19 @@
         <!-- Quick Presets for BECE -->
         <div style="background: #fffbeb; border: 1px dashed var(--border-gold); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
-            <span>⚡ 1-Click Profile Presets:</span>
+            <span>1-Click Profile Presets:</span>
           </div>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button type="button" class="btn-copy" onclick="applyBecePreset('distinction')">🌟 Distinction (Agg 06 - Cat A)</button>
-            <button type="button" class="btn-copy" onclick="applyBecePreset('competitive')">⚖️ Category B (Agg 12)</button>
-            <button type="button" class="btn-copy" onclick="applyBecePreset('self_placement')">💡 Borderline (Agg 24 - Self-Placement)</button>
-            <button type="button" class="btn-copy" onclick="applyBecePreset('hazard')" style="background: #fef2f2; border-color: #fecaca; color: #b91c1c;">⚠️ High Hazard (Agg 38 - TVET/Remedial)</button>
+            <button type="button" class="btn-copy" onclick="applyBecePreset('distinction')">Distinction (Agg 06 - Cat A)</button>
+            <button type="button" class="btn-copy" onclick="applyBecePreset('competitive')">Category B (Agg 12)</button>
+            <button type="button" class="btn-copy" onclick="applyBecePreset('self_placement')">Borderline (Agg 24 - Self-Placement)</button>
+            <button type="button" class="btn-copy" onclick="applyBecePreset('hazard')" style="background: #fef2f2; border-color: #fecaca; color: #b91c1c;">High Hazard (Agg 38 - TVET/Remedial)</button>
           </div>
         </div>
 
         <!-- Cores Section -->
         <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
-          <span>📌</span> 4 Compulsory Core Subjects
+          4 Compulsory Core Subjects
         </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
           {% for core in bece_cores %}
@@ -170,7 +176,7 @@
 
         <!-- Electives Section -->
         <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
-          <span>📚</span> Elective Subjects (Best 2 Count Automatically)
+          Elective Subjects (Best 2 Count Automatically)
         </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
           {% for elect in bece_electives %}
@@ -238,20 +244,20 @@
         <!-- Quick Presets for WASSCE -->
         <div style="background: #fffbeb; border: 1px dashed var(--border-gold); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
-            <span>⚡ 1-Click Profile Presets:</span>
+            <span>1-Click Profile Presets:</span>
           </div>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button type="button" class="btn-copy" onclick="applyWasscePreset('medicine')">🔬 Medicine (Agg 07)</button>
-            <button type="button" class="btn-copy" onclick="applyWasscePreset('engineering')">💻 Computer Sci (Agg 09)</button>
-            <button type="button" class="btn-copy" onclick="applyWasscePreset('business')">📊 Business (Agg 14)</button>
-            <button type="button" class="btn-copy" onclick="applyWasscePreset('remedial')" style="background: #fef2f2; border-color: #fecaca; color: #b91c1c;">⚠️ D7 in Math (Common Trap)</button>
-            <button type="button" class="btn-copy" onclick="applyWasscePreset('weak')" style="background: #fef2f2; border-color: #fecaca; color: #b91c1c;">🚫 Multi-Fail (Remedial)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('medicine')">Medicine (Agg 07)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('engineering')">Computer Sci (Agg 09)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('business')">Business (Agg 14)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('remedial')" style="background: #fef2f2; border-color: #fecaca; color: #b91c1c;">D7 in Math (Common Trap)</button>
+            <button type="button" class="btn-copy" onclick="applyWasscePreset('weak')" style="background: #fef2f2; border-color: #fecaca; color: #b91c1c;">Multi-Fail (Remedial)</button>
           </div>
         </div>
 
         <!-- 4 WASSCE Cores -->
         <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
-          <span>📌</span> 4 Core Subjects (English &amp; Core Math are compulsory for degrees)
+          4 Core Subjects (English &amp; Core Math are compulsory for degrees)
         </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
@@ -314,7 +320,7 @@
 
         <!-- Elective Subjects -->
         <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
-          <span>📚</span> Elective Subjects (Best 3 Count Automatically)
+          Elective Subjects (Best 3 Count Automatically)
         </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
@@ -411,7 +417,7 @@
             </p>
           </div>
           <button type="button" onclick="loadExplorerAdmissions(true)" class="btn-lookup" style="padding: 0.5rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
-            <span>🔄</span> Refresh Benchmarks
+            Refresh Benchmarks
           </button>
         </div>
 
@@ -461,7 +467,11 @@
 
         <!-- Empty State -->
         <div id="explorer_empty_state" style="display: none; text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
-          <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🔍</span>
+          <div style="margin-bottom: 0.75rem; display: flex; justify-content: center;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #f1f5f9; border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+          </div>
           <h4 style="font-size: 1.05rem; color: var(--text-main); margin-bottom: 0.25rem;">No matching programmes found</h4>
           <p style="font-size: 0.85rem;">Try adjusting your search query or changing the institution category.</p>
         </div>
@@ -482,13 +492,13 @@
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" onclick="openDossierModal()" class="btn-safety-guide" style="padding: 0.55rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
-              <span>📜</span> Official Admissions Dossier
+              Official Admissions Dossier
             </button>
             <button type="button" onclick="shareDossierWhatsApp()" class="btn-lookup" style="background: #f0fdf4; border: 1px solid #22c55e; color: #15803d; padding: 0.55rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
-              <span>💬</span> WhatsApp Placement Card
+              WhatsApp Placement Card
             </button>
             <button type="button" onclick="window.print()" class="btn-lookup" style="padding: 0.55rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
-              <span>🖨️</span> Print / Save Briefing
+              Print / Save Briefing
             </button>
           </div>
         </div>
@@ -504,7 +514,7 @@
           <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 1.25rem;">
             <div>
               <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">
-                <span>🎯</span> Intelligent Match Engine
+                Intelligent Match Engine
               </div>
               <h3 id="suggested_section_title" style="font-size: 1.25rem; font-weight: 900; color: var(--text-main); margin: 0;">
                 Best Recommended Institutions &amp; Admission Probability
@@ -517,9 +527,9 @@
             <!-- Filter Pills -->
             <div id="suggested_filters" style="display: flex; gap: 6px; flex-wrap: wrap;">
               <button type="button" class="btn-copy active-suggested-filter" onclick="filterSuggestedCards('ALL', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700; background: rgba(245, 158, 11, 0.15); border-color: var(--ghana-gold); color: var(--text-main);">All Options</button>
-              <button type="button" class="btn-copy" onclick="filterSuggestedCards('HIGH', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700;">🌟 High Chance (&ge;80%)</button>
-              <button type="button" class="btn-copy" onclick="filterSuggestedCards('COMPETITIVE', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700;">⚖️ Target Match (60-79%)</button>
-              <button type="button" class="btn-copy" onclick="filterSuggestedCards('REACH', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700;">🚀 Reach / Dream (35-59%)</button>
+              <button type="button" class="btn-copy" onclick="filterSuggestedCards('HIGH', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700;">High Chance (&ge;80%)</button>
+              <button type="button" class="btn-copy" onclick="filterSuggestedCards('COMPETITIVE', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700;">Target Match (60-79%)</button>
+              <button type="button" class="btn-copy" onclick="filterSuggestedCards('REACH', this)" style="border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-weight: 700;">Reach / Dream (35-59%)</button>
             </div>
           </div>
 
@@ -532,7 +542,7 @@
         <!-- Tier / Pathway Matches -->
         <div style="margin-bottom: 2rem;">
           <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
-            <span>🎯</span> Recommended Institutions & Placements
+            Recommended Institutions &amp; Placements
           </h3>
           <div id="tiers_container" style="display: grid; gap: 1.25rem;"></div>
         </div>
@@ -541,7 +551,7 @@
         <div id="scholarships_section" style="display: none; margin-bottom: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px;">
             <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;">
-              <span>🎓</span> Matched Scholarships &amp; Bursary Funds
+              Matched Scholarships &amp; Bursary Funds
             </h3>
             <span id="scholarships_count_badge" class="card-badge card-badge-fast" style="font-size: 0.725rem;">Verified Funds</span>
           </div>
@@ -552,7 +562,7 @@
         <div id="deficits_section" style="display: none; margin-bottom: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px;">
             <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;">
-              <span>📈</span> WASSCE Deficit Calculator &amp; NOV/DEC Remedial Strategy Engine
+              WASSCE Deficit Calculator &amp; NOV/DEC Remedial Strategy Engine
             </h3>
             <span class="card-badge card-badge-popular" style="font-size: 0.725rem;">GTEC Two-Sitting Policy</span>
           </div>
@@ -562,14 +572,14 @@
         <!-- Step-by-Step Action Roadmap -->
         <div style="margin-bottom: 1.5rem;">
           <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
-            <span>🧭</span> Actionable Next Steps (No-Agent Safe Protocol)
+            Actionable Next Steps (No-Agent Safe Protocol)
           </h3>
           <div id="roadmap_container" style="display: grid; gap: 0.85rem;"></div>
         </div>
 
         <!-- Data Protection Ephemeral Stamp & Cryptographic Proof -->
         <div style="padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-dim); flex-wrap: wrap; gap: 8px;">
-          <div>🛡️ Evaluated under Ghana Data Protection Act, 2012 (Act 843) &bull; Zero DB Retention</div>
+          <div style="display: flex; align-items: center; gap: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-green);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Evaluated under Ghana Data Protection Act, 2012 (Act 843) &bull; Zero DB Retention</div>
           <div id="res_attestation_hash" style="font-family: monospace; color: var(--ghana-gold); font-size: 0.72rem; word-break: break-all;">Proof: Ephemeral</div>
         </div>
 
@@ -583,7 +593,7 @@
       <!-- Modal Header -->
       <div style="background: #fffbeb; border-bottom: 1px solid var(--border-gold); padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="font-size: 1.5rem;">🇬🇭</span>
+          <img src="/static/img/logo-symbol.svg" alt="CheckerPay Ghana Emblem" width="24" height="24" style="display: block;">
           <div>
             <h3 id="dossier_title_display" style="font-size: 1.1rem; font-weight: 900; color: var(--text-main); margin: 0;">
               UNIVERSAL ADMISSIONS DOSSIER
@@ -624,10 +634,10 @@
         </button>
         <div style="display: flex; gap: 8px;">
           <button type="button" id="btn_copy_dossier" onclick="copyDossierText()" class="btn-lookup" style="padding: 0.5rem 1.1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
-            <span>📋</span> Copy Card Text
+            Copy Card Text
           </button>
           <button type="button" onclick="shareDossierWhatsApp()" class="btn-safety-guide" style="background: #16a34a; color: #ffffff; padding: 0.5rem 1.25rem; font-size: 0.825rem; font-weight: 800; display: inline-flex; align-items: center; gap: 6px;">
-            <span>💬</span> Share via WhatsApp
+            Share via WhatsApp
           </button>
         </div>
       </div>
@@ -797,7 +807,7 @@ function filterExplorer() {
             ${row.programme_name}
           </h4>
           <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0.75rem;">
-            🏛️ ${row.institution_name} <strong style="color: var(--ghana-gold);">(${row.institution_code})</strong>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-1px; margin-right:4px;"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"></path></svg>${row.institution_name} <strong style="color: var(--ghana-gold);">(${row.institution_code})</strong>
           </div>
 
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem; flex-wrap: wrap;">
@@ -816,11 +826,11 @@ function filterExplorer() {
 
         <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; flex-wrap: wrap; gap: 8px;">
           <div>
-            <div style="color: var(--text-dim);">📅 Deadline: <strong style="color: var(--text-main);">${row.application_deadline}</strong></div>
-            <div style="color: var(--text-dim); margin-top: 2px;">💳 Voucher: <strong style="color: var(--text-main);">${voucherDisplay}</strong></div>
+            <div style="color: var(--text-dim);">Deadline: <strong style="color: var(--text-main);">${row.application_deadline}</strong></div>
+            <div style="color: var(--text-dim); margin-top: 2px;">Voucher: <strong style="color: var(--text-main);">${voucherDisplay}</strong></div>
           </div>
           <a href="${row.portal_url}" target="_blank" rel="noopener noreferrer" class="btn-lookup" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: 700;">
-            Apply ↗
+            Apply &rarr;
           </a>
         </div>
       </div>
@@ -850,19 +860,19 @@ function calculateLiveBeceAggregate() {
   if (statusEl) {
     if (total <= 9) {
       statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #f0fdf4; color: #16a34a; border: 1px solid #86efac;";
-      statusEl.innerText = "🌟 Category A Eligible (Distinction)";
+      statusEl.innerText = "Category A Eligible (Distinction)";
       if (hintEl) hintEl.innerText = "Distinction standing! Prime eligibility for national Category A boarding schools.";
     } else if (total <= 15) {
       statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;";
-      statusEl.innerText = "⚖️ Category B Competitive Match";
+      statusEl.innerText = "Category B Competitive Match";
       if (hintEl) hintEl.innerText = "Solid results. Strong fit for Category B schools with high placement certainty.";
     } else if (total <= 24) {
       statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a;";
-      statusEl.innerText = "🏫 Category C & Day Focus";
+      statusEl.innerText = "Category C & Day Focus";
       if (hintEl) hintEl.innerText = "Target Category C boarding or local Category D day options to ensure automatic placement.";
     } else {
       statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;";
-      statusEl.innerText = "⚠️ High Hazard / Self-Placement";
+      statusEl.innerText = "High Hazard / Self-Placement";
       if (hintEl) hintEl.innerText = "High aggregate. Self-placement portal, technical/vocational (TVET), or remedial resit recommended.";
     }
   }
@@ -900,23 +910,23 @@ function calculateLiveWassceAggregate() {
   if (statusEl) {
     if (hasCoreBarrier) {
       statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;";
-      statusEl.innerText = `⛔ GTEC Barrier: ${math >= 7 ? 'Math ' + mathGrade : ''} ${eng >= 7 ? 'Eng ' + engGrade : ''} Blocks Direct Degree`;
+      statusEl.innerText = `GTEC Barrier: ${math >= 7 ? 'Math ' + mathGrade : ''} ${eng >= 7 ? 'Eng ' + engGrade : ''} Blocks Direct Degree`;
       if (hintEl) hintEl.innerText = "Warning: Public universities reject D7/E8/F9 in Math/English for Bachelor degrees. HND or NOV/DEC resit needed.";
     } else if (total <= 10) {
       statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #f0fdf4; color: #16a34a; border: 1px solid #86efac;";
-      statusEl.innerText = "🌟 High Distinction (Tier 1 Degree Match)";
+      statusEl.innerText = "High Distinction (Tier 1 Degree Match)";
       if (hintEl) hintEl.innerText = "Ultra-competitive for Medicine, Computer Science, Law, and Engineering at UG & KNUST.";
     } else if (total <= 18) {
       statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;";
-      statusEl.innerText = "⚖️ Public University Degree Qualified";
+      statusEl.innerText = "Public University Degree Qualified";
       if (hintEl) hintEl.innerText = "Clear standing for standard bachelor degrees across UG, KNUST, UCC, and UPSA.";
     } else if (total <= 24) {
       statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #fffbeb; color: #b45309; border: 1px solid #fde68a;";
-      statusEl.innerText = "💡 Degree Minimum / Colleges / HND";
+      statusEl.innerText = "Degree Minimum / Colleges / HND";
       if (hintEl) hintEl.innerText = "At cutoff threshold for public degrees. Broaden to Technical University HND or Colleges of Education.";
     } else {
       statusEl.style.cssText = "font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;";
-      statusEl.innerText = "⚠️ Technical HND / Mandatory NOV/DEC";
+      statusEl.innerText = "Technical HND / Mandatory NOV/DEC";
       if (hintEl) hintEl.innerText = "Aggregate above 24. Degree admission unlikely without NOV/DEC resit or Technical HND pathway.";
     }
   }
@@ -1070,7 +1080,7 @@ function renderFinalVerdict(verdict, examType) {
     badgeBg = "#dcfce7";
     badgeColor = "#15803d";
     badgeBorder = "#86efac";
-    badgeIcon = "🏆";
+    badgeIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>';
     badgeText = "OFFICIAL ADVISORY VERDICT • UNRESTRICTED ELIGIBILITY";
   } else if (isWarning) {
     headerBg = "#fef2f2";
@@ -1078,7 +1088,7 @@ function renderFinalVerdict(verdict, examType) {
     badgeBg = "#fee2e2";
     badgeColor = "#b91c1c";
     badgeBorder = "#fca5a5";
-    badgeIcon = "⚠️";
+    badgeIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
     badgeText = "BRUTALLY HONEST FINAL VERDICT • CRITICAL DIRECTIVE";
   } else {
     headerBg = "#fffbeb";
@@ -1086,20 +1096,20 @@ function renderFinalVerdict(verdict, examType) {
     badgeBg = "#fef3c7";
     badgeColor = "#b45309";
     badgeBorder = "#fde68a";
-    badgeIcon = "⚖️";
+    badgeIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>';
     badgeText = "OFFICIAL ADVISORY VERDICT • STRATEGIC GUIDANCE";
   }
 
   const nextMovesHtml = (verdict.next_moves || []).map(move => `
     <div style="display: flex; align-items: flex-start; gap: 10px; padding: 0.85rem 1rem; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-main); line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-      <span style="font-size: 1.1rem; line-height: 1; flex-shrink: 0; margin-top: 1px;">✅</span>
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #dcfce7; color: #16a34a; flex-shrink: 0; margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
       <div>${move}</div>
     </div>
   `).join("");
 
   const mistakesHtml = (verdict.costly_mistakes || []).map(mistake => `
     <div style="display: flex; align-items: flex-start; gap: 10px; padding: 0.85rem 1rem; background: #ffffff; border: 1px solid #fee2e2; border-left: 4px solid #ef4444; border-radius: 0 var(--radius-md) var(--radius-md) 0; font-size: 0.85rem; color: #991b1b; line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-      <span style="font-size: 1.1rem; line-height: 1; flex-shrink: 0; margin-top: 1px;">🚫</span>
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #fee2e2; color: #dc2626; flex-shrink: 0; margin-top: 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
       <div>${mistake}</div>
     </div>
   `).join("");
@@ -1111,7 +1121,7 @@ function renderFinalVerdict(verdict, examType) {
       <div style="background: ${headerBg}; border-bottom: 1px solid ${borderColor}; padding: 1.5rem 1.75rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 0.75rem;">
           <div style="display: inline-flex; align-items: center; gap: 6px; background: ${badgeBg}; color: ${badgeColor}; border: 1px solid ${badgeBorder}; padding: 4px 12px; border-radius: 999px; font-size: 0.775rem; font-weight: 800; letter-spacing: 0.04em;">
-            <span>${badgeIcon}</span>
+            ${badgeIcon}
             <span>${badgeText}</span>
           </div>
           <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">Grounded in GES CSSPS &amp; GTEC Rules</span>
@@ -1138,7 +1148,7 @@ function renderFinalVerdict(verdict, examType) {
         <!-- Next Moves Column -->
         <div>
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
-            <span style="font-size: 1.15rem;">🎯</span>
+            <span style="display: inline-flex; color: #047857;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></span>
             <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin: 0; text-transform: uppercase; letter-spacing: 0.03em;">
               Best Next Moves (What You Should Do Now)
             </h4>
@@ -1151,7 +1161,7 @@ function renderFinalVerdict(verdict, examType) {
         <!-- Costly Mistakes Column -->
         <div>
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
-            <span style="font-size: 1.15rem;">⚠️</span>
+            <span style="display: inline-flex; color: #b91c1c;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span>
             <h4 style="font-size: 0.95rem; font-weight: 800; color: #b91c1c; margin: 0; text-transform: uppercase; letter-spacing: 0.03em;">
               Costly Mistakes To Avoid (What You Must NOT Do)
             </h4>
@@ -1165,7 +1175,7 @@ function renderFinalVerdict(verdict, examType) {
 
       <!-- Footer Quick Note -->
       <div style="background: #ffffff; border-top: 1px solid var(--border-subtle); padding: 0.85rem 1.75rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.775rem; color: var(--text-muted); flex-wrap: wrap; gap: 8px;">
-        <span>💡 <strong>Parent Direct Advice:</strong> Tap <strong>"WhatsApp Placement Card"</strong> above to send this exact briefing directly to parents or advisors.</span>
+        <span><strong>Parent Direct Advice:</strong> Tap <strong>"WhatsApp Placement Card"</strong> above to send this exact briefing directly to parents or advisors.</span>
         <span style="color: var(--ghana-gold); font-weight: 700;">100% In-Memory Act 843 Zero Persistence</span>
       </div>
 
@@ -1232,8 +1242,8 @@ function renderBeceResults(analysis) {
       let probBorder = school.probability_percent >= 80 ? "#86efac" : (school.probability_percent >= 60 ? "#fde68a" : (school.probability_percent >= 35 ? "#bfdbfe" : "#fecaca"));
 
       let prereqBadge = school.prerequisites_met 
-        ? `<span style="font-size: 0.7rem; font-weight: 700; background: #f0fdf4; color: #16a34a; border: 1px solid #86efac; padding: 2px 7px; border-radius: 4px;">✓ Criteria Clear</span>`
-        : `<span style="font-size: 0.7rem; font-weight: 800; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px;">⛔ Prerequisite Deficit</span>`;
+        ? `<span style="font-size: 0.7rem; font-weight: 700; background: #f0fdf4; color: #16a34a; border: 1px solid #86efac; padding: 2px 7px; border-radius: 4px;">Criteria Clear</span>`
+        : `<span style="font-size: 0.7rem; font-weight: 800; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px;">Prerequisite Deficit</span>`;
 
       let deltaText = school.delta > 0 
         ? `<span style="color: #16a34a; font-weight: 800;">+${school.delta} pts ahead</span>`
@@ -1255,9 +1265,9 @@ function renderBeceResults(analysis) {
             ${school.school_name}
           </h4>
           <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-            <span>📍 ${school.region}</span>
+            <span>${school.region}</span>
             <span>&bull;</span>
-            <span>👤 ${school.gender}</span>
+            <span>${school.gender}</span>
           </div>
 
           <!-- Probability Gauge -->
@@ -1284,7 +1294,7 @@ function renderBeceResults(analysis) {
 
           <!-- Strategic CSSPS Role -->
           <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-            <span style="color: var(--ghana-gold);">📌</span> ${school.strategic_role}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ghana-gold)" stroke-width="2.5" style="display:inline-block; vertical-align:-1px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ${school.strategic_role}
           </div>
 
           <!-- Rationale -->
@@ -1405,8 +1415,8 @@ function renderWassceResults(analysis) {
       let probBorder = inst.probability_percent >= 80 ? "#86efac" : (inst.probability_percent >= 60 ? "#fde68a" : (inst.probability_percent >= 35 ? "#bfdbfe" : "#fecaca"));
 
       let prereqBadge = inst.prerequisites_met 
-        ? `<span style="font-size: 0.7rem; font-weight: 700; background: #f0fdf4; color: #16a34a; border: 1px solid #86efac; padding: 2px 7px; border-radius: 4px;">✓ Prerequisites Clear</span>`
-        : `<span style="font-size: 0.7rem; font-weight: 800; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px;">⛔ Prerequisite Deficit</span>`;
+        ? `<span style="font-size: 0.7rem; font-weight: 700; background: #f0fdf4; color: #16a34a; border: 1px solid #86efac; padding: 2px 7px; border-radius: 4px;">Prerequisites Clear</span>`
+        : `<span style="font-size: 0.7rem; font-weight: 800; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px;">Prerequisite Deficit</span>`;
 
       let deltaText = inst.delta > 0 
         ? `<span style="color: #16a34a; font-weight: 800;">+${inst.delta} pts ahead</span>`
@@ -1429,7 +1439,7 @@ function renderWassceResults(analysis) {
             ${inst.programme_name}
           </h4>
           <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 12px;">
-            🏛️ ${inst.institution_name}
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:-1px; margin-right:4px;"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"></path></svg>${inst.institution_name}
           </div>
 
           <!-- Probability Gauge -->
@@ -1456,7 +1466,7 @@ function renderWassceResults(analysis) {
 
           <!-- Strategic Role -->
           <div style="font-size: 0.75rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-            <span style="color: var(--ghana-gold);">📌</span> Strategic Role: ${inst.strategic_role}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ghana-gold)" stroke-width="2.5" style="display:inline-block; vertical-align:-1px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Strategic Role: ${inst.strategic_role}
           </div>
 
           <!-- Rationale -->
@@ -1469,7 +1479,7 @@ function renderWassceResults(analysis) {
         <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.725rem; flex-wrap: wrap; gap: 6px;">
           <span style="color: var(--text-dim);">Deadline: <strong>${inst.application_deadline}</strong> &bull; GH₵ ${Number(inst.voucher_cost_ghs).toFixed(2)}</span>
           <a href="${inst.portal_url}" target="_blank" rel="noopener noreferrer" style="color: var(--ghana-gold); text-decoration: none; font-weight: 800;">
-            Official Portal ↗
+            Official Portal &rarr;
           </a>
         </div>
       `;
@@ -1512,7 +1522,7 @@ function renderWassceResults(analysis) {
           <div style="margin-top: 1rem; border-top: 1px dashed var(--border-subtle); padding-top: 0.85rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 6px;">
               <span style="font-size: 0.8rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
-                <span>⚡</span> Live Departmental Cut-Offs &amp; Portal Benchmarks
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ghana-gold);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Live Departmental Cut-Offs &amp; Portal Benchmarks
               </span>
               <span style="font-size: 0.7rem; color: var(--text-dim);">${p.live_matches.length} Verified Departmental Targets</span>
             </div>
@@ -1523,15 +1533,15 @@ function renderWassceResults(analysis) {
                               "background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;");
 
           let prereqBadge = (m.prerequisites_met === false) 
-            ? `<span style="font-size: 0.7rem; font-weight: 800; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px;">⛔ Prerequisite Deficit</span>`
-            : `<span style="font-size: 0.7rem; font-weight: 700; background: #f0fdf4; color: #047857; border: 1px solid #86efac; padding: 2px 6px; border-radius: 4px;">✓ Clear</span>`;
+            ? `<span style="font-size: 0.7rem; font-weight: 800; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px;">Prerequisite Deficit</span>`
+            : `<span style="font-size: 0.7rem; font-weight: 700; background: #f0fdf4; color: #047857; border: 1px solid #86efac; padding: 2px 6px; border-radius: 4px;">Criteria Clear</span>`;
 
           let prereqBox = "";
           if (m.prerequisites_met === false) {
             prereqBox = `
               <div style="background: #fef2f2; border: 1px solid #fee2e2; border-left: 3px solid #dc2626; padding: 6px 10px; border-radius: 4px; font-size: 0.74rem; color: #b91c1c; margin-top: 6px; line-height: 1.4;">
                 <strong style="color: #dc2626;">Faculty Prerequisite Gatekeeper:</strong> ${m.prerequisite_deficit_reason}
-                <div style="color: #b91c1c; font-size: 0.7rem; margin-top: 2px;">⚠️ Do not purchase this application voucher until you satisfy this required subject in NOV/DEC remedial.</div>
+                <div style="color: #b91c1c; font-size: 0.7rem; margin-top: 2px;">Do not purchase this application voucher until you satisfy this required subject in NOV/DEC remedial.</div>
               </div>
             `;
           }
@@ -1554,9 +1564,9 @@ function renderWassceResults(analysis) {
               </div>
               ${prereqBox}
               <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.725rem; color: var(--text-dim); border-top: 1px solid var(--border-subtle); padding-top: 6px; margin-top: 6px;">
-                <span>📅 Deadline: <strong style="color: var(--text-main);">${m.application_deadline}</strong> &bull; Voucher: <strong style="color: var(--text-main);">GH₵ ${Number(m.voucher_cost_ghs).toFixed(2)}</strong></span>
+                <span>Deadline: <strong style="color: var(--text-main);">${m.application_deadline}</strong> &bull; Voucher: <strong style="color: var(--text-main);">GH₵ ${Number(m.voucher_cost_ghs).toFixed(2)}</strong></span>
                 <a href="${m.portal_url}" target="_blank" rel="noopener noreferrer" style="color: var(--ghana-gold); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
-                  Official Portal ↗
+                  Official Portal &rarr;
                 </a>
               </div>
             </div>
@@ -1567,7 +1577,7 @@ function renderWassceResults(analysis) {
       card.innerHTML = `
         <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">${p.title}</h4>
         <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0 0 0.5rem 0;">${p.description}</p>
-        ${p.benefits ? `<div style="font-size: 0.775rem; color: #047857; font-weight: 600;">✨ ${p.benefits}</div>` : ''}
+        ${p.benefits ? `<div style="font-size: 0.775rem; color: #047857; font-weight: 600;">${p.benefits}</div>` : ''}
         ${progHtml}
         ${liveMatchesHtml}
         ${extraHtml}
@@ -1598,7 +1608,7 @@ function renderWassceResults(analysis) {
             </div>
             <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0 0 6px 0;">${s.name}</h4>
             <div style="font-size: 0.85rem; font-weight: 800; color: #b45309; margin-bottom: 8px; background: #fffbeb; border: 1px solid #fde68a; padding: 4px 8px; border-radius: 4px; display: inline-block;">
-              💰 ${s.funding_amount}
+              ${s.funding_amount}
             </div>
             <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">
               <strong>Coverage:</strong> ${s.coverage}
@@ -1608,9 +1618,9 @@ function renderWassceResults(analysis) {
             </div>
           </div>
           <div style="border-top: 1px solid var(--border-subtle); padding-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem;">
-            <span style="color: var(--text-dim);">📅 Window: <strong style="color: var(--text-main);">${s.application_window}</strong></span>
+            <span style="color: var(--text-dim);">Window: <strong style="color: var(--text-main);">${s.application_window}</strong></span>
             <a href="${s.portal_url}" target="_blank" rel="noopener noreferrer" class="btn-lookup" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; text-decoration: none; font-weight: 700;">
-              Apply ↗
+              Apply &rarr;
             </a>
           </div>
         </div>
@@ -1627,7 +1637,7 @@ function renderWassceResults(analysis) {
     dSection.style.display = "block";
     const d = analysis.deficits_analysis;
     const bottleneckBadges = d.bottleneck_subjects.map(b => 
-      `<span style="background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; font-weight: 800; font-size: 0.775rem; padding: 3px 8px; border-radius: 4px;">⚠️ ${b.subject}: Grade ${b.current_grade} (${b.points} pts)</span>`
+      `<span style="background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; font-weight: 800; font-size: 0.775rem; padding: 3px 8px; border-radius: 4px;">${b.subject}: Grade ${b.current_grade} (${b.points} pts)</span>`
     ).join(" ");
 
     let scenariosHtml = "";
@@ -1639,7 +1649,7 @@ function renderWassceResults(analysis) {
               <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
                 <div>
                   <span style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">Target Subject: ${sc.remedial_subject}</span>
-                  <span style="font-size: 0.75rem; color: var(--text-dim); margin-left: 8px;">(Retake &amp; Raise ${sc.current_grade} ➔ ${sc.target_grade})</span>
+                  <span style="font-size: 0.75rem; color: var(--text-dim); margin-left: 8px;">(Retake &amp; Raise ${sc.current_grade} &rarr; ${sc.target_grade})</span>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
                   <span style="font-size: 0.75rem; font-weight: 800; color: #047857; background: #f0fdf4; border: 1px solid #86efac; padding: 2px 8px; border-radius: 4px;">
@@ -1729,7 +1739,7 @@ function copyDossierText() {
     const btn = document.getElementById("btn_copy_dossier");
     if (btn) {
       const orig = btn.innerHTML;
-      btn.innerHTML = "<span>✓</span> Copied to Clipboard!";
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:4px;"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied to Clipboard!';
       setTimeout(() => { btn.innerHTML = orig; }, 2200);
     }
   }).catch(() => {
