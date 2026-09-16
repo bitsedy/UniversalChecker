@@ -529,54 +529,59 @@ h1, h2, h3, h4, h5, h6,
   margin: 0 auto 2.5rem;
 }
 
-/* Telco Banner Pill Bar */
+/* Supported Payments Bar */
 .telco-banner {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
-  padding: 0.75rem 1.5rem;
-  background: #f8fafc;
+  margin-bottom: 2.25rem;
+  padding: 0.5rem 1.25rem;
+  background: #ffffff;
   border: 1px solid var(--border-subtle);
   border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
 }
 
 .telco-label {
-  font-size: 0.85rem;
-  color: var(--text-dim);
+  font-size: 0.8rem;
+  color: var(--text-muted);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  margin-right: 0.25rem;
 }
 
 .telco-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  font-weight: 700;
+  justify-content: center;
+  height: 36px;
   padding: 4px 12px;
-  border-radius: 9999px;
-  border: 1px solid transparent;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s ease;
 }
 
-.telco-item svg {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
+.telco-item:hover {
+  border-color: var(--border-gold);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+}
+
+.telco-logo-img {
+  height: 20px;
+  width: auto;
+  max-width: 80px;
+  object-fit: contain;
   display: block;
 }
-
-.telco-mtn { background: #fffbeb; border-color: #fde68a; color: #92400e; }
-.telco-telecel { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
-.telco-at { background: #f0f9ff; border-color: #bae6fd; color: #0369a1; }
-.telco-card { background: #f8fafc; border-color: #e2e8f0; color: #334155; }
 
 /* Product Grid */
 .products-grid {
@@ -894,7 +899,7 @@ h1, h2, h3, h4, h5, h6,
 .telco-radios {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: 0.85rem;
   margin-bottom: 1.25rem;
 }
 
@@ -910,20 +915,29 @@ h1, h2, h3, h4, h5, h6,
 
 .telco-radio-box {
   padding: 0.75rem 0.5rem;
-  text-align: center;
-  border: 1px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  border: 1.5px solid #cbd5e1;
   border-radius: var(--radius-md);
   background: #ffffff;
-  color: var(--text-main);
-  font-size: 0.8rem;
-  font-weight: 700;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+}
+
+.telco-radio-logo {
+  height: 28px;
+  width: auto;
+  max-width: 85%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .telco-radio-card input:checked + .telco-radio-box {
   border-color: var(--ghana-gold);
-  background: rgba(245, 158, 11, 0.12);
-  color: var(--ghana-gold);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
 }
 
 /* Payment Processing / USSD State */
@@ -1744,21 +1758,18 @@ footer {
 /* Telco Active Brand Transitions */
 .telco-radio-card.active-mtn .telco-radio-box {
   border-color: #d97706;
-  background: #fffbeb;
-  color: #b45309;
-  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.25);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.25);
 }
 
 .telco-radio-card.active-telecel .telco-radio-box {
   border-color: #dc2626;
-  background: #fef2f2;
-  color: #b91c1c;
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
 }
 
 .telco-radio-card.active-at .telco-radio-box {
   border-color: #0284c7;
-  background: #f0f9ff;
-  color: #0369a1;
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
 }

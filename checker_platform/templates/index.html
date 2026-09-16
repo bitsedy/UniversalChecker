@@ -12,24 +12,20 @@
       Instant delivery via on-screen reveal, SMS, and WhatsApp. Pay securely with MTN MoMo, Telecel Cash, or AT Money with zero double-allocation risk.
     </p>
 
-    <!-- Telco Support Banner -->
+    <!-- Supported Payments Bar -->
     <div class="telco-banner">
       <span class="telco-label">Supported Payments:</span>
-      <div class="telco-item telco-mtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="4" fill="#fbbf24" stroke="#d97706"/><circle cx="8" cy="12" r="2" fill="#78350f"/><circle cx="16" cy="12" r="2" fill="#78350f"/><path d="M11 12h2" stroke="#78350f" stroke-width="2"/></svg>
-        <span>MTN MoMo (*170#)</span>
+      <div class="telco-item" title="MTN Mobile Money (*170#)">
+        <img src="/static/img/payment_logos/mtn.png" alt="MTN MoMo" class="telco-logo-img">
       </div>
-      <div class="telco-item telco-telecel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" fill="#ef4444" stroke="#dc2626"/><path d="M8 12h8M12 8v8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/></svg>
-        <span>Telecel Cash (*110#)</span>
+      <div class="telco-item" title="Telecel Cash (*110#)">
+        <img src="/static/img/payment_logos/telecel.png" alt="Telecel Cash" class="telco-logo-img">
       </div>
-      <div class="telco-item telco-at">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="4" fill="#0284c7" stroke="#0369a1"/><path d="M7 15l5-8 5 8M9 13h6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg>
-        <span>AT Money (*110#)</span>
+      <div class="telco-item" title="AirtelTigo AT Money (*110#)">
+        <img src="/static/img/payment_logos/airteltigo.png" alt="AirtelTigo AT Money" class="telco-logo-img">
       </div>
-      <div class="telco-item telco-card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="15" r="1" fill="currentColor"/></svg>
-        <span>Visa / Mastercard</span>
+      <div class="telco-item" title="Visa / Debit Cards">
+        <img src="/static/img/payment_logos/visa.png" alt="Visa" class="telco-logo-img">
       </div>
     </div>
   </section>
@@ -487,27 +483,24 @@
       <div class="form-group">
         <label class="form-label">Select Mobile Money Network</label>
         <div class="telco-radios">
-          <label class="telco-radio-card">
+          <label class="telco-radio-card" title="MTN Mobile Money">
             <input type="radio" name="payment_network" id="radio_mtn" value="MOMO_MTN" checked>
             <div class="telco-radio-box" id="box_mtn">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: block; margin: 0 auto 4px auto;"><rect x="2" y="4" width="20" height="16" rx="4" fill="#fbbf24" stroke="#d97706"/><circle cx="8" cy="12" r="2" fill="#78350f"/><circle cx="16" cy="12" r="2" fill="#78350f"/><path d="M11 12h2" stroke="#78350f" stroke-width="2"/></svg>
-              MTN MoMo
+              <img src="/static/img/payment_logos/mtn.png" alt="MTN MoMo" class="telco-radio-logo">
             </div>
           </label>
 
-          <label class="telco-radio-card">
+          <label class="telco-radio-card" title="Telecel Cash">
             <input type="radio" name="payment_network" id="radio_telecel" value="MOMO_TELECEL">
             <div class="telco-radio-box" id="box_telecel">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: block; margin: 0 auto 4px auto;"><circle cx="12" cy="12" r="10" fill="#ef4444" stroke="#dc2626"/><path d="M8 12h8M12 8v8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/></svg>
-              Telecel Cash
+              <img src="/static/img/payment_logos/telecel.png" alt="Telecel Cash" class="telco-radio-logo">
             </div>
           </label>
 
-          <label class="telco-radio-card">
+          <label class="telco-radio-card" title="AirtelTigo AT Money">
             <input type="radio" name="payment_network" id="radio_at" value="MOMO_AT">
             <div class="telco-radio-box" id="box_at">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: block; margin: 0 auto 4px auto;"><rect x="2" y="4" width="20" height="16" rx="4" fill="#0284c7" stroke="#0369a1"/><path d="M7 15l5-8 5 8M9 13h6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg>
-              AT Money
+              <img src="/static/img/payment_logos/airteltigo.png" alt="AirtelTigo AT Money" class="telco-radio-logo">
             </div>
           </label>
         </div>

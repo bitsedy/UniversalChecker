@@ -43,6 +43,13 @@ function setupTelcoAutoDetect() {
       }
     }
   });
+
+  document.querySelectorAll('input[name="payment_network"]').forEach(radio => {
+    radio.addEventListener("change", (e) => {
+      const telcoKey = e.target.id.replace("radio_", "");
+      highlightTelcoBox(telcoKey);
+    });
+  });
 }
 
 function highlightTelcoBox(telcoKey) {
