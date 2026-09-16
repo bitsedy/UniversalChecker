@@ -14,7 +14,7 @@ temp_db.close()
 os.environ["CHECKER_DB_PATH"] = temp_db_path
 
 from checker_platform.main import app, _FEEDBACK_RATE_LIMIT
-from checker_platform.database import init_db, get_customer_feedback
+from checker_platform.database import init_db, get_customer_feedback, bulk_insert_vouchers, get_db_connection, update_setting
 
 class TestCustomerPagesAndFeedback(unittest.TestCase):
 
@@ -152,6 +152,39 @@ class TestCustomerPagesAndFeedback(unittest.TestCase):
         res = self.client.post("/api/feedback", json=payload)
         self.assertEqual(res.status_code, 429)
         self.assertIn("Too many feedback submissions", res.json().get("message", ""))
+
+    def test_storefront_qualitative_stock_indicators(self):
+        """Verifies qualitative stock messages (In Stock, Almost Out of Stock, Out of Stock) without exposing raw counts."""
+        update_setting("inventory_mode", "BATCH")
+        conn = get_db_connection()
+        conn.execute("DELETE FROM vouchers WHERE category = 'WASSCE';")
+        conn.commit()
+        conn.close()
+
+        # 1. Zero stock -> 'Out of Stock' and disabled button
+        res_zero = self.client.get("/")
+        self.assertEqual(res_zero.status_code, 200)
+        self.assertIn("Out of Stock", res_zero.text)
+        self.assertIn("stock-bullet out-of-stock", res_zero.text)
+        self.assertIn("disabled", res_zero.text)
+
+        # 2. Low stock (<= 10, e.g. 5) -> 'Almost Out of Stock'
+        low_vouchers = [{"serial_number": f"LOW_WSC_{i:03d}", "pin": f"12345678901{i}"} for i in range(5)]
+        bulk_insert_vouchers("WASSCE", low_vouchers)
+        res_low = self.client.get("/")
+        self.assertEqual(res_low.status_code, 200)
+        self.assertIn("Almost Out of Stock", res_low.text)
+        self.assertIn("stock-bullet low-stock", res_low.text)
+        self.assertNotIn("5 In Stock", res_low.text)
+
+        # 3. Healthy stock (> 10, add 10 more to reach 15) -> 'In Stock'
+        more_vouchers = [{"serial_number": f"HIGH_WSC_{i:03d}", "pin": f"98765432101{i}"} for i in range(10)]
+        bulk_insert_vouchers("WASSCE", more_vouchers)
+        res_high = self.client.get("/")
+        self.assertEqual(res_high.status_code, 200)
+        self.assertIn("In Stock", res_high.text)
+        self.assertIn("stock-bullet in-stock", res_high.text)
+        self.assertNotIn("15 In Stock", res_high.text)
 
 if __name__ == "__main__":
     unittest.main()

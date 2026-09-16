@@ -777,18 +777,53 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .stock-indicator {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 0.8rem;
-  color: var(--text-muted);
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .stock-bullet {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.stock-bullet.in-stock {
   background-color: var(--ghana-green);
+  box-shadow: 0 0 6px rgba(5, 150, 105, 0.45);
+}
+
+.stock-bullet.low-stock {
+  background-color: #ea580c;
+  box-shadow: 0 0 6px rgba(234, 88, 12, 0.45);
+}
+
+.stock-bullet.out-of-stock {
+  background-color: var(--ghana-red);
+  box-shadow: 0 0 6px rgba(220, 38, 38, 0.45);
+}
+
+.stock-text-in {
+  color: #047857;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.stock-text-low {
+  color: #c2410c;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.stock-text-out {
+  color: var(--ghana-red);
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .product-name {

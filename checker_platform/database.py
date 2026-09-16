@@ -308,9 +308,23 @@ def get_product_catalog() -> Dict[str, Dict[str, Any]]:
             ).fetchone()
             unsold_count = stock_row["count"] if stock_row else 0
             if inventory_mode == "DEMO_GENERATE":
-                data["available_stock"] = unsold_count if unsold_count > 0 else 999
+                avail = unsold_count if unsold_count > 0 else 999
             else:
-                data["available_stock"] = unsold_count
+                avail = unsold_count
+            data["available_stock"] = avail
+
+            if avail > 10:
+                data["stock_status"] = "IN_STOCK"
+                data["stock_label"] = "In Stock"
+                data["stock_class"] = "in-stock"
+            elif avail > 0:
+                data["stock_status"] = "LOW_STOCK"
+                data["stock_label"] = "Almost Out of Stock"
+                data["stock_class"] = "low-stock"
+            else:
+                data["stock_status"] = "OUT_OF_STOCK"
+                data["stock_label"] = "Out of Stock"
+                data["stock_class"] = "out-of-stock"
             
         return categories
     finally:
