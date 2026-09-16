@@ -469,6 +469,74 @@
       </div>
     </div>
 
+    <!-- ADVISOR ANALYSIS SKELETON (Shows while engine analyzes grades) -->
+    <div id="results_skeleton" style="display: none; margin-bottom: 2.5rem; animation: fadeIn 0.3s ease-in-out;">
+      <div class="skeleton-card" style="border: 2px solid var(--border-gold); padding: 2.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 1rem;">
+          <div style="flex: 1; min-width: 250px;">
+            <div class="skeleton skeleton-badge" style="width: 140px; height: 22px; margin-bottom: 0.75rem;"></div>
+            <div class="skeleton skeleton-title skeleton-w-50" style="height: 28px;"></div>
+            <div class="skeleton skeleton-line skeleton-w-75"></div>
+            <div class="skeleton skeleton-line skeleton-w-33"></div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <div class="skeleton skeleton-btn" style="width: 130px; height: 38px;"></div>
+            <div class="skeleton skeleton-btn" style="width: 130px; height: 38px;"></div>
+          </div>
+        </div>
+
+        <!-- Shimmering Final Verdict Box -->
+        <div class="skeleton" style="height: 110px; border-radius: var(--radius-md); margin-bottom: 2rem;"></div>
+
+        <!-- Shimmering Grid Section Header -->
+        <div style="margin-bottom: 1.25rem;">
+          <div class="skeleton skeleton-line skeleton-w-20" style="height: 14px; margin-bottom: 6px;"></div>
+          <div class="skeleton skeleton-title skeleton-w-50" style="height: 22px; margin: 0;"></div>
+        </div>
+
+        <div class="skeleton-grid">
+          <div class="skeleton-card" style="box-shadow: none; border: 1px solid var(--border-subtle);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <div class="skeleton skeleton-badge" style="width: 80px;"></div>
+              <div class="skeleton skeleton-badge" style="width: 65px;"></div>
+            </div>
+            <div class="skeleton skeleton-title skeleton-w-90"></div>
+            <div class="skeleton skeleton-line skeleton-w-65"></div>
+            <div class="skeleton skeleton-bar skeleton-w-100" style="height: 8px; margin: 1rem 0;"></div>
+            <div class="skeleton skeleton-line skeleton-w-50"></div>
+            <div class="skeleton skeleton-line skeleton-w-75"></div>
+            <div class="skeleton skeleton-btn" style="margin-top: 1rem; height: 36px;"></div>
+          </div>
+
+          <div class="skeleton-card" style="box-shadow: none; border: 1px solid var(--border-subtle);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <div class="skeleton skeleton-badge" style="width: 80px;"></div>
+              <div class="skeleton skeleton-badge" style="width: 65px;"></div>
+            </div>
+            <div class="skeleton skeleton-title skeleton-w-75"></div>
+            <div class="skeleton skeleton-line skeleton-w-50"></div>
+            <div class="skeleton skeleton-bar skeleton-w-100" style="height: 8px; margin: 1rem 0;"></div>
+            <div class="skeleton skeleton-line skeleton-w-50"></div>
+            <div class="skeleton skeleton-line skeleton-w-75"></div>
+            <div class="skeleton skeleton-btn" style="margin-top: 1rem; height: 36px;"></div>
+          </div>
+
+          <div class="skeleton-card" style="box-shadow: none; border: 1px solid var(--border-subtle);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <div class="skeleton skeleton-badge" style="width: 80px;"></div>
+              <div class="skeleton skeleton-badge" style="width: 65px;"></div>
+            </div>
+            <div class="skeleton skeleton-title skeleton-w-85"></div>
+            <div class="skeleton skeleton-line skeleton-w-65"></div>
+            <div class="skeleton skeleton-bar skeleton-w-100" style="height: 8px; margin: 1rem 0;"></div>
+            <div class="skeleton skeleton-line skeleton-w-50"></div>
+            <div class="skeleton skeleton-line skeleton-w-75"></div>
+            <div class="skeleton skeleton-btn" style="margin-top: 1rem; height: 36px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ANALYSIS RESULTS SECTION (Rendered dynamically) -->
     <div id="results_section" style="display: none; animation: fadeIn 0.4s ease-in-out;">
       <div style="background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: var(--radius-lg); padding: 2.25rem; margin-bottom: 2.5rem; position: relative;">
@@ -715,9 +783,35 @@ function switchExamTab(tab) {
   }
 }
 
+function renderExplorerSkeleton() {
+  const grid = document.getElementById("explorer_cards_grid");
+  if (!grid) return;
+  const empty = document.getElementById("explorer_empty_state");
+  if (empty) empty.style.display = "none";
+  grid.style.display = "grid";
+  grid.innerHTML = Array(6).fill(0).map(() => `
+    <div class="skeleton-card" style="padding: 1.35rem; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px;">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span class="skeleton skeleton-badge" style="width: 110px; height: 20px;"></span>
+          <span class="skeleton skeleton-badge" style="width: 60px; height: 18px;"></span>
+        </div>
+        <div class="skeleton skeleton-title skeleton-w-85" style="height: 18px; margin-bottom: 8px;"></div>
+        <div class="skeleton skeleton-line skeleton-w-50" style="height: 13px;"></div>
+        <div class="skeleton skeleton-line skeleton-w-65" style="height: 13px; margin-bottom: 1rem;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid #f1f5f9;">
+        <span class="skeleton skeleton-badge" style="width: 75px; height: 20px;"></span>
+        <span class="skeleton skeleton-badge" style="width: 85px; height: 20px;"></span>
+      </div>
+    </div>
+  `).join("");
+}
+
 async function loadExplorerAdmissions(forceReload = false) {
   const badge = document.getElementById("explorer_count_badge");
   if (badge) badge.innerText = "Synchronizing live benchmarks from database...";
+  renderExplorerSkeleton();
   
   try {
     const res = await fetch("/api/admissions/live?limit=300");
@@ -942,6 +1036,14 @@ async function submitBeceAnalysis() {
   }
   const programme = document.getElementById("bece_programme").value;
 
+  const resSec = document.getElementById("results_section");
+  const resSkel = document.getElementById("results_skeleton");
+  if (resSec) resSec.style.display = "none";
+  if (resSkel) {
+    resSkel.style.display = "block";
+    resSkel.scrollIntoView({ behavior: "smooth" });
+  }
+
   try {
     const res = await fetch("/api/advisor/analyze", {
       method: "POST",
@@ -958,9 +1060,11 @@ async function submitBeceAnalysis() {
     if (res.ok && data.success) {
       renderBeceResults(data.analysis);
     } else {
+      if (resSkel) resSkel.style.display = "none";
       alert("Analysis error: " + (data.message || "Failed to analyze grades."));
     }
   } catch (err) {
+    if (resSkel) resSkel.style.display = "none";
     alert("Network error: " + err.message);
   } finally {
     btn.innerText = "Run Expert Placement Analysis →";
@@ -992,6 +1096,14 @@ async function submitWassceAnalysis() {
   }
   const programme = document.getElementById("wassce_programme").value;
 
+  const resSec = document.getElementById("results_section");
+  const resSkel = document.getElementById("results_skeleton");
+  if (resSec) resSec.style.display = "none";
+  if (resSkel) {
+    resSkel.style.display = "block";
+    resSkel.scrollIntoView({ behavior: "smooth" });
+  }
+
   try {
     const res = await fetch("/api/advisor/analyze", {
       method: "POST",
@@ -1008,9 +1120,11 @@ async function submitWassceAnalysis() {
     if (res.ok && data.success) {
       renderWassceResults(data.analysis);
     } else {
+      if (resSkel) resSkel.style.display = "none";
       alert("Analysis error: " + (data.message || "Failed to analyze grades."));
     }
   } catch (err) {
+    if (resSkel) resSkel.style.display = "none";
     alert("Network error: " + err.message);
   } finally {
     btn.innerText = "Run Degree & Tertiary Analysis →";
@@ -1175,6 +1289,8 @@ function renderFinalVerdict(verdict, examType) {
 
 function renderBeceResults(analysis) {
   currentAnalysis = analysis;
+  const skeleton = document.getElementById("results_skeleton");
+  if (skeleton) skeleton.style.display = "none";
   const section = document.getElementById("results_section");
   section.style.display = "block";
   section.scrollIntoView({ behavior: "smooth" });
@@ -1354,6 +1470,8 @@ function renderBeceResults(analysis) {
 
 function renderWassceResults(analysis) {
   currentAnalysis = analysis;
+  const skeleton = document.getElementById("results_skeleton");
+  if (skeleton) skeleton.style.display = "none";
   const section = document.getElementById("results_section");
   section.style.display = "block";
   section.scrollIntoView({ behavior: "smooth" });

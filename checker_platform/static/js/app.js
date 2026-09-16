@@ -223,12 +223,49 @@ function payWithPaystack() {
   handler.openIframe();
 }
 
+function renderVouchersSkeleton(qty = 1) {
+  const container = document.getElementById("vouchers_container");
+  if (!container) return;
+  container.replaceChildren();
+  for (let i = 0; i < qty; i++) {
+    const card = document.createElement("div");
+    card.className = "skeleton-voucher-card";
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+        <span class="skeleton skeleton-line" style="width: 150px; height: 14px; margin: 0;"></span>
+        <span class="skeleton skeleton-badge" style="width: 80px; height: 18px;"></span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 100px; gap: 1rem; align-items: center; margin-bottom: 0.75rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+        <div>
+          <div class="skeleton skeleton-line" style="width: 80px; height: 10px; margin-bottom: 6px;"></div>
+          <div class="skeleton skeleton-line" style="width: 170px; height: 18px; margin: 0;"></div>
+        </div>
+        <div class="skeleton skeleton-btn" style="height: 32px; width: 80px; margin-left: auto;"></div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 100px; gap: 1rem; align-items: center; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+        <div>
+          <div class="skeleton skeleton-line" style="width: 60px; height: 10px; margin-bottom: 6px;"></div>
+          <div class="skeleton skeleton-line" style="width: 140px; height: 18px; margin: 0;"></div>
+        </div>
+        <div class="skeleton skeleton-btn" style="height: 32px; width: 80px; margin-left: auto;"></div>
+      </div>
+    `;
+    container.appendChild(card);
+  }
+}
+
 async function verifyPaystackPayment(orderRef) {
   const btn = document.getElementById("btn_paystack_pay");
   if (btn) {
     btn.innerText = "Confirming Paystack Payment...";
     btn.disabled = true;
   }
+
+  // Show immediate voucher shimmer skeleton while verifying with server
+  document.getElementById("checkout_step_payment").style.display = "none";
+  document.getElementById("checkout_step_success").style.display = "block";
+  document.getElementById("redirect_countdown_box").style.display = "none";
+  renderVouchersSkeleton(currentOrder ? currentOrder.quantity : 1);
 
   try {
     const res = await fetch("/api/orders/verify", {
@@ -242,6 +279,8 @@ async function verifyPaystackPayment(orderRef) {
     const data = await res.json();
     if (!res.ok || !data.success) {
       alert(data.message || "Paystack payment verification failed.");
+      document.getElementById("checkout_step_success").style.display = "none";
+      document.getElementById("checkout_step_payment").style.display = "block";
       if (btn) {
         btn.innerText = "Pay via Paystack (MoMo & Cards)";
         btn.disabled = false;
@@ -251,6 +290,8 @@ async function verifyPaystackPayment(orderRef) {
     showSuccessVouchers(data);
   } catch (err) {
     alert("Payment verification error: " + err.message);
+    document.getElementById("checkout_step_success").style.display = "none";
+    document.getElementById("checkout_step_payment").style.display = "block";
     if (btn) {
       btn.innerText = "Pay via Paystack (MoMo & Cards)";
       btn.disabled = false;
@@ -265,6 +306,12 @@ async function approveSimulatedPayment() {
   btn.innerText = "Verifying Transaction...";
   btn.disabled = true;
 
+  // Show immediate voucher shimmer skeleton while server processes
+  document.getElementById("checkout_step_payment").style.display = "none";
+  document.getElementById("checkout_step_success").style.display = "block";
+  document.getElementById("redirect_countdown_box").style.display = "none";
+  renderVouchersSkeleton(currentOrder ? currentOrder.quantity : 1);
+
   try {
     const res = await fetch("/api/orders/verify", {
       method: "POST",
@@ -278,6 +325,8 @@ async function approveSimulatedPayment() {
     const data = await res.json();
     if (!res.ok || !data.success) {
       alert(data.message || "Verification failed.");
+      document.getElementById("checkout_step_success").style.display = "none";
+      document.getElementById("checkout_step_payment").style.display = "block";
       btn.innerText = "Quick Sandbox Test (Simulate MoMo Approval)";
       btn.disabled = false;
       return;
@@ -286,6 +335,8 @@ async function approveSimulatedPayment() {
     showSuccessVouchers(data);
   } catch (err) {
     alert("Verification error: " + err.message);
+    document.getElementById("checkout_step_success").style.display = "none";
+    document.getElementById("checkout_step_payment").style.display = "block";
     btn.innerText = "Quick Sandbox Test (Simulate MoMo Approval)";
     btn.disabled = false;
   }

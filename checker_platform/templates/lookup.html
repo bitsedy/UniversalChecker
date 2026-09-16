@@ -18,7 +18,7 @@
 
   <!-- Search Card -->
   <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-gold); margin-bottom: 2.5rem;">
-    <form method="GET" action="/lookup" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+    <form method="GET" action="/lookup" style="display: flex; gap: 0.75rem; flex-wrap: wrap;" onsubmit="const sk = document.getElementById('lookup_skeleton_container'); if (sk) sk.style.display='block';">
       <input 
         type="text" 
         name="q" 
@@ -32,6 +32,44 @@
         Search Records
       </button>
     </form>
+  </div>
+
+  <!-- Instant Search Skeleton (Shown while retrieving records) -->
+  <div id="lookup_skeleton_container" style="display: none; margin-bottom: 2.5rem; animation: fadeIn 0.3s ease-in-out;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <div class="skeleton skeleton-title skeleton-w-40" style="height: 22px; margin: 0;"></div>
+      <div class="skeleton skeleton-badge" style="width: 90px; height: 20px;"></div>
+    </div>
+    <div class="skeleton-card" style="margin-bottom: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+        <div>
+          <div class="skeleton skeleton-line" style="width: 110px; height: 12px; margin-bottom: 6px;"></div>
+          <div class="skeleton skeleton-title" style="width: 220px; height: 24px; margin: 0;"></div>
+        </div>
+        <div class="skeleton skeleton-badge" style="width: 80px; height: 24px;"></div>
+      </div>
+      <div class="skeleton" style="height: 65px; border-radius: var(--radius-md); margin-bottom: 1.25rem;"></div>
+      <div class="skeleton-voucher-card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+          <div class="skeleton skeleton-line" style="width: 140px; height: 14px; margin: 0;"></div>
+          <div class="skeleton skeleton-badge" style="width: 90px; height: 18px;"></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 120px; gap: 1rem; align-items: center; margin-bottom: 0.75rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+          <div>
+            <div class="skeleton skeleton-line" style="width: 90px; height: 10px; margin-bottom: 6px;"></div>
+            <div class="skeleton skeleton-line" style="width: 200px; height: 20px; margin: 0;"></div>
+          </div>
+          <div class="skeleton skeleton-btn" style="height: 34px; width: 100px; margin-left: auto;"></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 120px; gap: 1rem; align-items: center; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+          <div>
+            <div class="skeleton skeleton-line" style="width: 70px; height: 10px; margin-bottom: 6px;"></div>
+            <div class="skeleton skeleton-line" style="width: 160px; height: 20px; margin: 0;"></div>
+          </div>
+          <div class="skeleton skeleton-btn" style="height: 34px; width: 100px; margin-left: auto;"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Results Section -->
