@@ -235,19 +235,19 @@ function renderVouchersSkeleton(qty = 1) {
         <span class="skeleton skeleton-line" style="width: 150px; height: 14px; margin: 0;"></span>
         <span class="skeleton skeleton-badge" style="width: 80px; height: 18px;"></span>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 100px; gap: 1rem; align-items: center; margin-bottom: 0.75rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
-        <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+        <div style="min-width: 0; flex: 1 1 180px;">
           <div class="skeleton skeleton-line" style="width: 80px; height: 10px; margin-bottom: 6px;"></div>
-          <div class="skeleton skeleton-line" style="width: 170px; height: 18px; margin: 0;"></div>
+          <div class="skeleton skeleton-line" style="width: 170px; max-width: 100%; height: 18px; margin: 0;"></div>
         </div>
-        <div class="skeleton skeleton-btn" style="height: 32px; width: 80px; margin-left: auto;"></div>
+        <div class="skeleton skeleton-btn" style="height: 32px; width: 80px; flex-shrink: 0;"></div>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 100px; gap: 1rem; align-items: center; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
-        <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+        <div style="min-width: 0; flex: 1 1 180px;">
           <div class="skeleton skeleton-line" style="width: 60px; height: 10px; margin-bottom: 6px;"></div>
-          <div class="skeleton skeleton-line" style="width: 140px; height: 18px; margin: 0;"></div>
+          <div class="skeleton skeleton-line" style="width: 140px; max-width: 100%; height: 18px; margin: 0;"></div>
         </div>
-        <div class="skeleton skeleton-btn" style="height: 32px; width: 80px; margin-left: auto;"></div>
+        <div class="skeleton skeleton-btn" style="height: 32px; width: 80px; flex-shrink: 0;"></div>
       </div>
     `;
     container.appendChild(card);

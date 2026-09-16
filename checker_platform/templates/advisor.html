@@ -68,7 +68,7 @@
   <div id="advisor_main_panel" style="display: none;">
 
     <!-- 1-2-3 Idiot-Proof Guide -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1rem; margin-bottom: 2rem;">
       <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-sm);">
         <div style="width: 36px; height: 36px; border-radius: 50%; background: #fef3c7; color: #b45309; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">1</div>
         <div>
@@ -149,7 +149,7 @@
         <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
           4 Compulsory Core Subjects
         </h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
           {% for core in bece_cores %}
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">{{ core }}</label>
@@ -172,7 +172,7 @@
         <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
           Elective Subjects (Best 2 Count Automatically)
         </h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1rem; margin-bottom: 2rem;">
           {% for elect in bece_electives %}
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">{{ elect }}</label>
@@ -253,7 +253,7 @@
         <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
           4 Core Subjects (English &amp; Core Math are compulsory for degrees)
         </h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <label class="form-label" style="font-size: 0.85rem; font-weight: 700;">English Language</label>
             <select id="w_core_eng" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
@@ -316,7 +316,7 @@
         <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px;">
           Elective Subjects (Best 3 Count Automatically)
         </h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1rem; margin-bottom: 2rem;">
           <div style="background: #f8fafc; border: 1px solid var(--border-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md);">
             <input type="text" id="w_elect_name_0" class="form-input" value="Elective Mathematics" style="margin-bottom: 6px; font-size: 0.8rem;">
             <select id="w_elect_val_0" class="form-input wassce-grade-input" onchange="calculateLiveWassceAggregate()">
@@ -412,7 +412,7 @@
         </div>
 
         <!-- Filter Bar -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 1rem; margin-bottom: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
           <div>
             <label class="form-label" style="font-size: 0.8rem; margin-bottom: 4px;">Search Programme or Keyword</label>
             <input type="text" id="explorer_search_input" class="form-input" placeholder="e.g. Computer Science, Medicine, Law, Nursing..." oninput="filterExplorer()" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
@@ -451,7 +451,7 @@
         </div>
 
         <!-- Cards Grid -->
-        <div id="explorer_cards_grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+        <div id="explorer_cards_grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 1rem;">
           <!-- Injected via JavaScript -->
         </div>
 
@@ -592,7 +592,7 @@
           </div>
 
           <!-- Cards Grid -->
-          <div id="suggested_institutions_grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+          <div id="suggested_institutions_grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 1.25rem;">
             <!-- Populated dynamically via renderBeceResults or renderWassceResults -->
           </div>
         </div>
@@ -613,7 +613,7 @@
             </h3>
             <span id="scholarships_count_badge" class="card-badge card-badge-fast" style="font-size: 0.725rem;">Verified Funds</span>
           </div>
-          <div id="scholarships_container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;"></div>
+          <div id="scholarships_container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 1rem;"></div>
         </div>
 
         <!-- WASSCE Deficit & Remedial Strategy Engine (Dynamic) -->
@@ -1247,7 +1247,7 @@ function renderFinalVerdict(verdict, examType) {
       </div>
 
       <!-- Actionable Directives Grid -->
-      <div style="padding: 1.75rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.5rem; background: #fafafa;">
+      <div style="padding: 1.75rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 1.5rem; background: #fafafa;">
         
         <!-- Next Moves Column -->
         <div>
