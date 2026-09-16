@@ -648,16 +648,15 @@ function filterFaq(category, pillElem) {
 
 /**
  * Sovereign Navigation Scroll Engine
- * Drives the real-time top laser progress beam and floating precision scroll navigator orb.
+ * Drives the floating precision scroll navigator orb with real-time circular tracking.
  * Throttled with requestAnimationFrame for 60fps buttery smooth performance.
  */
 function initScrollEngine() {
-  const progressBar = document.getElementById("scroll_progress_bar");
   const scrollTopBtn = document.getElementById("scroll_top_btn");
   const ringProgress = document.getElementById("scroll_ring_progress");
   const percentText = document.getElementById("scroll_percent_text");
 
-  if (!progressBar && !scrollTopBtn) return;
+  if (!scrollTopBtn) return;
 
   const RING_CIRCUMFERENCE = 125.66; // 2 * PI * 20
   let isTicking = false;
@@ -668,13 +667,7 @@ function initScrollEngine() {
     const progress = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
     const roundedProgress = Math.round(progress);
 
-    // 1. Update top micro-beam progress laser
-    if (progressBar) {
-      progressBar.style.width = `${progress}%`;
-      progressBar.setAttribute("aria-valuenow", roundedProgress);
-    }
-
-    // 2. Update circular SVG progress ring & percentage text
+    // 1. Update circular SVG progress ring & percentage text on tracking orb
     if (ringProgress) {
       const offset = RING_CIRCUMFERENCE - (progress / 100) * RING_CIRCUMFERENCE;
       ringProgress.style.strokeDashoffset = offset;
@@ -683,7 +676,7 @@ function initScrollEngine() {
       percentText.textContent = `${roundedProgress}%`;
     }
 
-    // 3. Toggle floating orb visibility
+    // 2. Toggle floating orb visibility
     if (scrollTopBtn) {
       if (scrollTop > 180) {
         scrollTopBtn.classList.add("is-visible");

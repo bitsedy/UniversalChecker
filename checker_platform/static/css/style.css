@@ -145,28 +145,6 @@ html {
   background: #f8fafc;
 }
 
-/* TOP MICRO-BEAM SCROLL PROGRESS LASER */
-.scroll-progress-beam {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 3px;
-  background: linear-gradient(
-    90deg,
-    var(--ghana-red) 0%,
-    var(--ghana-gold) 35%,
-    #fbbf24 70%,
-    var(--ghana-green) 100%
-  );
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.85),
-              0 0 20px rgba(16, 185, 129, 0.45);
-  z-index: 100000;
-  pointer-events: none;
-  transition: width 0.08s ease-out;
-  will-change: width;
-}
-
 /* FLOATING PRECISION SCROLL NAVIGATOR ORB */
 .scroll-top-orb {
   position: fixed;
@@ -344,7 +322,6 @@ img, svg, picture, video, canvas {
 .faq-question,
 .faq-chevron,
 .scroll-top-orb,
-.kente-ribbon,
 .pulse-dot,
 .stock-bullet,
 .stock-indicator,
@@ -472,25 +449,6 @@ h1, h2, h3, h4, h5, h6,
   font-family: var(--font-mono) !important;
 }
 
-/* Subtle Kente Geometric Top Ribbon */
-.kente-ribbon {
-  height: 6px;
-  width: 100%;
-  background: repeating-linear-gradient(
-    90deg,
-    #ef4444 0px,
-    #ef4444 24px,
-    #f59e0b 24px,
-    #f59e0b 48px,
-    #10b981 48px,
-    #10b981 72px,
-    #111827 72px,
-    #111827 96px
-  );
-  position: relative;
-  z-index: 50;
-}
-
 /* App Header & Navbar */
 .app-header {
   border-bottom: 1px solid var(--border-subtle);
@@ -534,18 +492,16 @@ h1, h2, h3, h4, h5, h6,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #ffffff, #f1f5f9);
-  border: 1.5px solid var(--border-gold);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.2);
+  background: transparent;
+  border: none;
+  box-shadow: none;
   transition: all 0.25s ease;
 }
 
 .brand-link:hover .brand-badge-star {
-  box-shadow: 0 0 16px rgba(217, 119, 6, 0.35);
-  border-color: var(--ghana-gold);
+  box-shadow: none;
+  border: none;
+  transform: scale(1.06);
 }
 
 .brand-title span {
@@ -699,19 +655,20 @@ h1, h2, h3, h4, h5, h6,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 36px;
-  padding: 4px 12px;
-  border-radius: var(--radius-sm);
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  height: 32px;
+  padding: 2px 8px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
   transition: all 0.2s ease;
 }
 
 .telco-item:hover {
-  border-color: var(--border-gold);
+  background: transparent;
+  border: none;
   transform: translateY(-1px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
+  filter: brightness(1.08);
 }
 
 .telco-logo-img {
@@ -1545,11 +1502,11 @@ footer {
 }
 
 .trust-seal-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: rgba(217, 119, 6, 0.08);
-  border: 1px solid var(--border-gold);
+  width: 32px;
+  height: 32px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1725,16 +1682,16 @@ footer {
 }
 
 .faq-q-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.15rem;
   flex-shrink: 0;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   transition: all 0.3s ease;
 }
 
@@ -1746,13 +1703,16 @@ footer {
 
 .faq-item.open .faq-q-icon {
   transform: scale(1.08);
-  box-shadow: 0 0 12px rgba(217, 119, 6, 0.2);
+  box-shadow: none !important;
 }
 
-.faq-q-icon.gold { background: rgba(217, 119, 6, 0.1); border-color: rgba(217, 119, 6, 0.3); }
-.faq-q-icon.emerald { background: rgba(5, 150, 105, 0.1); border-color: rgba(5, 150, 105, 0.3); }
-.faq-q-icon.blue { background: rgba(2, 132, 199, 0.1); border-color: rgba(2, 132, 199, 0.3); }
-.faq-q-icon.purple { background: rgba(147, 51, 234, 0.1); border-color: rgba(147, 51, 234, 0.3); }
+.faq-q-icon.gold,
+.faq-q-icon.emerald,
+.faq-q-icon.blue,
+.faq-q-icon.purple {
+  background: transparent !important;
+  border: none !important;
+}
 
 .faq-q-text {
   font-size: 1rem;
@@ -1894,17 +1854,18 @@ footer {
 }
 
 .faq-support-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: #f1f5f9;
-  border: 1.5px solid var(--border-gold);
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
   position: relative;
   flex-shrink: 0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--ghana-gold);
 }
 
 .faq-support-status {
