@@ -49,9 +49,8 @@
 
   <!-- Products Section -->
   <section style="margin-bottom: 3.5rem;">
-    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
+    <div style="margin-bottom: 1.5rem;">
       <h2 style="font-size: 1.5rem; font-weight: 800;">Select Result Checker</h2>
-      <span style="font-size: 0.85rem; color: var(--text-dim);">Live Stock Updated Automatically</span>
     </div>
 
     <div class="products-grid">
@@ -569,8 +568,8 @@
         <button id="btn_paystack_pay" class="btn-buy" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); font-weight: 800;" onclick="payWithPaystack()">
           Pay via Paystack (MoMo &amp; Cards)
         </button>
-        <button id="btn_approve_payment" class="btn-safety-guide" style="text-align: center; cursor: pointer; font-size: 0.85rem;" onclick="approveSimulatedPayment()">
-          Quick Sandbox Test (Simulate MoMo Approval)
+        <button id="btn_approve_payment" class="btn-safety-guide" style="display: none; text-align: center; cursor: pointer; font-size: 0.85rem;" onclick="approveSimulatedPayment()">
+          Verify Payment
         </button>
         <button class="btn-print" onclick="document.getElementById('checkout_step_payment').style.display='none'; document.getElementById('checkout_step_details').style.display='block';">
           &larr; Back to Order Details

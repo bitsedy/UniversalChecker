@@ -286,7 +286,7 @@ def get_product_catalog() -> Dict[str, Dict[str, Any]]:
                 "short_title": "CTVET Technical & Vocational",
                 "description": "Valid for May/June Certificate & Nov/Dec Technical Examinations across all regions.",
                 "official_url": "https://ctvet.gov.gh",
-                "badge": "Technical/Vocational",
+                "badge": "TVET Direct",
                 "check_limit": 5,
                 "index_format": "Region + Center Code + Index Number"
             }

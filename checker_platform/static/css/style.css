@@ -708,8 +708,10 @@ h1, h2, h3, h4, h5, h6,
 .card-top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 1.25rem;
+  flex-wrap: wrap;
 }
 
 .card-badge {
@@ -719,6 +721,7 @@ h1, h2, h3, h4, h5, h6,
   border-radius: 6px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .card-badge-popular {

@@ -327,7 +327,7 @@ async function approveSimulatedPayment() {
       alert(data.message || "Verification failed.");
       document.getElementById("checkout_step_success").style.display = "none";
       document.getElementById("checkout_step_payment").style.display = "block";
-      btn.innerText = "Quick Sandbox Test (Simulate MoMo Approval)";
+      btn.innerText = "Verify Payment";
       btn.disabled = false;
       return;
     }
@@ -337,7 +337,7 @@ async function approveSimulatedPayment() {
     alert("Verification error: " + err.message);
     document.getElementById("checkout_step_success").style.display = "none";
     document.getElementById("checkout_step_payment").style.display = "block";
-    btn.innerText = "Quick Sandbox Test (Simulate MoMo Approval)";
+    btn.innerText = "Verify Payment";
     btn.disabled = false;
   }
 }
