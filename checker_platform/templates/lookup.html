@@ -12,7 +12,7 @@
     </div>
     <h1 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem;">Retrieve Lost Result Checker</h1>
     <p style="color: var(--text-muted); font-size: 0.95rem;">
-      Did your phone battery die or did your browser close? Enter your Mobile Money number or Order Reference below to view and reprint your Serial & PIN.
+      Did your phone turn off or did you close the page? Type your phone number or Order Number below to find your cards again.
     </p>
   </div>
 
@@ -23,13 +23,13 @@
         type="text" 
         name="q" 
         value="{{ query or '' }}" 
-        placeholder="Enter Phone Number (e.g. 024 123 4567) or Order Ref (ORD-...)" 
+        placeholder="Type Phone Number (e.g. 024 123 4567) or Order Number (ORD-...)" 
         class="form-input" 
         style="flex: 1; min-width: 260px;" 
         required
       >
       <button type="submit" class="btn-buy" style="width: auto; padding: 0.85rem 1.75rem;">
-        Search Records
+        Find My Card
       </button>
     </form>
   </div>
@@ -117,11 +117,11 @@
           {% if is_phone_query %}
           <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #b45309; display: flex; align-items: flex-start; gap: 8px;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #b45309; flex-shrink: 0; margin-top: 2px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <div><strong>Security Notice:</strong> To protect your voucher against unauthorized access, PINs are masked for phone searches. Your full PIN was dispatched via SMS to your registered phone number. To view full PINs on-screen, search using your unique <strong>Order Reference (ORD-...)</strong>.</div>
+            <div><strong>Security Notice:</strong> To keep your card safe from strangers, PIN numbers are hidden when searching by phone number. Your full PIN was sent to your phone by SMS. If you want to see the full PIN on your screen, search using your <strong>Order Number (ORD-...)</strong>.</div>
           </div>
           {% endif %}
           <div style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
-            Your Active Voucher Credentials:
+            Your Card Details:
           </div>
 
           {% for v in ord.vouchers %}
@@ -168,7 +168,7 @@
 
         {% else %}
           <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-md); padding: 1rem; color: #b45309; font-size: 0.85rem;">
-            This order is currently <strong>{{ ord.payment_status }}</strong>. Vouchers are only displayed after successful Mobile Money payment completion.
+            This order is currently <strong>{{ ord.payment_status }}</strong>. Cards only show up after your Mobile Money payment goes through.
           </div>
         {% endif %}
       </div>
@@ -183,7 +183,7 @@
         </div>
         <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">No Records Found</h3>
         <p style="color: var(--text-muted); font-size: 0.875rem; max-width: 450px; margin: 0 auto;">
-          We could not find any paid orders matching "{{ query }}". Please verify the phone number or order reference used during checkout.
+          We could not find any paid orders matching "{{ query }}". Please check that you typed the right phone number or order number.
         </p>
       </div>
     {% endif %}
