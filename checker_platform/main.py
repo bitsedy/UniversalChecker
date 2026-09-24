@@ -198,8 +198,8 @@ async def health_check():
 async def home(request: Request):
     """Storefront homepage with live stock and product options."""
     products = get_product_catalog()
-    raw_wa = get_setting("support_whatsapp", "+233240000000")
-    clean_wa = re.sub(r"\D", "", raw_wa) or "233240000000"
+    raw_wa = get_setting("support_whatsapp", "+233509512942")
+    clean_wa = re.sub(r"\D", "", raw_wa) or "233509512942"
     support_phone = get_setting("support_phone", "+233 24 000 0000")
     return templates.TemplateResponse(
         request=request,
@@ -855,7 +855,7 @@ async def admin_page(request: Request, admin_user: str = Depends(get_current_adm
         "arkesel_api_key": get_setting("arkesel_api_key", ""),
         "mnotify_api_key": get_setting("mnotify_api_key", ""),
         "support_phone": get_setting("support_phone", "+233 24 000 0000"),
-        "support_whatsapp": get_setting("support_whatsapp", "+233240000000"),
+        "support_whatsapp": get_setting("support_whatsapp", "+233509512942"),
     }
     admissions_metrics = get_admissions_summary_metrics()
     analytics_data = get_system_analytics(time_window="7d")

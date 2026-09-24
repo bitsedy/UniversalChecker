@@ -385,7 +385,7 @@
               <td style="padding: 0.85rem 1rem; color: var(--text-muted);">{{ s.daily_burn_rate }}/day</td>
               <td style="padding: 0.85rem 1rem; color: #0284c7;">{{ s.days_remaining }}</td>
               <td style="padding: 0.85rem 1rem;">
-                <span style="color: {{ s.health_color }}; font-size: 0.8rem; font-weight: 800;">{{ s.health_status }}</span>
+                <span class="health-badge health-{{ s.health_status }}">{{ s.health_status }}</span>
               </td>
             </tr>
             {% endfor %}
@@ -412,7 +412,7 @@
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
         <!-- Option 1: Dynamic Demo Generator -->
-        <label style="background: #f8fafc; border: 2px solid {% if settings.inventory_mode == 'DEMO_GENERATE' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_demo">
+        <label class="inventory-mode-card{% if settings.inventory_mode == 'DEMO_GENERATE' %} active-mode{% endif %}" id="label_mode_demo">
           <div style="display: flex; align-items: flex-start; gap: 12px;">
             <input type="radio" name="cfg_inventory_mode" id="mode_demo" value="DEMO_GENERATE" {% if settings.inventory_mode == 'DEMO_GENERATE' %}checked{% endif %} onchange="updateModeSelection('DEMO_GENERATE')">
             <div>
@@ -427,7 +427,7 @@
         </label>
 
         <!-- Option 2: Strict Batch Upload -->
-        <label style="background: #f8fafc; border: 2px solid {% if settings.inventory_mode == 'BATCH' %}var(--ghana-gold){% else %}var(--border-subtle){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; display: block;" id="label_mode_batch">
+        <label class="inventory-mode-card{% if settings.inventory_mode == 'BATCH' %} active-mode{% endif %}" id="label_mode_batch">
           <div style="display: flex; align-items: flex-start; gap: 12px;">
             <input type="radio" name="cfg_inventory_mode" id="mode_batch" value="BATCH" {% if settings.inventory_mode == 'BATCH' %}checked{% endif %} onchange="updateModeSelection('BATCH')">
             <div>
@@ -653,7 +653,7 @@
           </div>
           <div>
             <label class="form-label">Support WhatsApp Number (Direct Chat)</label>
-            <input type="text" id="cfg_support_whatsapp" value="{{ settings.support_whatsapp }}" class="form-input" placeholder="+233240000000">
+            <input type="text" id="cfg_support_whatsapp" value="{{ settings.support_whatsapp }}" class="form-input" placeholder="+233509512942">
           </div>
         </div>
 
@@ -690,6 +690,28 @@
 
 <!-- STYLING FOR ANALYTICS CONTROLS -->
 <style>
+.health-badge {
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.health-HEALTHY, .health-healthy { color: #10b981; }
+.health-SUFFICIENT, .health-sufficient { color: #38bdf8; }
+.health-LOW, .health-low { color: #f59e0b; }
+.health-CRITICAL, .health-critical { color: #ef4444; }
+
+.inventory-mode-card {
+  background: #f8fafc;
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  cursor: pointer;
+  display: block;
+  transition: border-color 0.2s ease;
+}
+.inventory-mode-card.active-mode {
+  border-color: var(--ghana-gold);
+}
+
 .analytics-filter-btn {
   background: none;
   border: none;
@@ -716,11 +738,14 @@
 }
 </style>
 
+<!-- INITIAL ANALYTICS DATA (SAFELY EMBEDDED) -->
+<div id="initial_analytics_data" style="display: none;">{{ analytics|tojson }}</div>
+
 <!-- CHART.JS LOGIC & ASYNC TELEMETRY ENGINE -->
 <script>
 let currentWindow = "7d";
 let charts = {};
-const initialAnalytics = {{ analytics|tojson }};
+const initialAnalytics = JSON.parse(document.getElementById("initial_analytics_data").textContent || "{}");
 
 // Tab switching
 function switchAdminTab(tabName) {
@@ -753,12 +778,13 @@ function switchAdminTab(tabName) {
 function updateModeSelection(mode) {
   const lDemo = document.getElementById("label_mode_demo");
   const lBatch = document.getElementById("label_mode_batch");
-  if (mode === "DEMO_GENERATE") {
-    if (lDemo) lDemo.style.borderColor = "var(--ghana-gold)";
-    if (lBatch) lBatch.style.borderColor = "var(--border-subtle)";
-  } else {
-    if (lDemo) lDemo.style.borderColor = "var(--border-subtle)";
-    if (lBatch) lBatch.style.borderColor = "var(--ghana-gold)";
+  if (lDemo) {
+    lDemo.classList.toggle("active-mode", mode === "DEMO_GENERATE");
+    lDemo.style.borderColor = (mode === "DEMO_GENERATE") ? "var(--ghana-gold)" : "var(--border-subtle)";
+  }
+  if (lBatch) {
+    lBatch.classList.toggle("active-mode", mode === "BATCH");
+    lBatch.style.borderColor = (mode === "BATCH") ? "var(--ghana-gold)" : "var(--border-subtle)";
   }
 }
 

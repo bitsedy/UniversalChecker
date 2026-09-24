@@ -185,7 +185,7 @@ def init_db():
             ("paystack_secret_key", "sk_test_sample_ghana_waec"),
             ("sms_sender_id", "CHECKER_GH"),
             ("support_phone", "+233 24 000 0000"),
-            ("support_whatsapp", "+233240000000"),
+            ("support_whatsapp", "+233509512942"),
             ("inventory_mode", "BATCH"), # 'BATCH' or 'DEMO_GENERATE'
             ("admin_username", "admin"),
             ("admin_password", "pbkdf2:sha256:100000$819e68795004da0b7d103dc1f7ea4bda$6d629dc72822847627fc5308b32ab1da9638b3b67cc13ef578a9f19e8b7c3d21"),

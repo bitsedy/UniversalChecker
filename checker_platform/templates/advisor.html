@@ -17,6 +17,50 @@
     </p>
   </div>
 
+  <!-- 3-Step Process Explainer Strip -->
+  <div class="advisor-process-strip" style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.25rem 1.75rem; margin-bottom: 2.25rem; box-shadow: var(--shadow-sm);">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+      <!-- Step 1 -->
+      <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 200px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(217, 119, 6, 0.12); color: var(--ghana-gold); border: 1px solid rgba(217, 119, 6, 0.3); font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.92rem; color: var(--text-main);">Enter Your Grades</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">Input BECE stanine or WASSCE subjects</div>
+        </div>
+      </div>
+
+      <div class="advisor-step-arrow" style="color: var(--text-dim); font-size: 1.25rem; font-weight: 700; user-select: none;">&rarr;</div>
+
+      <!-- Step 2 -->
+      <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 200px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(5, 150, 105, 0.12); color: var(--ghana-green); border: 1px solid rgba(5, 150, 105, 0.3); font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.92rem; color: var(--text-main);">Give Your Consent</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">Authorize ephemeral Act 843 evaluation</div>
+        </div>
+      </div>
+
+      <div class="advisor-step-arrow" style="color: var(--text-dim); font-size: 1.25rem; font-weight: 700; user-select: none;">&rarr;</div>
+
+      <!-- Step 3 -->
+      <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 200px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(2, 132, 199, 0.12); color: #0284c7; border: 1px solid rgba(2, 132, 199, 0.3); font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.92rem; color: var(--text-main);">Get Your Verdict</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">Instant probabilities &amp; strategic dossier</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @media (max-width: 768px) {
+      .advisor-step-arrow {
+        display: none !important;
+      }
+    }
+  </style>
+
   <!-- Ghana Data Protection Act 843 Consent Box -->
   <div style="background: #ffffff; border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 2.5rem; box-shadow: var(--shadow-sm);">
     <div style="display: flex; align-items: flex-start; gap: 1rem;">
@@ -651,7 +695,7 @@
       <!-- Modal Header -->
       <div style="background: #fffbeb; border-bottom: 1px solid var(--border-gold); padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <img src="/static/img/logo-symbol.svg" alt="CheckerPay Ghana Emblem" width="24" height="24" style="display: block;">
+          <img src="/static/img/icon-mark.svg" alt="AggreGate Emblem" width="24" height="24" style="display: block;">
           <div>
             <h3 id="dossier_title_display" style="font-size: 1.1rem; font-weight: 900; color: var(--text-main); margin: 0;">
               UNIVERSAL ADMISSIONS DOSSIER
