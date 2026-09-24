@@ -12,7 +12,64 @@ const TELCO_PREFIXES = {
 
 let currentOrder = null;
 
+// YouTube-Style Whole-System Laser Progress Bar Controller
+window.SystemLoader = {
+  _timer: null,
+  _progress: 0,
+  start() {
+    const loader = document.getElementById("system_laser_loader");
+    const bar = document.getElementById("system_laser_bar");
+    if (!loader || !bar) return;
+
+    if (this._timer) clearInterval(this._timer);
+    loader.classList.add("active");
+    this._progress = 20;
+    bar.style.width = `${this._progress}%`;
+
+    this._timer = setInterval(() => {
+      if (this._progress < 85) {
+        this._progress += (85 - this._progress) * 0.18;
+        bar.style.width = `${Math.round(this._progress)}%`;
+      }
+    }, 120);
+  },
+  done() {
+    const loader = document.getElementById("system_laser_loader");
+    const bar = document.getElementById("system_laser_bar");
+    if (!loader || !bar) return;
+
+    if (this._timer) clearInterval(this._timer);
+    this._progress = 100;
+    bar.style.width = "100%";
+
+    setTimeout(() => {
+      loader.classList.remove("active");
+      setTimeout(() => {
+        bar.style.width = "0%";
+        this._progress = 0;
+      }, 250);
+    }, 200);
+  }
+};
+
+function setupSystemNavigationLoader() {
+  // Trigger system laser loader on internal link clicks for instant visual feedback
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest("a");
+    if (!link) return;
+    const href = link.getAttribute("href");
+    const target = link.getAttribute("target");
+    if (href && !href.startsWith("#") && !href.startsWith("javascript:") && !href.startsWith("mailto:") && !href.startsWith("tel:") && !target && href.startsWith("/")) {
+      window.SystemLoader.start();
+    }
+  });
+
+  // Finish any active load state
+  window.SystemLoader.done();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  setupSystemNavigationLoader();
   setupTelcoAutoDetect();
   setupQuantityListeners();
   // initLiveSocialProof(); // Halted during testing stage to preserve authenticity
@@ -139,6 +196,7 @@ async function submitOrder() {
   const btn = document.getElementById("btn_submit_order");
   btn.innerText = "Reserving Voucher...";
   btn.disabled = true;
+  window.SystemLoader.start();
 
   try {
     const res = await fetch("/api/orders/create", {
@@ -158,15 +216,18 @@ async function submitOrder() {
       alert(data.message || "Failed to reserve voucher. It may be temporarily out of stock.");
       btn.innerText = "Proceed to Payment";
       btn.disabled = false;
+      window.SystemLoader.done();
       return;
     }
 
     currentOrder = data.order;
     showPaymentPrompt(data);
+    window.SystemLoader.done();
   } catch (err) {
     alert("Network error: " + err.message);
     btn.innerText = "Proceed to Payment";
     btn.disabled = false;
+    window.SystemLoader.done();
   }
 }
 
@@ -232,22 +293,22 @@ function renderVouchersSkeleton(qty = 1) {
     card.className = "skeleton-voucher-card";
     card.innerHTML = `
       <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
-        <span class="skeleton skeleton-line" style="width: 150px; height: 14px; margin: 0;"></span>
-        <span class="skeleton skeleton-badge" style="width: 80px; height: 18px;"></span>
+        <span class="skeleton skeleton-line" style="width: 160px; height: 16px; margin: 0;"></span>
+        <span class="skeleton skeleton-badge" style="width: 85px; height: 18px;"></span>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+      <div class="voucher-field" style="margin-bottom: 0.75rem;">
         <div style="min-width: 0; flex: 1 1 180px;">
           <div class="skeleton skeleton-line" style="width: 80px; height: 10px; margin-bottom: 6px;"></div>
-          <div class="skeleton skeleton-line" style="width: 170px; max-width: 100%; height: 18px; margin: 0;"></div>
+          <div class="skeleton skeleton-line" style="width: 200px; max-width: 100%; height: 20px; margin: 0;"></div>
         </div>
-        <div class="skeleton skeleton-btn" style="height: 32px; width: 80px; flex-shrink: 0;"></div>
+        <div class="skeleton skeleton-btn" style="height: 32px; width: 90px; flex-shrink: 0; border-radius: var(--radius-sm);"></div>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; background: #f8fafc; padding: 0.75rem; border-radius: 8px;">
+      <div class="voucher-field" style="margin-bottom: 0;">
         <div style="min-width: 0; flex: 1 1 180px;">
-          <div class="skeleton skeleton-line" style="width: 60px; height: 10px; margin-bottom: 6px;"></div>
-          <div class="skeleton skeleton-line" style="width: 140px; max-width: 100%; height: 18px; margin: 0;"></div>
+          <div class="skeleton skeleton-line" style="width: 70px; height: 10px; margin-bottom: 6px;"></div>
+          <div class="skeleton skeleton-line" style="width: 160px; max-width: 100%; height: 20px; margin: 0;"></div>
         </div>
-        <div class="skeleton skeleton-btn" style="height: 32px; width: 80px; flex-shrink: 0;"></div>
+        <div class="skeleton skeleton-btn" style="height: 32px; width: 90px; flex-shrink: 0; border-radius: var(--radius-sm);"></div>
       </div>
     `;
     container.appendChild(card);
@@ -266,6 +327,7 @@ async function verifyPaystackPayment(orderRef) {
   document.getElementById("checkout_step_success").style.display = "block";
   document.getElementById("redirect_countdown_box").style.display = "none";
   renderVouchersSkeleton(currentOrder ? currentOrder.quantity : 1);
+  window.SystemLoader.start();
 
   try {
     const res = await fetch("/api/orders/verify", {
@@ -285,9 +347,11 @@ async function verifyPaystackPayment(orderRef) {
         btn.innerText = "Pay via Paystack (MoMo & Cards)";
         btn.disabled = false;
       }
+      window.SystemLoader.done();
       return;
     }
     showSuccessVouchers(data);
+    window.SystemLoader.done();
   } catch (err) {
     alert("Payment verification error: " + err.message);
     document.getElementById("checkout_step_success").style.display = "none";
@@ -296,6 +360,7 @@ async function verifyPaystackPayment(orderRef) {
       btn.innerText = "Pay via Paystack (MoMo & Cards)";
       btn.disabled = false;
     }
+    window.SystemLoader.done();
   }
 }
 
@@ -311,6 +376,7 @@ async function approveSimulatedPayment() {
   document.getElementById("checkout_step_success").style.display = "block";
   document.getElementById("redirect_countdown_box").style.display = "none";
   renderVouchersSkeleton(currentOrder ? currentOrder.quantity : 1);
+  window.SystemLoader.start();
 
   try {
     const res = await fetch("/api/orders/verify", {
@@ -329,16 +395,19 @@ async function approveSimulatedPayment() {
       document.getElementById("checkout_step_payment").style.display = "block";
       btn.innerText = "Verify Payment";
       btn.disabled = false;
+      window.SystemLoader.done();
       return;
     }
 
     showSuccessVouchers(data);
+    window.SystemLoader.done();
   } catch (err) {
     alert("Verification error: " + err.message);
     document.getElementById("checkout_step_success").style.display = "none";
     document.getElementById("checkout_step_payment").style.display = "block";
     btn.innerText = "Verify Payment";
     btn.disabled = false;
+    window.SystemLoader.done();
   }
 }
 

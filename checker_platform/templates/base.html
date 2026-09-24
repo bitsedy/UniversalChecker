@@ -22,10 +22,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/css/style.css?v=2026.12">
+  <link rel="stylesheet" href="/static/css/style.css?v=2026.13">
   {% block extra_head %}{% endblock %}
 </head>
 <body>
+  <!-- YouTube-Style Whole-System Laser Progress Bar -->
+  <div id="system_laser_loader" class="system-laser-loader" aria-hidden="true">
+    <div id="system_laser_bar" class="system-laser-loader-bar"></div>
+  </div>
+
   <!-- Navbar -->
   <header class="app-header">
     <nav class="navbar">
@@ -165,7 +170,7 @@
   </button>
 
   <script src="https://js.paystack.co/v1/inline.js"></script>
-  <script src="/static/js/app.js?v=2026.11"></script>
+  <script src="/static/js/app.js?v=2026.13"></script>
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>

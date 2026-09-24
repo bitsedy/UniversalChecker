@@ -834,19 +834,28 @@ function renderExplorerSkeleton() {
   if (empty) empty.style.display = "none";
   grid.style.display = "grid";
   grid.innerHTML = Array(6).fill(0).map(() => `
-    <div class="skeleton-card" style="padding: 1.35rem; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px;">
+    <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm); min-height: 220px;">
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-          <span class="skeleton skeleton-badge" style="width: 110px; height: 20px;"></span>
-          <span class="skeleton skeleton-badge" style="width: 60px; height: 18px;"></span>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 0.75rem;">
+          <span class="skeleton skeleton-line skeleton-w-30" style="height: 12px; margin: 0;"></span>
+          <span class="skeleton skeleton-badge" style="width: 70px; height: 18px;"></span>
         </div>
-        <div class="skeleton skeleton-title skeleton-w-85" style="height: 18px; margin-bottom: 8px;"></div>
-        <div class="skeleton skeleton-line skeleton-w-50" style="height: 13px;"></div>
-        <div class="skeleton skeleton-line skeleton-w-65" style="height: 13px; margin-bottom: 1rem;"></div>
+        <div class="skeleton skeleton-title skeleton-w-85" style="height: 20px; margin-bottom: 6px;"></div>
+        <div class="skeleton skeleton-line skeleton-w-50" style="height: 12px; margin-bottom: 0.85rem;"></div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 0.85rem;">
+          <span class="skeleton skeleton-badge" style="width: 105px; height: 22px;"></span>
+          <span class="skeleton skeleton-badge" style="width: 120px; height: 22px;"></span>
+        </div>
+        <div style="background: #f8fafc; border-left: 2px solid var(--border-gold); padding: 0.5rem 0.75rem; border-radius: 0 4px 4px 0; margin-bottom: 0.85rem;">
+          <div class="skeleton skeleton-line skeleton-w-75" style="height: 10px; margin: 0;"></div>
+        </div>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid #f1f5f9;">
-        <span class="skeleton skeleton-badge" style="width: 75px; height: 20px;"></span>
-        <span class="skeleton skeleton-badge" style="width: 85px; height: 20px;"></span>
+      <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="flex: 1;">
+          <div class="skeleton skeleton-line" style="width: 100px; height: 10px; margin-bottom: 4px;"></div>
+          <div class="skeleton skeleton-line" style="width: 80px; height: 10px; margin: 0;"></div>
+        </div>
+        <div class="skeleton skeleton-btn" style="width: 70px; height: 28px; border-radius: var(--radius-sm); margin: 0;"></div>
       </div>
     </div>
   `).join("");
@@ -856,6 +865,7 @@ async function loadExplorerAdmissions(forceReload = false) {
   const badge = document.getElementById("explorer_count_badge");
   if (badge) badge.innerText = "Synchronizing live benchmarks from database...";
   renderExplorerSkeleton();
+  if (window.SystemLoader) window.SystemLoader.start();
   
   try {
     const res = await fetch("/api/admissions/live?limit=300");
@@ -869,6 +879,8 @@ async function loadExplorerAdmissions(forceReload = false) {
     }
   } catch (err) {
     if (badge) badge.innerText = "Network error loading benchmarks: " + err.message;
+  } finally {
+    if (window.SystemLoader) window.SystemLoader.done();
   }
 }
 
@@ -1087,6 +1099,7 @@ async function submitBeceAnalysis() {
     resSkel.style.display = "block";
     resSkel.scrollIntoView({ behavior: "smooth" });
   }
+  if (window.SystemLoader) window.SystemLoader.start();
 
   try {
     const res = await fetch("/api/advisor/analyze", {
@@ -1113,6 +1126,7 @@ async function submitBeceAnalysis() {
   } finally {
     btn.innerText = "Get Honest Advice →";
     btn.disabled = false;
+    if (window.SystemLoader) window.SystemLoader.done();
   }
 }
 
@@ -1147,6 +1161,7 @@ async function submitWassceAnalysis() {
     resSkel.style.display = "block";
     resSkel.scrollIntoView({ behavior: "smooth" });
   }
+  if (window.SystemLoader) window.SystemLoader.start();
 
   try {
     const res = await fetch("/api/advisor/analyze", {
@@ -1173,6 +1188,7 @@ async function submitWassceAnalysis() {
   } finally {
     btn.innerText = "Get Honest Advice →";
     btn.disabled = false;
+    if (window.SystemLoader) window.SystemLoader.done();
   }
 }
 

@@ -323,7 +323,21 @@ async function submitCustomerFeedback(e) {
 
   btn.disabled = true;
   btn.innerHTML = '<span>Submitting Review...</span>';
-  alertBox.style.display = 'none';
+  if (window.SystemLoader) window.SystemLoader.start();
+
+  alertBox.style.display = 'block';
+  alertBox.style.background = '#ffffff';
+  alertBox.style.border = '1px solid var(--border-subtle)';
+  alertBox.style.color = 'var(--text-main)';
+  alertBox.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 0;">
+      <span class="skeleton skeleton-circle" style="width: 24px; height: 24px;"></span>
+      <div style="flex: 1;">
+        <div class="skeleton skeleton-line skeleton-w-50" style="height: 12px; margin-bottom: 6px;"></div>
+        <div class="skeleton skeleton-line skeleton-w-75" style="height: 10px; margin: 0;"></div>
+      </div>
+    </div>
+  `;
 
   try {
     const res = await fetch('/api/feedback', {
@@ -364,6 +378,7 @@ async function submitCustomerFeedback(e) {
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<span>Submit Review &rarr;</span>';
+    if (window.SystemLoader) window.SystemLoader.done();
   }
 }
 
