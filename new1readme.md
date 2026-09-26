@@ -212,9 +212,310 @@ After receiving results, thousands of Ghanaian students miss university admissio
 
 ---
 
-## 4. System Requirements & Operational Dependencies
+## 4. Proposed User Flows & Operational Journeys
 
-### 4.1 Runtime & Core Software Dependencies
+### 4.1 User Flow 1: Instant Voucher Purchase & Dual Fulfillment Journey
+```
+[Storefront Browse] 
+        │
+        ▼
+[Select Exam Category (e.g. WASSCE, BECE, CSSPS, CTVET)] 
+        │
+        ▼
+[Click "Buy Now" -> Checkout Modal Opens]
+        │
+        ├── Enter Quantity (1 to 10)
+        ├── Enter Ghanaian Mobile Number (024/020/027...)
+        └── Auto-Detected Network Badge (MTN / Telecel / AT)
+        │
+        ▼
+[Proceed to Payment -> Atomic Immediate-Locking Reservation]
+        │
+        ├── SQLite WAL row locked (status = 'RESERVED', 10-min TTL)
+        └── IETF Idempotency-Key generated
+        │
+        ▼
+[Authorize Mobile Money / Card Payment]
+        │
+        ├── MTN MoMo / Telecel Cash / AT Money USSD prompt on handset, OR
+        └── Paystack Secured Web Popup (MoMo / Debit / Credit Cards)
+        │
+        ▼
+[Cryptographic Webhook / Callback Verification]
+        │
+        ├── Verifies HMAC-SHA512 signature, currency (GHS), pesewa amount
+        └── Atomically transitions voucher status: RESERVED -> SOLD
+        │
+        ▼
+[Instant Multi-Channel Dual Delivery]
+        ├── On-Screen Voucher Reveal (Serial + PIN + 1-Click Copy)
+        ├── Simultaneous SMS Dispatch to Buyer Handset
+        ├── Optional 1-Click WhatsApp Share Pre-Filled Link
+        └── Printable Standardized Official Slip
+        │
+        ▼
+[Automated Category-Specific Portal Routing]
+        ├── 6-Second Auto-Redirect Countdown Bar
+        ├── Pause / Resume Redirect Controls
+        └── Seamless Redirection to Official Portal (ghana.waecdirect.org / cssps.gov.gh)
+```
+
+#### Step-by-Step Flow Progression:
+1. **Discovery & Stock Evaluation**: The buyer visits the homepage, observes the qualitative stock indicator (e.g., emerald *"In Stock"*), reviews category check limits, and clicks *"Buy Now"* on their desired examination card.
+2. **Order Configuration**: A responsive modal presents the order form. The buyer inputs their voucher quantity and phone number. The client-side validator instantly detects the telecom carrier from the number prefix (e.g., `054` &rarr; MTN) and displays the network emblem.
+3. **Atomic Reservation & Idempotency Locking**: Upon clicking *"Proceed to Payment"*, the backend executes a `BEGIN IMMEDIATE` transaction, atomically reserving available unsold vouchers for 10 minutes and binding them to a unique order reference (`ORD-...`).
+4. **Payment Authorization**: The buyer completes the transaction via their chosen channel (approving the MoMo USSD prompt on their phone or completing the Paystack checkout).
+5. **Fulfillment & Shimmer Reveal**: The backend validates the payment, updates the Merkle audit ledger, and returns the revealed credentials. Shimmer skeleton placeholders immediately transition to crisp, readable voucher cards.
+6. **Dual Dispatch & Portal Handoff**: An SMS is sent to the buyer's phone. Meanwhile, an automated 6-second countdown bar initiates on-screen, automatically directing the candidate into the accredited government checking portal.
+
+---
+
+### 4.2 User Flow 2: Self-Service Lost Voucher Retrieval Journey (`/lookup`)
+```
+[Candidate Loses Tab / Battery Dies / Network Drops]
+        │
+        ▼
+[Navigate to /lookup Tool]
+        │
+        ▼
+[Enter Buyer Phone Number (024XXXXXXX) OR Order Reference (ORD-...)]
+        │
+        ▼
+[Submit Query -> Instant Shimmer Skeleton Feedback]
+        │
+        ▼
+[System Queries Paid Vouchers for Candidate Session]
+        │
+        ▼
+[Complete Order Audit Displayed]
+        ├── Order Reference & Timestamp
+        ├── Examination Type (WASSCE / BECE / CSSPS / CTVET)
+        ├── Unmasked Card Serial Number & 12-Digit PIN
+        ├── Direct Portal Link & Official Verification Instructions
+        └── 1-Click Copy & Print Options
+```
+
+#### Step-by-Step Flow Progression:
+1. **Interruption Event**: A buyer experiences a sudden browser crash, phone shutdown, or telecom SMS delivery delay.
+2. **Lookup Entry**: The buyer accesses `/lookup` directly from the navigation bar or footer.
+3. **Identification**: The buyer types either their 10-digit mobile number or their order reference into the single search input.
+4. **Shimmer Skeleton State**: The interface renders an instant placeholder silhouette, providing fluid visual feedback during the database search.
+5. **Credential Restoration**: All previously purchased, paid vouchers matching the query are displayed with full PINs, serials, and one-click copy controls.
+
+---
+
+### 4.3 User Flow 3: Educational Pathway & Placement Advisory Journey (`/advisor`)
+```
+[Candidate Navigates to /advisor]
+        │
+        ▼
+[Statutory Data Protection Act, 2012 (Act 843) Consent Step]
+        ├── Explicit Consent Checkbox required
+        └── Unlocks Interactive Grade Evaluator
+        │
+        ▼
+[Select Academic Stream: BECE -> CSSPS OR WASSCE -> Tertiary]
+        │
+        ▼
+[Input Examination Grades]
+        ├── BECE: 4 Cores + 5 Electives (Stanine Grades 1-9)
+        └── WASSCE: 4 Cores + 4 Electives (Grades A1-F9)
+        │
+        ▼
+[Real-Time Dynamic Aggregate Preview Banner]
+        ├── Live Aggregate Calculation on Every Dropdown Change
+        └── Immediate Target Benchmark Status Indicator
+        │
+        ▼
+[Submit for Objective Evaluation -> Shimmer Skeleton Feedback]
+        │
+        ▼
+[Act 843 Ephemeral RAM Evaluation (Zero Disk Persistence)]
+        │
+        ▼
+[Personalized Verdict & Advisory Report Rendered]
+        ├── Verified Aggregate Score Breakdown
+        ├── Institution Tier Categorization (GES Cat A/B/C/D or Degree Tiers 1-3)
+        ├── Matched Schools & Programmes with Realistic Admission Probabilities
+        ├── Critical Subject Deficit Warnings & Remedial NOV/DEC Action Plan
+        ├── Scholarship & Financial Aid Directives
+        └── Cryptographic SHA-256 Ephemeral Compliance Attestation Hash
+```
+
+#### Step-by-Step Flow Progression:
+1. **Statutory Consent**: The candidate encounters the Act 843 compliance banner and checks the explicit data processing consent box to unlock the evaluation form.
+2. **Stream Selection**: The user toggles between the **BECE &rarr; CSSPS Senior High Placement** tab and the **WASSCE &rarr; Tertiary Pathways** tab.
+3. **Grade Entry**: The candidate selects their grades via intuitive dropdown selectors. An instant preview banner dynamically calculates their aggregate score in real time.
+4. **Ephemeral RAM Analysis**: Upon submission, the advisory engine evaluates the grade combinations against admission thresholds in temporary volatile memory.
+5. **Comprehensive Verdict**: The candidate receives an in-depth breakdown containing institutional matches, subject deficiency alerts, cut-off benchmarks, and alternative academic pathways.
+6. **Data Shredding & Proof**: All student inputs are purged from RAM, and a tamper-evident SHA-256 compliance hash is generated proving zero data was stored.
+
+---
+
+### 4.4 User Flow 4: Portal Traps & Anti-Voucher Burn Guidance Journey (`/guides`)
+```
+[User Navigates to /guides]
+        │
+        ▼
+[Review Portal Mechanics & Pitfalls Before Validation]
+        │
+        ├── The 3-Check Limit Rule (WAEC WASSCE & BECE)
+        ├── The "Voucher Burn" Network Refresh Danger
+        ├── The 12-Digit Index Requirement (CSSPS School Placement)
+        └── CTVET Center Code Structure
+        │
+        ▼
+[Candidate Armed with Validation Knowledge]
+        │
+        ▼
+[Direct Launch to Target Governmental Portal]
+```
+
+#### Step-by-Step Flow Progression:
+1. **Pre-Check Education**: The user visits `/guides` from the homepage safety banner or navigation bar.
+2. **Risk Identification**: The user learns why pressing browser refresh on official portals invalidates checks and sees side-by-side examples of valid vs. invalid index numbers.
+3. **Confident Submission**: Equipped with step-by-step checklists, the student opens the official portal and verifies their results without burning their voucher.
+
+---
+
+### 4.5 User Flow 5: Merchant Operations, Restocking & Audit Journey (`/admin`)
+```
+[Merchant Authenticates via Stealth Login]
+        │
+        ▼
+[Dashboard Telemetry Overview]
+        ├── Live Categorized Stock Levels
+        ├── Financial Settlement Velocity (24h / 7d / 30d / All)
+        └── Cryptographic Merkle Block Audit Status
+        │
+        ▼
+[Merchant Management Actions]
+        ├── Bulk CSV Voucher Restocking (Serial + PIN Import)
+        ├── Unit Price Adjustment per Exam Category
+        ├── Inventory Mode Switching (Wholesale Batch vs Demo Generator)
+        ├── Scraper Fleet Trigger & Cut-Off Benchmark Synchronization
+        └── Paystack Secret & Public API Key Management
+```
+
+---
+
+## 5. User Stories & Acceptance Criteria
+
+### 5.1 Persona 1: Secondary School Candidate (Akosua — WASSCE Graduate)
+
+#### User Story 1.1: Instant Voucher Purchase & On-Screen Reveal
+* **As a** WASSCE school candidate,
+* **I want to** purchase a genuine WAEC Result Checker voucher using my MTN Mobile Money wallet and see the Serial Number and PIN immediately on my phone screen,
+* **So that** I do not have to walk to an internet cafe or wait for delayed SMS messages to view my examination results.
+
+> **Acceptance Criteria**:
+> - The purchase modal prompts for quantity, phone number, and network provider.
+> - Payment verification occurs within sub-second intervals upon MoMo approval.
+> - The Serial Number and 12-digit PIN are clearly rendered on-screen with high-contrast monospaced styling.
+> - A 1-click copy button copies the PIN directly to the device clipboard with visual confirmation.
+
+#### User Story 1.2: Automatic Portal Redirection
+* **As a** candidate holding newly revealed voucher credentials,
+* **I want the platform to** automatically open the official WAEC checking portal (`ghana.waecdirect.org`) after a brief countdown,
+* **So that** I don't have to search the internet for the correct portal link or risk landing on phishing websites.
+
+> **Acceptance Criteria**:
+> - An animated 6-second countdown bar begins immediately upon credential reveal.
+> - The portal link correctly points to `https://ghana.waecdirect.org`.
+> - A "Pause / Resume Redirect" button allows the user to stop the countdown at any point.
+> - A "Go Now ↗" button provides immediate navigation without waiting for the timer.
+
+---
+
+### 5.2 Persona 2: Junior High School Graduate (Kwesi — BECE Candidate)
+
+#### User Story 2.1: Secondary School Placement Advisory
+* **As a** BECE graduate awaiting Senior High School placement,
+* **I want to** enter my core and elective stanine grades into the Pathway Advisor,
+* **So that** I can understand which GES school categories (Category A, B, C, or D) my aggregate qualifies me for before the official CSSPS placement results are released.
+
+> **Acceptance Criteria**:
+> - The advisor accepts 4 core subjects and 5 electives on a 1–9 stanine scale.
+> - The system automatically identifies the best 4 cores and best 2 electives to compute the official aggregate score.
+> - The generated report categorizes matching Senior High Schools into Categories A, B, C, and D based on official GES thresholds.
+> - If the aggregate exceeds placement thresholds, constructive guidance on technical/vocational (TVET) institutions or resits is provided.
+
+#### User Story 2.2: CSSPS 12-Digit Format Guidance
+* **As a** candidate checking my SHS placement,
+* **I want clear instructions** on how to format my CSSPS index number,
+* **So that** I do not fail placement verification by entering a 10-digit number instead of the mandatory 12-digit format.
+
+> **Acceptance Criteria**:
+> - The platform highlights the 10-digit vs. 12-digit CSSPS rule in both product cards and `/guides`.
+> - Side-by-side visual examples clearly demonstrate appending the 2-digit completion year (e.g., `101010101026`).
+
+---
+
+### 5.3 Persona 3: Parent / Guardian (Mr. Mensah — Household Decision Maker)
+
+#### User Story 3.1: Dual Delivery & Receipt Assurance
+* **As a** parent purchasing vouchers for my children from my workplace,
+* **I want** the purchased PIN and serial sent to my mobile number via SMS and available as a printable slip,
+* **So that** I have a permanent physical or digital record to send to my child at home.
+
+> **Acceptance Criteria**:
+> - Simultaneous SMS delivery delivers the exact Serial, PIN, and portal URL to the buyer's phone number within 3 seconds.
+> - A "Print / Save Official Slip" button generates a standardized, receipt-ready document.
+> - A "Share Voucher to WhatsApp" button formats a pre-filled, encrypted WhatsApp message.
+
+#### User Story 3.2: Self-Service Lost Voucher Recovery
+* **As a** parent who closed the browser tab before writing down the PIN,
+* **I want to** enter my mobile phone number on a recovery page,
+* **So that** I can retrieve all vouchers I paid for without paying again or contacting support.
+
+> **Acceptance Criteria**:
+> - Navigating to `/lookup` allows queries by 10-digit mobile number or Order Reference.
+> - All past paid orders associated with the query are retrieved with full credentials.
+> - The lookup interface operates with shimmer skeleton feedback and zero page deformities.
+
+---
+
+### 5.4 Persona 4: Cyber-Cafe Operator & Educational Agent (Yaw)
+
+#### User Story 4.1: Concurrency Safety Under High-Volume Purchasing
+* **As a** cyber-cafe operator buying vouchers for multiple students simultaneously,
+* **I want** an ironclad guarantee that every voucher I purchase is unique and unallocated,
+* **So that** none of my clients experience invalid or duplicate PIN errors on official portals.
+
+> **Acceptance Criteria**:
+> - Row-level atomic database locking (`BEGIN IMMEDIATE`) prevents double-allocation under concurrent checkouts.
+> - 10-minute temporary reservation holds vouchers during payment execution.
+> - Abandoned checkouts automatically recycle back to inventory without manual intervention.
+
+---
+
+### 5.5 Persona 5: Merchant Administrator (Platform Operator)
+
+#### User Story 5.1: Wholesale CSV Restocking & Inventory Control
+* **As a** platform administrator,
+* **I want to** upload wholesale CSV batches containing thousands of Serial Numbers and PINs,
+* **So that** I can replenish stock instantly before major national examination release spikes.
+
+> **Acceptance Criteria**:
+> - The admin dashboard (`/admin`) provides a bulk CSV upload interface supporting WASSCE, BECE, CSSPS, and CTVET categories.
+> - Duplicate serials or PINs are automatically detected and rejected during database ingestion.
+> - Real-time stock counts by category immediately reflect newly ingested cards.
+
+#### User Story 5.2: Cryptographic Audit Ledger & Compliance Verification
+* **As a** compliance officer,
+* **I want to** verify the cryptographic integrity of the Merkle audit chain,
+* **So that** I can prove that all transactions, stock allocations, and admin logins are tamper-evident and compliant with the Ghana Electronic Transactions Act (Act 772).
+
+> **Acceptance Criteria**:
+> - Every sensitive state change creates a SHA-256 hashed audit block linked to its predecessor.
+> - The admin panel includes a 1-click audit integrity validator verifying block parent hashes.
+> - All grade evaluations generate verifiable Act 843 ephemeral attestation proofs confirming zero data retention.
+
+---
+
+## 6. System Requirements & Operational Dependencies
+
+### 6.1 Runtime & Core Software Dependencies
 * **Python Runtime**: Python 3.10, 3.11, 3.12, 3.13, or 3.14 (fully verified on 64-bit architectures).
 * **Asynchronous Web Framework**: `fastapi >= 0.115.0`
 * **ASGI Server**: `uvicorn[standard] >= 0.30.0`
@@ -224,20 +525,20 @@ After receiving results, thousands of Ghanaian students miss university admissio
 * **Form & Multipart Processing**: `python-multipart >= 0.0.12`
 * **HTTP & Scraper Engine**: `httpx >= 0.27.0`
 
-### 4.2 Operating System & Environment Compatibility
+### 6.2 Operating System & Environment Compatibility
 * **Supported Operating Systems**:
   - **Microsoft Windows**: Windows 10, Windows 11, Windows Server 2019/2022.
   - **Linux**: Ubuntu 20.04+, Debian 11+, RHEL/CentOS 8+, Alpine Linux.
   - **macOS**: macOS 12 (Monterey) or higher.
 * **Architecture Support**: x86_64, amd64, arm64.
 
-### 4.3 Database Engine & Storage Requirements
+### 6.3 Database Engine & Storage Requirements
 * **Database Engine**: SQLite 3.35.0 or higher.
 * **Storage Mode**: Write-Ahead Logging (`PRAGMA journal_mode=WAL;`).
 * **Concurrency Locking**: `BEGIN IMMEDIATE` transaction support on local or network-attached SSD storage with persistent file-locking semantics.
 * **Storage Footprint**: Lightweight base footprint (< 50 MB application core + SQLite database growing proportionally with transaction volume).
 
-### 4.4 Telecom & Payment Gateway Requirements
+### 6.4 Telecom & Payment Gateway Requirements
 * **Payment Processor**: Paystack Merchant Account with Ghanaian Cedi (GHS) settlement enabled.
 * **API Credentials**: Valid Paystack Public Key (`pk_live_...` or `pk_test_...`) and Secret Key (`sk_live_...` or `sk_test_...`).
 * **Webhook Endpoint Access**: Publicly accessible HTTPS domain to receive Paystack webhook callback events (`/api/webhooks/paystack`).
@@ -247,12 +548,12 @@ After receiving results, thousands of Ghanaian students miss university admissio
   - AirtelTigo AT Money (*110#)
   - Visa & Mastercard (Ghanaian and international bank cards)
 
-### 4.5 Messaging & SMS Dispatch Requirements
+### 6.5 Messaging & SMS Dispatch Requirements
 * **SMS Gateway Integration**: Compatible with RESTful Ghanaian SMS aggregators (Arkesel, Hubtel, or mNotify).
 * **Sender ID**: Accredited alphanumeric Sender ID (maximum 11 characters, e.g., `CHECKERPAY`) approved by the National Communications Authority (NCA).
 * **Local Phone Formatting**: Ghanaian MSISDN formatting supporting standard 10-digit local format (`024XXXXXXX`) or international format (`+233XXXXXXXXX`).
 
-### 4.6 Client Browser & Viewport Requirements
+### 6.6 Client Browser & Viewport Requirements
 * **Browser Compatibility**: Any modern standards-compliant web browser supporting ES6+, CSS Flexbox, and CSS Grid:
   - Google Chrome / Chromium (Desktop & Mobile)
   - Mozilla Firefox
@@ -262,7 +563,7 @@ After receiving results, thousands of Ghanaian students miss university admissio
 * **Supported Viewport Range**: Fully responsive from compact mobile displays (320px width) up to ultra-wide 4K monitors (3840px width).
 * **JavaScript Requirements**: Modern JavaScript enabled for dynamic modal management, auto-redirect countdowns, and shimmer skeleton rendering.
 
-### 4.7 Network & Security Egress Requirements
+### 6.7 Network & Security Egress Requirements
 * **Inbound Connectivity**: TCP port 80/443 (HTTP/HTTPS) for client access.
 * **Outbound Egress**:
   - HTTPS access to `api.paystack.co` on port 443.
