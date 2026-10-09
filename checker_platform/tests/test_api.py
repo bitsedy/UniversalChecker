@@ -29,7 +29,6 @@ class TestApiEndpoints(unittest.TestCase):
         bulk_insert_vouchers("WASSCE", vouchers[:2])
         bulk_insert_vouchers("CSSPS", vouchers[2:])
         bulk_insert_vouchers("BECE", [{"serial_number": "API_BEC_001", "pin": "998877665544"}])
-        bulk_insert_vouchers("CTVET", [{"serial_number": "API_CTV_001", "pin": "112233445566"}])
         cls.client = TestClient(app)
 
     def test_storefront_get(self):
@@ -167,7 +166,6 @@ class TestApiEndpoints(unittest.TestCase):
             "price_WASSCE": "22.00",
             "price_BECE": "18.00",
             "price_CSSPS": "15.00",
-            "price_CTVET": "25.00",
             "sms_sender_id": "CHECKER_GH",
             "inventory_mode": "DEMO_GENERATE"
         }, auth=("admin", "ghana2026"))
@@ -205,7 +203,6 @@ class TestApiEndpoints(unittest.TestCase):
             "price_WASSCE": "22.00",
             "price_BECE": "18.00",
             "price_CSSPS": "15.00",
-            "price_CTVET": "25.00",
             "sms_sender_id": "CHECKER_GH",
             "inventory_mode": "BATCH"
         }, auth=("admin", "ghana2026"))
@@ -234,7 +231,6 @@ class TestApiEndpoints(unittest.TestCase):
             "price_WASSCE": "22.00",
             "price_BECE": "18.00",
             "price_CSSPS": "15.00",
-            "price_CTVET": "25.00",
             "sms_sender_id": "CHECKER_GH",
             "admin_password": "short"
         }, auth=("admin", "ghana2026"))
@@ -247,7 +243,6 @@ class TestApiEndpoints(unittest.TestCase):
             "price_WASSCE": "22.00",
             "price_BECE": "18.00",
             "price_CSSPS": "15.00",
-            "price_CTVET": "25.00",
             "sms_sender_id": "CHECKER_GH",
             "admin_password": strong_pass
         }, auth=("admin", "ghana2026"))

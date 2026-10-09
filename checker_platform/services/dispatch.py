@@ -69,15 +69,6 @@ OFFICIAL_PORTAL_DETAILS = {
             "Enter Candidate Date of Birth matching official school records.",
             "Self-Placement choice locks permanently once confirmed."
         ]
-    },
-    "CTVET": {
-        "title": "CTVET / NABPTEX Examination",
-        "portal_name": "Official CTVET / NABPTEX Checking Portal",
-        "portal_url": "https://ctvet.gov.gh",
-        "rules": [
-            "Select the correct Examination Series (May/June or Nov/Dec).",
-            "Provide Region and Center Code before entering Index Number."
-        ]
     }
 }
 

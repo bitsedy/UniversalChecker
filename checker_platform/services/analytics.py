@@ -116,7 +116,7 @@ def get_system_analytics(time_window: str = "7d") -> Dict[str, Any]:
             })
 
         # Ensure all standard categories appear even if zero revenue
-        standard_categories = ["WASSCE", "BECE", "CSSPS", "CTVET"]
+        standard_categories = ["WASSCE", "BECE", "CSSPS"]
         present_cats = {c["category"] for c in revenue_by_category}
         for sc in standard_categories:
             if sc not in present_cats:

@@ -8,7 +8,7 @@
 **CheckerPay Ghana** (architecturally designated **UniversalChecker**) is an enterprise-grade digital voucher distribution gateway and educational pathway intelligence platform built specifically for the Ghanaian secondary and tertiary educational ecosystems. 
 
 ### 1.1 The Primary Mandate
-Every academic cycle across Ghana, over 550,000 junior high school graduates sit for the Basic Education Certificate Examination (**BECE**), more than 450,000 senior high school students write the West African Senior School Certificate Examination (**WASSCE**), tens of thousands sit for **CTVET / NABPTEX** technical examinations, and hundreds of thousands of candidates await placement through the Computerized School Selection and Placement System (**CSSPS**).
+Every academic cycle across Ghana, over 550,000 junior high school graduates sit for the Basic Education Certificate Examination (**BECE**), more than 450,000 senior high school students write the West African Senior School Certificate Examination (**WASSCE**), and hundreds of thousands of candidates await secondary school placement through the Computerized School Selection and Placement System (**CSSPS**). (Note: CTVET / NABPTEX technical certificates are issued directly through accredited schools and technical institutes, requiring no commercial scratch cards).
 
 The core purpose of CheckerPay Ghana is to:
 1. **Provide 100% Guaranteed, Concurrency-Safe Digital Distribution** of official examination result checker PINs and school placement vouchers directly to students, parents, and schools nationwide.
@@ -66,8 +66,8 @@ After receiving results, thousands of Ghanaian students miss university admissio
   - **WAEC WASSCE**: Result Checker vouchers valid for both May/June School Candidates and Private Nov/Dec Candidates (Official check limit: 3 times).
   - **WAEC BECE**: Result Checker vouchers valid for Basic Education Certificate Examination graduates (Official check limit: 3 times).
   - **CSSPS Placement**: Senior High School placement verification and self-placement eVouchers (Unlimited checks for the same candidate).
-  - **CTVET / NABPTEX**: Technical and vocational examination vouchers valid for May/June Certificate and Nov/Dec Technical Examinations (Check limit: 5 times).
-- **Direct Official Portal Integration**: Each product card is explicitly mapped to its statutory governmental portal (`ghana.waecdirect.org`, `eresults.waecgh.org`, `cssps.gov.gh`, `ctvet.gov.gh`).
+  - *(Note on CTVET / NABPTEX: In Ghana, CTVET does not sell scratch card checkers. Technical and vocational students receive their official results and certificates directly in person at their respective technical institutes and centers. Therefore, CTVET cards are excluded from retail sale to safeguard candidates against unnecessary purchases).*
+- **Direct Official Portal Integration**: Each product card is explicitly mapped to its statutory governmental portal (`ghana.waecdirect.org`, `eresults.waecgh.org`, `cssps.gov.gh`).
 
 ### 3.2 Automated Category-Specific Portal Routing & Countdown Engine
 - **Intelligent Post-Payment Redirection**: The instant Mobile Money or card payment is verified, the success interface automatically identifies the purchased product category and initializes a **6-second redirect countdown**.
@@ -79,7 +79,6 @@ After receiving results, thousands of Ghanaian students miss university admissio
   - *WASSCE* &rarr; `https://ghana.waecdirect.org`
   - *BECE* &rarr; `https://eresults.waecgh.org`
   - *CSSPS* &rarr; `https://cssps.gov.gh`
-  - *CTVET* &rarr; `https://ctvet.gov.gh`
 
 ### 3.3 Atomic Concurrency-Safe Inventory & Reservation Recycling Engine
 - **Transaction Isolation**: Backed by SQLite in Write-Ahead Logging (WAL) mode utilizing `BEGIN IMMEDIATE` transactions for all stock queries and mutations.
@@ -155,7 +154,7 @@ After receiving results, thousands of Ghanaian students miss university admissio
 - **Curated Portal Instruction Library**: Dedicated educational modules detailing exact rules and pitfalls across Ghanaian portals:
   - *The 3-Check WAEC Rule*: Explains candidate-binding mechanics and why page refreshing burns attempts.
   - *The 12-Digit CSSPS Rule*: Visually illustrates the distinction between the 10-digit index and the required 12-digit string (`Index + Completion Year`).
-  - *CTVET Center Codes*: Guidance on region and center code prefixes.
+  - *CTVET School Collection Notice*: Guidance clarifying that technical and vocational examination results are issued directly in person at accredited technical institutes and centers without scratch cards.
   - *Emergency Recovery Steps*: Actionable advice if a portal crashes during checking.
 
 ### 3.11 Anti-Deformity & User Manipulation Immunity Frontend Architecture
@@ -219,7 +218,7 @@ After receiving results, thousands of Ghanaian students miss university admissio
 [Storefront Browse] 
         │
         ▼
-[Select Exam Category (e.g. WASSCE, BECE, CSSPS, CTVET)] 
+[Select Exam Category (e.g. WASSCE, BECE, CSSPS)] 
         │
         ▼
 [Click "Buy Now" -> Checkout Modal Opens]
@@ -289,7 +288,7 @@ After receiving results, thousands of Ghanaian students miss university admissio
         ▼
 [Complete Order Audit Displayed]
         ├── Order Reference & Timestamp
-        ├── Examination Type (WASSCE / BECE / CSSPS / CTVET)
+        ├── Examination Type (WASSCE / BECE / CSSPS)
         ├── Unmasked Card Serial Number & 12-Digit PIN
         ├── Direct Portal Link & Official Verification Instructions
         └── 1-Click Copy & Print Options
@@ -362,7 +361,7 @@ After receiving results, thousands of Ghanaian students miss university admissio
         ├── The 3-Check Limit Rule (WAEC WASSCE & BECE)
         ├── The "Voucher Burn" Network Refresh Danger
         ├── The 12-Digit Index Requirement (CSSPS School Placement)
-        └── CTVET Center Code Structure
+        └── Notice on School-Based CTVET Result Collection
         │
         ▼
 [Candidate Armed with Validation Knowledge]
@@ -497,7 +496,7 @@ After receiving results, thousands of Ghanaian students miss university admissio
 * **So that** I can replenish stock instantly before major national examination release spikes.
 
 > **Acceptance Criteria**:
-> - The admin dashboard (`/admin`) provides a bulk CSV upload interface supporting WASSCE, BECE, CSSPS, and CTVET categories.
+> - The admin dashboard (`/admin`) provides a bulk CSV upload interface supporting WASSCE, BECE, and CSSPS categories.
 > - Duplicate serials or PINs are automatically detected and rejected during database ingestion.
 > - Real-time stock counts by category immediately reflect newly ingested cards.
 

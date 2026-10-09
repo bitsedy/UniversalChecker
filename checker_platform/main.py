@@ -115,7 +115,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="CheckerPay Ghana",
-    description="High-concurrency digital voucher reseller gateway for WAEC, CSSPS, and CTVET.",
+    description="High-concurrency digital voucher reseller gateway for WAEC and CSSPS.",
     version="1.0.0",
     lifespan=lifespan
 )
@@ -841,7 +841,6 @@ async def admin_page(request: Request, admin_user: str = Depends(get_current_adm
         "price_WASSCE": get_setting("price_WASSCE", "22.00"),
         "price_BECE": get_setting("price_BECE", "18.00"),
         "price_CSSPS": get_setting("price_CSSPS", "15.00"),
-        "price_CTVET": get_setting("price_CTVET", "25.00"),
         "sms_sender_id": get_setting("sms_sender_id", "CHECKER_GH"),
         "paystack_public_key": get_setting("paystack_public_key", "pk_test_sample_ghana_waec"),
         "has_paystack_secret_key": bool(raw_secret and not raw_secret.startswith("sk_test_sample")),
@@ -921,7 +920,7 @@ async def admin_logout(request: Request):
 # ============================================================================
 
 class OrderCreateRequest(BaseModel):
-    category: str = Field(..., description="WASSCE, BECE, CSSPS, or CTVET")
+    category: str = Field(..., description="WASSCE, BECE, or CSSPS")
     quantity: int = Field(1, ge=1, le=20)
     customer_phone: str
     customer_email: Optional[str] = None
@@ -939,7 +938,6 @@ class SettingsUpdateRequest(BaseModel):
     price_WASSCE: Optional[str] = None
     price_BECE: Optional[str] = None
     price_CSSPS: Optional[str] = None
-    price_CTVET: Optional[str] = None
     sms_sender_id: Optional[str] = None
     paystack_public_key: Optional[str] = None
     paystack_secret_key: Optional[str] = None
@@ -1281,8 +1279,6 @@ async def api_admin_save_settings(req: SettingsUpdateRequest, request: Request, 
         update_setting("price_BECE", str(req.price_BECE))
     if req.price_CSSPS is not None:
         update_setting("price_CSSPS", str(req.price_CSSPS))
-    if req.price_CTVET is not None:
-        update_setting("price_CTVET", str(req.price_CTVET))
     if req.sms_sender_id is not None:
         update_setting("sms_sender_id", req.sms_sender_id.strip())
 
@@ -1341,7 +1337,7 @@ async def api_admin_generate_demo_batch(req: GenerateBatchRequest, request: Requ
     """Generates random authentic-style vouchers directly into inventory."""
     client_ip = AdminSecurityManager.get_client_ip(request)
     clean_cat = req.category.strip().upper()
-    categories = ["WASSCE", "BECE", "CSSPS", "CTVET"] if clean_cat == "ALL" else [clean_cat]
+    categories = ["WASSCE", "BECE", "CSSPS"] if clean_cat == "ALL" else [clean_cat]
     total_inserted = 0
     breakdown = {}
     

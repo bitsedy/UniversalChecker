@@ -61,9 +61,9 @@ class TestOperationalAnalytics(unittest.TestCase):
             self.assertIn("payment_methods", fin)
             self.assertIn("funnel", fin)
 
-            # Ensure all 4 categories exist in breakdown
+            # Ensure all 3 categories exist in breakdown
             cat_names = {c["category"] for c in fin["revenue_by_category"]}
-            self.assertTrue({"WASSCE", "BECE", "CSSPS", "CTVET"}.issubset(cat_names))
+            self.assertTrue({"WASSCE", "BECE", "CSSPS"}.issubset(cat_names))
 
             # Inventory health assertions
             inv = data["inventory"]

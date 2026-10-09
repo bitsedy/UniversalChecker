@@ -193,7 +193,7 @@
             Examination Portal Share
           </h3>
           <p style="font-size: 0.775rem; color: var(--text-muted); margin: 2px 0 0 0;">
-            Revenue distribution across WAEC, CSSPS &amp; CTVET
+            Revenue distribution across WAEC &amp; CSSPS
           </p>
         </div>
         <div style="position: relative; height: 260px; width: 100%;">
@@ -463,11 +463,10 @@
           <div>
             <label class="form-label" style="font-size: 0.8rem;">Target Category</label>
             <select id="gen_category" class="form-input" style="font-size: 0.85rem; padding: 0.55rem 0.75rem;">
-              <option value="ALL">All Categories (4x)</option>
+              <option value="ALL">All Categories (3x)</option>
               <option value="WASSCE">WAEC WASSCE</option>
               <option value="BECE">WAEC BECE</option>
               <option value="CSSPS">CSSPS Placement</option>
-              <option value="CTVET">CTVET / NABPTEX</option>
             </select>
           </div>
           <div>
@@ -501,7 +500,6 @@
               <option value="WASSCE">WAEC WASSCE</option>
               <option value="BECE">WAEC BECE</option>
               <option value="CSSPS">CSSPS Placement</option>
-              <option value="CTVET">CTVET / NABPTEX</option>
             </select>
           </div>
 
@@ -590,7 +588,7 @@
         <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--ghana-gold); margin-bottom: 0.85rem; text-transform: uppercase;">
           Voucher Retail Pricing (GH₵)
         </h4>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1rem; margin-bottom: 1rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
           <div>
             <label class="form-label">WASSCE Price (GH₵)</label>
             <input type="number" step="0.5" id="cfg_price_WASSCE" value="{{ settings.price_WASSCE }}" class="form-input" required>
@@ -599,16 +597,9 @@
             <label class="form-label">BECE Price (GH₵)</label>
             <input type="number" step="0.5" id="cfg_price_BECE" value="{{ settings.price_BECE }}" class="form-input" required>
           </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
           <div>
             <label class="form-label">CSSPS Price (GH₵)</label>
             <input type="number" step="0.5" id="cfg_price_CSSPS" value="{{ settings.price_CSSPS }}" class="form-input" required>
-          </div>
-          <div>
-            <label class="form-label">CTVET Price (GH₵)</label>
-            <input type="number" step="0.5" id="cfg_price_CTVET" value="{{ settings.price_CTVET }}" class="form-input" required>
           </div>
         </div>
 
@@ -1270,7 +1261,6 @@ async function handleSaveSettings(e) {
     price_WASSCE: document.getElementById("cfg_price_WASSCE").value,
     price_BECE: document.getElementById("cfg_price_BECE").value,
     price_CSSPS: document.getElementById("cfg_price_CSSPS").value,
-    price_CTVET: document.getElementById("cfg_price_CTVET").value,
     sms_sender_id: document.getElementById("cfg_sms_sender_id").value,
     paystack_public_key: document.getElementById("cfg_paystack_public_key").value
   };

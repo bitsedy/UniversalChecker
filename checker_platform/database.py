@@ -32,7 +32,7 @@ def init_db():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS vouchers (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                category TEXT NOT NULL, -- 'WASSCE', 'BECE', 'CSSPS', 'CTVET'
+                category TEXT NOT NULL, -- 'WASSCE', 'BECE', 'CSSPS'
                 serial_number TEXT NOT NULL UNIQUE,
                 pin TEXT NOT NULL,
                 status TEXT NOT NULL DEFAULT 'UNSOLD', -- 'UNSOLD', 'RESERVED', 'SOLD', 'REFUNDED'
@@ -180,7 +180,6 @@ def init_db():
             ("price_WASSCE", "22.00"),
             ("price_BECE", "18.00"),
             ("price_CSSPS", "15.00"),
-            ("price_CTVET", "25.00"),
             ("paystack_public_key", "pk_test_sample_ghana_waec"),
             ("paystack_secret_key", "sk_test_sample_ghana_waec"),
             ("sms_sender_id", "CHECKER_GH"),
@@ -225,8 +224,7 @@ def generate_dynamic_vouchers(category: str, count: int, order_ref: Optional[str
     prefixes = {
         "WASSCE": "WSC2026",
         "BECE": "BEC2026",
-        "CSSPS": "CSS2026",
-        "CTVET": "CTV2026"
+        "CSSPS": "CSS2026"
     }
     prefix = prefixes.get(category, "VCH2026")
     vouchers = []
@@ -280,15 +278,6 @@ def get_product_catalog() -> Dict[str, Dict[str, Any]]:
                 "badge": "Placement 2026",
                 "check_limit": 999,
                 "index_format": "12-Digit String (10-Digit Index + 2-Digit Year, e.g. 101010101026)"
-            },
-            "CTVET": {
-                "name": "CTVET / NABPTEX Result Checker",
-                "short_title": "CTVET Technical & Vocational",
-                "description": "Valid for May/June Certificate & Nov/Dec Technical Examinations across all regions.",
-                "official_url": "https://ctvet.gov.gh",
-                "badge": "TVET Direct",
-                "check_limit": 5,
-                "index_format": "Region + Center Code + Index Number"
             }
         }
 
