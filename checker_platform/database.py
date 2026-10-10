@@ -634,6 +634,7 @@ def get_admin_metrics() -> Dict[str, Any]:
     """Provides inventory and revenue statistics for admin dashboard."""
     conn = get_db_connection()
     try:
+        standard_categories = ["WASSCE", "BECE", "CSSPS"]
         stock_stats = conn.execute(
             """
             SELECT category, 
@@ -641,9 +642,18 @@ def get_admin_metrics() -> Dict[str, Any]:
                    COUNT(CASE WHEN status = 'RESERVED' THEN 1 END) as reserved,
                    COUNT(CASE WHEN status = 'SOLD' THEN 1 END) as sold
             FROM vouchers
+            WHERE category IN ('WASSCE', 'BECE', 'CSSPS')
             GROUP BY category
             """
         ).fetchall()
+
+        stock_dict = {r["category"]: dict(r) for r in stock_stats}
+        clean_stock = []
+        for cat in standard_categories:
+            if cat in stock_dict:
+                clean_stock.append(stock_dict[cat])
+            else:
+                clean_stock.append({"category": cat, "unsold": 0, "reserved": 0, "sold": 0})
 
         sales_stats = conn.execute(
             """
@@ -665,7 +675,7 @@ def get_admin_metrics() -> Dict[str, Any]:
         ).fetchall()
 
         return {
-            "stock": [dict(r) for r in stock_stats],
+            "stock": clean_stock,
             "total_orders": sales_stats["total_orders"],
             "total_revenue": round(sales_stats["total_revenue"], 2),
             "recent_orders": [dict(r) for r in recent_orders]

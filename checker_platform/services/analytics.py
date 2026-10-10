@@ -103,8 +103,11 @@ def get_system_analytics(time_window: str = "7d") -> Dict[str, Any]:
             """
         ).fetchall()
 
+        standard_categories = ["WASSCE", "BECE", "CSSPS"]
         revenue_by_category = []
         for r in cat_rows:
+            if r["category"] not in standard_categories:
+                continue
             cat_rev = round(float(r["revenue"]), 2)
             share_pct = round((cat_rev / window_rev * 100), 1) if window_rev > 0 else 0.0
             revenue_by_category.append({
@@ -116,7 +119,6 @@ def get_system_analytics(time_window: str = "7d") -> Dict[str, Any]:
             })
 
         # Ensure all standard categories appear even if zero revenue
-        standard_categories = ["WASSCE", "BECE", "CSSPS"]
         present_cats = {c["category"] for c in revenue_by_category}
         for sc in standard_categories:
             if sc not in present_cats:
@@ -207,6 +209,7 @@ def get_system_analytics(time_window: str = "7d") -> Dict[str, Any]:
                    COUNT(CASE WHEN status = 'SOLD' THEN 1 END) as sold,
                    COUNT(*) as total
             FROM vouchers
+            WHERE category IN ('WASSCE', 'BECE', 'CSSPS')
             GROUP BY category
             """
         ).fetchall()
@@ -218,19 +221,21 @@ def get_system_analytics(time_window: str = "7d") -> Dict[str, Any]:
 
         # Calculate days in window for burn rate calculation
         days_in_window = 1 if time_window == "24h" else (30 if time_window == "30d" else 7)
+        stock_map = {sr["category"]: sr for sr in stock_rows}
 
-        for sr in stock_rows:
-            unsold = int(sr["unsold"])
-            reserved = int(sr["reserved"])
-            sold = int(sr["sold"])
-            total = int(sr["total"])
+        for cat in standard_categories:
+            sr = stock_map.get(cat)
+            unsold = int(sr["unsold"]) if sr else 0
+            reserved = int(sr["reserved"]) if sr else 0
+            sold = int(sr["sold"]) if sr else 0
+            total = int(sr["total"]) if sr else 0
 
             total_unsold += unsold
             total_reserved += reserved
             total_sold += sold
 
             # Estimate burn rate based on window vouchers sold
-            cat_window_sold = next((c["vouchers_count"] for c in revenue_by_category if c["category"] == sr["category"]), 0)
+            cat_window_sold = next((c["vouchers_count"] for c in revenue_by_category if c["category"] == cat), 0)
             daily_burn = round(cat_window_sold / days_in_window, 2)
             days_left = round(unsold / daily_burn, 1) if daily_burn > 0 else (999.0 if unsold > 0 else 0.0)
 
@@ -238,7 +243,7 @@ def get_system_analytics(time_window: str = "7d") -> Dict[str, Any]:
             health_color = "#10b981" if health_status == "HEALTHY" else ("#38bdf8" if health_status == "SUFFICIENT" else ("#f59e0b" if health_status == "LOW" else "#ef4444"))
 
             category_inventory.append({
-                "category": sr["category"],
+                "category": cat,
                 "unsold": unsold,
                 "reserved": reserved,
                 "sold": sold,
