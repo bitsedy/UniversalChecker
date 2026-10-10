@@ -2139,28 +2139,8 @@ footer {
   gap: 1.5rem;
 }
 
-/* Whole-System YouTube-Style Top Laser Loader */
+/* Whole-System YouTube-Style Top Laser Loader - Discarded */
 .system-laser-loader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  z-index: 999999;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s ease-out;
-}
-
-.system-laser-loader.active {
-  opacity: 1;
-}
-
-.system-laser-loader-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--ghana-green) 0%, var(--ghana-gold) 55%, #f59e0b 100%);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.75), 0 0 4px rgba(22, 163, 74, 0.5);
-  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: none !important;
 }
 

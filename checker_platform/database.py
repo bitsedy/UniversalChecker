@@ -180,6 +180,9 @@ def init_db():
             ("price_WASSCE", "22.00"),
             ("price_BECE", "18.00"),
             ("price_CSSPS", "15.00"),
+            ("price_ADVISORY_BASIC", "6.00"),
+            ("price_ADVISORY_DECOY", "12.00"),
+            ("price_ADVISORY_HERO", "15.00"),
             ("paystack_public_key", "pk_test_sample_ghana_waec"),
             ("paystack_secret_key", "sk_test_sample_ghana_waec"),
             ("sms_sender_id", "CHECKER_GH"),
@@ -409,6 +412,20 @@ def complete_voucher_sale(order_ref: str) -> List[Dict[str, Any]]:
         if not order:
             conn.execute("ROLLBACK;")
             raise ValueError(f"Order {order_ref} not found")
+
+        is_advisory = str(order["category"]).startswith("TIER_") or order_ref.startswith("ADV-")
+        if is_advisory:
+            conn.execute(
+                """
+                UPDATE orders 
+                SET payment_status = 'PAID',
+                    updated_at = datetime('now')
+                WHERE order_reference = ?
+                """,
+                (order_ref,)
+            )
+            conn.execute("COMMIT;")
+            return []
 
         # Update vouchers
         conn.execute(

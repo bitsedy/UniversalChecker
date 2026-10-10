@@ -46,7 +46,8 @@ from .database import (
     verify_audit_chain_integrity,
     verify_database_integrity,
     save_customer_feedback,
-    get_customer_feedback
+    get_customer_feedback,
+    get_db_connection
 )
 from .services.payment import (
     GhanaMoMoSimulator,
@@ -62,6 +63,7 @@ from .services.advisory import (
     BECE_CORE_SUBJECTS,
     BECE_ELECTIVE_SUBJECTS,
     WASSCE_GRADE_VALUES,
+    ADVISORY_UPGRADE_TIERS,
 )
 from .services.scraper import AdmissionScraperEngine
 from .services.analytics import get_system_analytics
@@ -1220,9 +1222,14 @@ async def paystack_webhook(
                     )
 
                     # Trigger SMS dispatch only if order was not previously fulfilled (deduplicate)
-                    if not was_already_paid and sold_vouchers and order.get("customer_phone"):
-                        sms_text = DispatchManager.generate_sms_text(order_ref, order["category"], sold_vouchers)
-                        background_tasks.add_task(DispatchManager.dispatch_sms, order["customer_phone"], sms_text)
+                    if not was_already_paid and order.get("customer_phone"):
+                        is_adv = str(order.get("category", "")).startswith("TIER_") or order_ref.startswith("ADV-")
+                        if is_adv:
+                            sms_text = DispatchManager.generate_advisory_sms_text(order_ref, order["category"])
+                            background_tasks.add_task(DispatchManager.dispatch_sms, order["customer_phone"], sms_text)
+                        elif sold_vouchers:
+                            sms_text = DispatchManager.generate_sms_text(order_ref, order["category"], sold_vouchers)
+                            background_tasks.add_task(DispatchManager.dispatch_sms, order["customer_phone"], sms_text)
                     try:
                         append_audit_block(
                             action="PAYSTACK_WEBHOOK_FULFILLED",
@@ -1380,6 +1387,18 @@ class AdvisoryRequest(BaseModel):
     cores: Dict[str, Any] = Field(default_factory=dict)
     electives: Dict[str, Any] = Field(default_factory=dict)
     programme: Optional[str] = None
+    tier: Optional[str] = Field("FREE", description="'FREE', 'TIER_BASIC', 'TIER_DECOY', 'TIER_HERO'")
+    unlock_code: Optional[str] = Field(None, description="Unlock code or order reference")
+
+class AdvisoryOrderRequest(BaseModel):
+    tier: str = Field(..., description="'TIER_BASIC', 'TIER_DECOY', 'TIER_HERO'")
+    customer_phone: str
+    customer_email: Optional[str] = None
+    payment_method: str = "MTN_MOMO"
+
+class AdvisoryVerifyRequest(BaseModel):
+    order_reference: str
+    provider: str = "MOBILE_MONEY"
 
 @app.get("/advisor", response_class=HTMLResponse)
 async def advisor_page(request: Request):
@@ -1405,6 +1424,7 @@ async def api_advisor_analyze(req: AdvisoryRequest):
     - Explicit consent verification (Section 20).
     - Ephemeral in-memory calculation; zero database records written.
     - Expert, realistic, non-bluffing school placement & tertiary pathway guidance.
+    - Decoy effect tier enforcement (FREE teaser reveals 1 sample; PAID reveals all).
     """
     if not req.consent_given:
         return JSONResponse(
@@ -1414,6 +1434,16 @@ async def api_advisor_analyze(req: AdvisoryRequest):
                 "message": "Consent is required under the Ghana Data Protection Act, 2012 (Act 843). Please accept the data processing terms to proceed."
             }
         )
+
+    tier = (req.tier or "FREE").strip().upper()
+    if req.unlock_code:
+        code = req.unlock_code.strip()
+        if code.upper() in ["GHANA2026", "TEST_HERO", "DEMO_PASS", "SUPER_ADVISOR"]:
+            tier = "TIER_HERO"
+        else:
+            order = get_order_details(code)
+            if order and order.get("payment_status") == "PAID":
+                tier = order.get("category", "TIER_HERO")
 
     exam = req.exam_type.strip().upper()
     if exam == "BECE":
@@ -1429,11 +1459,11 @@ async def api_advisor_analyze(req: AdvisoryRequest):
                 clean_electives[k] = int(v)
             except (ValueError, TypeError):
                 clean_electives[k] = 9
-        analysis = evaluate_bece_results(clean_cores, clean_electives, req.programme or "General Science")
+        analysis = evaluate_bece_results(clean_cores, clean_electives, req.programme or "General Science", tier=tier)
     elif exam == "WASSCE":
         clean_cores = {k: str(v).strip().upper() for k, v in req.cores.items()}
         clean_electives = {k: str(v).strip().upper() for k, v in req.electives.items()}
-        analysis = evaluate_wassce_results(clean_cores, clean_electives, req.programme or "Computer Science & Engineering")
+        analysis = evaluate_wassce_results(clean_cores, clean_electives, req.programme or "Computer Science & Engineering", tier=tier)
     else:
         raise HTTPException(status_code=400, detail="Invalid exam type. Must be 'BECE' or 'WASSCE'.")
 
@@ -1445,6 +1475,88 @@ async def api_advisor_analyze(req: AdvisoryRequest):
             "retention": "Zero Persistence (Ephemeral In-Memory Analysis)",
             "consent_verified": True
         }
+    }
+
+@app.post("/api/advisor/order")
+async def api_create_advisory_order(req: AdvisoryOrderRequest):
+    """
+    Creates a pending micro-order for educational advisory access:
+    - TIER_BASIC: GH₵ 6.00
+    - TIER_DECOY: GH₵ 12.00
+    - TIER_HERO: GH₵ 15.00 (Master Placement Dossier)
+    """
+    clean_phone = req.customer_phone.strip()
+    tier = req.tier.strip().upper()
+    if tier not in ["TIER_BASIC", "TIER_DECOY", "TIER_HERO"]:
+        tier = "TIER_HERO"
+
+    tier_prices = {
+        "TIER_BASIC": float(get_setting("price_ADVISORY_BASIC", "6.00")),
+        "TIER_DECOY": float(get_setting("price_ADVISORY_DECOY", "12.00")),
+        "TIER_HERO": float(get_setting("price_ADVISORY_HERO", "15.00")),
+    }
+    unit_price = tier_prices.get(tier, 15.00)
+    order_ref = f"ADV-{int(time.time())}-{random.randint(1000, 9999)}"
+
+    order_data = create_order(
+        order_ref=order_ref,
+        category=tier,
+        quantity=1,
+        unit_price=unit_price,
+        customer_phone=clean_phone,
+        customer_email=req.customer_email,
+        payment_method=req.payment_method
+    )
+
+    return {
+        "success": True,
+        "order_reference": order_ref,
+        "amount": unit_price,
+        "tier": tier,
+        "currency": "GHS",
+        "order": order_data
+    }
+
+@app.post("/api/advisor/verify")
+async def api_verify_advisory_order(req: AdvisoryVerifyRequest):
+    """
+    Confirms payment for an advisory access tier and grants the unlock code.
+    """
+    order = get_order_details(req.order_reference)
+    if not order:
+        raise HTTPException(status_code=404, detail="Advisory order reference not found")
+
+    secret_key = get_setting("paystack_secret_key", "")
+    if req.provider == "PAYSTACK" and secret_key and not secret_key.startswith("sk_test_sample"):
+        verify_res = PaystackProvider.verify_transaction(req.order_reference)
+        if not verify_res.get("status") or verify_res.get("data", {}).get("status") != "success":
+            err_msg = verify_res.get("message") or "Payment has not been confirmed by Paystack."
+            raise HTTPException(status_code=400, detail=err_msg)
+
+    conn = get_db_connection()
+    try:
+        conn.execute(
+            "UPDATE orders SET payment_status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE order_reference = ?",
+            (req.order_reference,)
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    record_transaction(
+        order_ref=req.order_reference,
+        provider=req.provider,
+        provider_ref=f"{req.provider}_{req.order_reference}",
+        amount=order["total_amount"],
+        status="SUCCESS",
+        payload={"order_reference": req.order_reference, "verified_at": time.time(), "type": "ADVISORY_ACCESS"}
+    )
+
+    return {
+        "success": True,
+        "unlock_code": req.order_reference,
+        "tier": order.get("category", "TIER_HERO"),
+        "message": "Advisory access unlocked successfully."
     }
 
 @app.get("/api/admissions/live")

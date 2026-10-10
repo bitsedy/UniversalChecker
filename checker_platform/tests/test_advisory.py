@@ -456,4 +456,193 @@ class TestStealthAdminAndAdvisory(unittest.TestCase):
         self.assertIn("ADVISOR'S FINAL VERDICT", analysis_d7["whatsapp_share_text"])
         self.assertIn("BRUTALLY HONEST REALITY", analysis_d7["whatsapp_share_text"])
 
+    # ========================================================================
+    # 3. DECOY EFFECT & MANDATORY HARD LIMIT PAYWALL TESTS
+    # ========================================================================
+
+    def test_bece_free_tier_enforces_mandatory_hard_ceiling(self):
+        """Free BECE analysis must lock 9 out of 10 institutions and lock CSSPS matrix."""
+        payload = {
+            "exam_type": "BECE",
+            "consent_given": True,
+            "cores": {"English Language": 2, "Mathematics": 2, "Integrated Science": 2, "Social Studies": 2},
+            "electives": {"BDT / Pre-Technical": 2, "French": 2},
+            "programme": "General Science",
+            "tier": "FREE"
+        }
+        res = self.client.post("/api/advisor/analyze", json=payload)
+        self.assertEqual(res.status_code, 200)
+        data = res.json()["analysis"]
+
+        self.assertTrue(data["preview_limit_reached"])
+        self.assertFalse(data["is_unlocked"])
+        self.assertEqual(data["unlocked_count"], 1)
+        self.assertEqual(data["locked_count"], len(data["suggested_schools"]) - 1)
+
+        # First school is sample; subsequent schools are locked
+        schools = data["suggested_schools"]
+        self.assertFalse(schools[0]["is_locked"])
+        for s in schools[1:]:
+            self.assertTrue(s["is_locked"])
+            self.assertIn("Locked", s["preview_badge"])
+
+        # CSSPS choice matrix has locked choices
+        matrix = data["cssps_choice_matrix"]
+        self.assertTrue(len(matrix) >= 5)
+        locked_choices = [c for c in matrix if c["is_locked"]]
+        self.assertTrue(len(locked_choices) >= 4)
+
+        # Upgrade tiers returned with Decoy effect structure
+        tiers = data["upgrade_tiers"]
+        self.assertEqual(len(tiers), 3)
+        self.assertEqual(tiers[0]["price_ghs"], 6.0)
+        self.assertEqual(tiers[1]["price_ghs"], 12.0)
+        self.assertEqual(tiers[2]["price_ghs"], 15.0)
+
+    def test_wassce_free_tier_enforces_mandatory_hard_ceiling(self):
+        """Free WASSCE analysis must lock all but 1 sample institution."""
+        payload = {
+            "exam_type": "WASSCE",
+            "consent_given": True,
+            "cores": {
+                "English Language": "B2",
+                "Core Mathematics": "B2",
+                "Integrated Science": "B2",
+                "Social Studies": "A1"
+            },
+            "electives": {
+                "Elective Mathematics": "A1",
+                "Physics": "B2",
+                "Chemistry": "B3"
+            },
+            "programme": "Computer Science & Engineering",
+            "tier": "FREE"
+        }
+        res = self.client.post("/api/advisor/analyze", json=payload)
+        self.assertEqual(res.status_code, 200)
+        data = res.json()["analysis"]
+
+        self.assertTrue(data["preview_limit_reached"])
+        self.assertFalse(data["is_unlocked"])
+        self.assertEqual(data["unlocked_count"], 1)
+
+        institutions = data["suggested_institutions"]
+        self.assertFalse(institutions[0]["is_locked"])
+        for inst in institutions[1:]:
+            self.assertTrue(inst["is_locked"])
+
+    def test_advisory_order_and_verify_unlock_flow(self):
+        """Tests the end-to-end micro-order creation and instant payment verification unlock."""
+        # 1. Create micro-order for Hero Master Dossier (GH₵ 15.00)
+        order_payload = {
+            "tier": "TIER_HERO",
+            "customer_phone": "0241234567",
+            "customer_email": "student@example.com",
+            "payment_method": "MTN_MOMO"
+        }
+        res_order = self.client.post("/api/advisor/order", json=order_payload)
+        self.assertEqual(res_order.status_code, 200)
+        order_data = res_order.json()
+        self.assertTrue(order_data["success"])
+        order_ref = order_data["order_reference"]
+        self.assertTrue(order_ref.startswith("ADV-"))
+        self.assertEqual(order_data["amount"], 15.0)
+
+        # 2. Verify micro-order payment
+        verify_payload = {
+            "order_reference": order_ref,
+            "provider": "MOBILE_MONEY"
+        }
+        res_verify = self.client.post("/api/advisor/verify", json=verify_payload)
+        self.assertEqual(res_verify.status_code, 200)
+        verify_data = res_verify.json()
+        self.assertTrue(verify_data["success"])
+        self.assertEqual(verify_data["unlock_code"], order_ref)
+        self.assertEqual(verify_data["tier"], "TIER_HERO")
+
+        # 3. Analyze BECE results using the paid order_reference as unlock code
+        analyze_payload = {
+            "exam_type": "BECE",
+            "consent_given": True,
+            "cores": {"English Language": 1, "Mathematics": 1, "Integrated Science": 1, "Social Studies": 1},
+            "electives": {"BDT / Pre-Technical": 1, "French": 2},
+            "programme": "General Science",
+            "unlock_code": order_ref
+        }
+        res_paid = self.client.post("/api/advisor/analyze", json=analyze_payload)
+        self.assertEqual(res_paid.status_code, 200)
+        paid_data = res_paid.json()["analysis"]
+
+        self.assertFalse(paid_data["preview_limit_reached"])
+        self.assertTrue(paid_data["is_unlocked"])
+        self.assertEqual(paid_data["locked_count"], 0)
+        # All suggested schools are completely unlocked
+        for s in paid_data["suggested_schools"]:
+            self.assertFalse(s["is_locked"])
+        # All CSSPS choices are completely unlocked
+        for c in paid_data["cssps_choice_matrix"]:
+            self.assertFalse(c["is_locked"])
+
+    def test_instant_test_pass_bypass(self):
+        """Verifies DEMO_PASS / GHANA2026 unlock code grants instant full Hero tier access."""
+        analyze_payload = {
+            "exam_type": "BECE",
+            "consent_given": True,
+            "cores": {"English Language": 2, "Mathematics": 2, "Integrated Science": 2, "Social Studies": 2},
+            "electives": {"BDT / Pre-Technical": 2, "French": 2},
+            "programme": "General Science",
+            "unlock_code": "GHANA2026"
+        }
+        res = self.client.post("/api/advisor/analyze", json=analyze_payload)
+        self.assertEqual(res.status_code, 200)
+        data = res.json()["analysis"]
+        self.assertTrue(data["is_unlocked"])
+        self.assertEqual(data["locked_count"], 0)
+
+    def test_advisory_order_paystack_webhook_fulfillment(self):
+        """Validates that Paystack webhook fulfills an advisory micro-order cleanly."""
+        import json
+        import hmac
+        import hashlib
+        from checker_platform.database import update_setting, get_order_details
+
+        test_secret = "sk_test_advisory_webhook_key_456"
+        update_setting("paystack_secret_key", test_secret)
+
+        # 1. Create advisory order (TIER_HERO: 15.00 GHS = 1500 pesewas)
+        order_payload = {
+            "tier": "TIER_HERO",
+            "customer_phone": "0557778899",
+            "payment_method": "MTN_MOMO"
+        }
+        res_order = self.client.post("/api/advisor/order", json=order_payload)
+        self.assertEqual(res_order.status_code, 200)
+        order_ref = res_order.json()["order_reference"]
+
+        # 2. Simulate Paystack webhook
+        webhook_body = json.dumps({
+            "event": "charge.success",
+            "data": {
+                "reference": order_ref,
+                "amount": 1500,  # 15.00 GHS in pesewas
+                "currency": "GHS",
+                "id": 998877
+            }
+        }).encode("utf-8")
+
+        sig = hmac.new(test_secret.encode("utf-8"), webhook_body, hashlib.sha512).hexdigest()
+        res_hook = self.client.post(
+            "/api/webhooks/paystack",
+            content=webhook_body,
+            headers={"X-Paystack-Signature": sig, "Content-Type": "application/json"}
+        )
+        self.assertEqual(res_hook.status_code, 200)
+        self.assertEqual(res_hook.json(), {"status": "ok"})
+
+        # 3. Verify order is marked as PAID
+        order = get_order_details(order_ref)
+        self.assertEqual(order["payment_status"], "PAID")
+
+
+
 

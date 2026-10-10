@@ -123,6 +123,24 @@ class DispatchManager:
         )
 
     @staticmethod
+    def generate_advisory_sms_text(order_ref: str, tier: str) -> str:
+        """Generates standard Ghanaian SMS notification for unlocked educational advisory dossiers."""
+        tier_names = {
+            "TIER_BASIC": "Basic School Matcher",
+            "TIER_DECOY": "Standard Placement Report",
+            "TIER_HERO": "Master Placement Dossier"
+        }
+        tier_label = tier_names.get(tier, "Placement Dossier")
+        return (
+            f"ADVISORY UNLOCKED ({tier_label})\n"
+            f"Order Ref: {order_ref}\n"
+            f"Unlock Code: {order_ref}\n"
+            f"Access your complete placement analysis report at:\n"
+            f"https://aggregateghana.com/advisor\n"
+            f"Keep code safe. AggreGate Ghana."
+        )
+
+    @staticmethod
     def generate_whatsapp_share_text(order_ref: str, category: str, vouchers: List[Dict[str, Any]]) -> str:
         """Formats encoded text for sharing via WhatsApp."""
         portal = OFFICIAL_PORTAL_DETAILS.get(category, OFFICIAL_PORTAL_DETAILS["WASSCE"])

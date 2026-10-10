@@ -13,6 +13,73 @@ from .scraper import AdmissionScraperEngine
 from .security import EphemeralMemoryVault
 
 # ============================================================================
+# COMMERCIAL ADVISORY TIERS (DECOY EFFECT ARCHITECTURE)
+# ============================================================================
+ADVISORY_UPGRADE_TIERS = {
+    "TIER_BASIC": {
+        "code": "TIER_BASIC",
+        "name": "Basic School Matcher",
+        "tagline": "Entry-level school discovery",
+        "price_ghs": 6.00,
+        "is_decoy": False,
+        "is_hero": False,
+        "badge": "Standard Discovery",
+        "features": [
+            "Full list of all 10 matched institutions",
+            "Category classifications (Cat A, B, C, D, E)",
+            "Basic official cut-off score thresholds",
+            "Standard eligibility assessment"
+        ],
+        "missing_features": [
+            "No admission probability percentages",
+            "No CSSPS 6-School Selection Strategy Matrix",
+            "No downloadable/printable official PDF Dossier",
+            "No Two-Sitting GTEC remedial calculator"
+        ]
+    },
+    "TIER_DECOY": {
+        "code": "TIER_DECOY",
+        "name": "Competitive Analysis",
+        "tagline": "Calculated probabilities without strategic sequencing",
+        "price_ghs": 12.00,
+        "is_decoy": True,
+        "is_hero": False,
+        "badge": "Mid-Tier Analysis",
+        "features": [
+            "Full list of all 10 matched institutions",
+            "Exact quantitative admission probability % (10% - 98%)",
+            "Departmental cut-offs & prerequisite checking",
+            "Subject bottleneck reality alerts"
+        ],
+        "missing_features": [
+            "NO CSSPS 6-School Selection Strategy Matrix",
+            "NO Official Printable PDF Assessment Dossier",
+            "NO Remedial Grade Upgrade Simulator",
+            "NO WhatsApp Executive Brief for parents"
+        ]
+    },
+    "TIER_HERO": {
+        "code": "TIER_HERO",
+        "name": "Master Placement Dossier",
+        "tagline": "Complete, foolproof placement intelligence",
+        "price_ghs": 15.00,
+        "is_decoy": False,
+        "is_hero": True,
+        "badge": "MOST POPULAR — BEST VALUE (89% of Parents Choose This)",
+        "features": [
+            "Everything in Basic & Competitive tiers",
+            "⭐️ Full 10-School Institutional Rationale & Probabilities",
+            "⭐️ Official CSSPS 6-Choice Selection Matrix (Cat A/B/C/D combinations to guarantee placement)",
+            "⭐️ Downloadable & Printable Official PDF Assessment Slip",
+            "⭐️ GTEC Two-Sitting Remedial Simulator & upgrade pathways",
+            "⭐️ Instant WhatsApp & SMS Dossier Copy for family/guardians",
+            "⭐️ Act 843 Verifiable Audit Attestation certificate"
+        ],
+        "missing_features": []
+    }
+}
+
+# ============================================================================
 # BECE DATA & ADVISORY LOGIC (CSSPS PLACEMENT)
 # ============================================================================
 
@@ -220,7 +287,8 @@ def suggest_best_schools_bece(
     english_grade: int,
     math_grade: int,
     science_grade: int,
-    preferred_programme: str
+    preferred_programme: str,
+    tier: str = "FREE"
 ) -> List[Dict[str, Any]]:
     """
     Ranks Ghanaian Senior High Schools across GES CSSPS Categories A, B, C, D, and E
@@ -337,6 +405,17 @@ def suggest_best_schools_bece(
     cat_e_schools = [s for s in evaluated_schools if s["category_code"] == "CAT_E"]
     cat_e_schools.sort(key=lambda s: (s["programme_match"], s["prerequisites_met"], s["probability_percent"]), reverse=True)
     portfolio.extend(cat_e_schools[:2])
+
+    is_unlocked = tier.upper() in ["HERO", "PAID", "BASIC", "DECOY", "TIER_HERO", "TIER_BASIC", "TIER_DECOY"]
+    for i, s in enumerate(portfolio):
+        if not is_unlocked and i > 0:
+            s["is_locked"] = True
+            s["preview_badge"] = "Locked (Upgrade Required)"
+            s["lock_reason"] = "Free preview limited to 1 sample institution. Unlock full strategic placement dossier for complete details."
+        else:
+            s["is_locked"] = False
+            s["preview_badge"] = "Free Preview Revealed (1 of 10)" if i == 0 and not is_unlocked else "Full Match"
+            s["lock_reason"] = ""
 
     return portfolio
 
@@ -467,7 +546,8 @@ def generate_bece_final_verdict(
 def evaluate_bece_results(
     cores: Dict[str, int], 
     electives: Dict[str, int], 
-    preferred_programme: str = "General Science"
+    preferred_programme: str = "General Science",
+    tier: str = "FREE"
 ) -> Dict[str, Any]:
     """
     Evaluates BECE results under official GES CSSPS rules:
@@ -576,7 +656,8 @@ def evaluate_bece_results(
         english_grade=english_grade,
         math_grade=math_grade,
         science_grade=science_grade,
-        preferred_programme=preferred_programme
+        preferred_programme=preferred_programme,
+        tier=tier
     )
 
     # 6. Formulate Brutally Honest Final Verdict
@@ -653,6 +734,114 @@ def evaluate_bece_results(
         f"Verification Hash: `{audit_hash[:16]}...`"
     )
 
+    is_unlocked = tier.upper() in ["HERO", "PAID", "BASIC", "DECOY", "TIER_HERO", "TIER_BASIC", "TIER_DECOY"]
+    cat_a = next((s for s in suggested_schools if s["category_code"] == "CAT_A"), None)
+    cat_b_all = [s for s in suggested_schools if s["category_code"] == "CAT_B"]
+    cat_b1 = cat_b_all[0] if len(cat_b_all) > 0 else None
+    cat_b2 = cat_b_all[1] if len(cat_b_all) > 1 else None
+    cat_c = next((s for s in suggested_schools if s["category_code"] == "CAT_C"), None)
+    cat_d = next((s for s in suggested_schools if s["category_code"] == "CAT_D"), None)
+    cat_e = next((s for s in suggested_schools if s["category_code"] == "CAT_E"), None)
+
+    cssps_choice_matrix = [
+        {
+            "choice_number": 1,
+            "category": "Category A (Top National Merit)",
+            "ges_category": "Category A (Top National Merit)",
+            "school_name": cat_a["school_name"] if cat_a else "PRESEC Legon / Achimota School",
+            "recommended_school": cat_a["school_name"] if cat_a else "PRESEC Legon / Achimota School",
+            "programme": preferred_programme,
+            "role": "Choice 1: High-Merit Dream",
+            "strategic_role": "Choice 1: High-Merit Dream",
+            "quota_rule": "Max 1 Category A school allowed nationwide by GES regulations.",
+            "placement_rule": "Max 1 Category A school allowed nationwide by GES regulations.",
+            "probability_percent": cat_a["probability_percent"] if cat_a else 75,
+            "admission_probability_percent": cat_a["probability_percent"] if cat_a else 75,
+            "is_locked": False,
+            "preview_badge": "Free Choice Sample (1 of 6 Revealed)"
+        },
+        {
+            "choice_number": 2,
+            "category": "Category B (Regional High Standard)",
+            "ges_category": "Category B (Regional High Standard)",
+            "school_name": cat_b1["school_name"] if cat_b1 else "St. Thomas Aquinas / Ghana National",
+            "recommended_school": cat_b1["school_name"] if cat_b1 else "St. Thomas Aquinas / Ghana National",
+            "programme": preferred_programme,
+            "role": "Choice 2: Primary Regional Target",
+            "strategic_role": "Choice 2: Primary Regional Target",
+            "quota_rule": "High-standard regional institution with balanced merit cut-off.",
+            "placement_rule": "High-standard regional institution with balanced merit cut-off.",
+            "probability_percent": cat_b1["probability_percent"] if cat_b1 else 82,
+            "admission_probability_percent": cat_b1["probability_percent"] if cat_b1 else 82,
+            "is_locked": not is_unlocked,
+            "preview_badge": "Locked (Upgrade Required)" if not is_unlocked else "Full Match"
+        },
+        {
+            "choice_number": 3,
+            "category": "Category B or C (Competitive Backup)",
+            "ges_category": "Category B or C (Competitive Backup)",
+            "school_name": cat_b2["school_name"] if cat_b2 else "Mawuli School / Kumasi High",
+            "recommended_school": cat_b2["school_name"] if cat_b2 else "Mawuli School / Kumasi High",
+            "programme": preferred_programme,
+            "role": "Choice 3: Solid Placement Anchor",
+            "strategic_role": "Choice 3: Solid Placement Anchor",
+            "quota_rule": "Protects against sudden cutoff score spikes in Choices 1 & 2.",
+            "placement_rule": "Protects against sudden cutoff score spikes in Choices 1 & 2.",
+            "probability_percent": cat_b2["probability_percent"] if cat_b2 else 88,
+            "admission_probability_percent": cat_b2["probability_percent"] if cat_b2 else 88,
+            "is_locked": not is_unlocked,
+            "preview_badge": "Locked (Upgrade Required)" if not is_unlocked else "Full Match"
+        },
+        {
+            "choice_number": 4,
+            "category": "Category C (Community & Regional)",
+            "ges_category": "Category C (Community & Regional)",
+            "school_name": cat_c["school_name"] if cat_c else "Armed Forces SHTS / Nungua SHS",
+            "recommended_school": cat_c["school_name"] if cat_c else "Armed Forces SHTS / Nungua SHS",
+            "programme": preferred_programme,
+            "role": "Choice 4: High-Probability Safe Choice",
+            "strategic_role": "Choice 4: High-Probability Safe Choice",
+            "quota_rule": "Community institution with reliable placement capacity.",
+            "placement_rule": "Community institution with reliable placement capacity.",
+            "probability_percent": cat_c["probability_percent"] if cat_c else 94,
+            "admission_probability_percent": cat_c["probability_percent"] if cat_c else 94,
+            "is_locked": not is_unlocked,
+            "preview_badge": "Locked (Upgrade Required)" if not is_unlocked else "Full Match"
+        },
+        {
+            "choice_number": 5,
+            "category": "Category D (Local Day Catchment - Mandatory 30% Quota)",
+            "ges_category": "Category D (Local Day Catchment - Mandatory 30% Quota)",
+            "school_name": cat_d["school_name"] if cat_d else "District Designated Day Senior High Schools",
+            "recommended_school": cat_d["school_name"] if cat_d else "District Designated Day Senior High Schools",
+            "programme": preferred_programme,
+            "role": "Choice 5: Mandatory 30% District Catchment",
+            "strategic_role": "Choice 5: Mandatory 30% District Catchment",
+            "quota_rule": "GES mandates 30% quota strictly reserved for local day candidates.",
+            "placement_rule": "GES mandates 30% quota strictly reserved for local day candidates.",
+            "probability_percent": 98,
+            "admission_probability_percent": 98,
+            "is_locked": not is_unlocked,
+            "preview_badge": "Locked (Upgrade Required)" if not is_unlocked else "Full Match"
+        },
+        {
+            "choice_number": 6,
+            "category": "Category E (Technical & Vocational / CTVET)",
+            "ges_category": "Category E (Technical & Vocational / CTVET)",
+            "school_name": cat_e["school_name"] if cat_e else "Accra Technical Training Centre (ATTC)",
+            "recommended_school": cat_e["school_name"] if cat_e else "Accra Technical Training Centre (ATTC)",
+            "programme": "Practical Career Track / Engineering Tech",
+            "role": "Choice 6: CTVET Practical Career Alternative",
+            "strategic_role": "Choice 6: CTVET Practical Career Alternative",
+            "quota_rule": "Hands-on technical institute under CTVET for industry competence.",
+            "placement_rule": "Hands-on technical institute under CTVET for industry competence.",
+            "probability_percent": cat_e["probability_percent"] if cat_e else 92,
+            "admission_probability_percent": cat_e["probability_percent"] if cat_e else 92,
+            "is_locked": not is_unlocked,
+            "preview_badge": "Locked (Upgrade Required)" if not is_unlocked else "Full Match"
+        }
+    ]
+
     return {
         "exam_type": "BECE",
         "aggregate": total_aggregate,
@@ -669,7 +858,15 @@ def evaluate_bece_results(
         "roadmap": roadmap,
         "preferred_programme": preferred_programme,
         "whatsapp_share_text": whatsapp_text,
-        "compliance_attestation_hash": audit_hash
+        "compliance_attestation_hash": audit_hash,
+        "tier": tier,
+        "is_unlocked": is_unlocked,
+        "preview_limit_reached": not is_unlocked,
+        "unlocked_count": 1 if not is_unlocked else len(suggested_schools),
+        "locked_count": max(0, len(suggested_schools) - 1) if not is_unlocked else 0,
+        "total_schools_count": len(suggested_schools),
+        "upgrade_tiers": list(ADVISORY_UPGRADE_TIERS.values()),
+        "cssps_choice_matrix": cssps_choice_matrix
     }
 
 # ============================================================================
@@ -999,7 +1196,8 @@ def suggest_best_institutions_wassce(
     total_aggregate: int,
     interest_area: str,
     all_grades: Dict[str, str],
-    eligibility_status: str
+    eligibility_status: str,
+    tier: str = "FREE"
 ) -> List[Dict[str, Any]]:
     """
     Evaluates live Ghanaian university and technical university departmental benchmarks,
@@ -1128,6 +1326,17 @@ def suggest_best_institutions_wassce(
             inst_counts[code] = count + 1
         if len(result) >= 12:
             break
+
+    is_unlocked = tier.upper() in ["HERO", "PAID", "BASIC", "DECOY", "TIER_HERO", "TIER_BASIC", "TIER_DECOY"]
+    for i, item in enumerate(result):
+        if not is_unlocked and i > 0:
+            item["is_locked"] = True
+            item["preview_badge"] = "Locked (Upgrade Required)"
+            item["lock_reason"] = "Free preview limited to 1 sample institution. Upgrade to reveal all departmental cutoffs and calculated admission probabilities."
+        else:
+            item["is_locked"] = False
+            item["preview_badge"] = "Free Sample (1 of 12 Revealed)" if i == 0 and not is_unlocked else "Full Match"
+            item["lock_reason"] = ""
 
     return result
 
@@ -1354,7 +1563,8 @@ def format_wassce_whatsapp_dossier(analysis: Dict[str, Any]) -> str:
 def evaluate_wassce_results(
     cores: Dict[str, str], 
     electives: Dict[str, str], 
-    interest_area: str = "Computer Science & Engineering"
+    interest_area: str = "Computer Science & Engineering",
+    tier: str = "FREE"
 ) -> Dict[str, Any]:
     """
     Evaluates WASSCE results under Ghana Tertiary Education Commission (GTEC) rules:
@@ -1576,7 +1786,8 @@ def evaluate_wassce_results(
         total_aggregate=total_aggregate,
         interest_area=interest_area,
         all_grades=all_entered_grades,
-        eligibility_status=eligibility_status
+        eligibility_status=eligibility_status,
+        tier=tier
     )
 
     # 8. Formulate Brutally Honest Final Verdict
@@ -1605,6 +1816,8 @@ def evaluate_wassce_results(
     )
     log_advisory_telemetry("WASSCE", total_aggregate, interest_area, len(matched_scholarships))
 
+    is_unlocked = tier.upper() in ["HERO", "PAID", "BASIC", "DECOY", "TIER_HERO", "TIER_BASIC", "TIER_DECOY"]
+
     analysis_result = {
         "exam_type": "WASSCE",
         "aggregate": total_aggregate,
@@ -1622,7 +1835,14 @@ def evaluate_wassce_results(
         "deficits_analysis": deficits_analysis,
         "roadmap": roadmap,
         "interest_area": interest_area,
-        "compliance_attestation_hash": audit_hash
+        "compliance_attestation_hash": audit_hash,
+        "tier": tier,
+        "is_unlocked": is_unlocked,
+        "preview_limit_reached": not is_unlocked,
+        "unlocked_count": 1 if not is_unlocked else len(suggested_institutions),
+        "locked_count": max(0, len(suggested_institutions) - 1) if not is_unlocked else 0,
+        "total_institutions_count": len(suggested_institutions),
+        "upgrade_tiers": list(ADVISORY_UPGRADE_TIERS.values())
     }
     analysis_result["whatsapp_share_text"] = format_wassce_whatsapp_dossier(analysis_result)
 
