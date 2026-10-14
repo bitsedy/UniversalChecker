@@ -13,6 +13,16 @@ import random
 import time
 import logging
 import json
+
+try:
+    from dotenv import load_dotenv
+    _root_env = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+    if os.path.exists(_root_env):
+        load_dotenv(_root_env)
+    else:
+        load_dotenv()
+except ImportError:
+    pass
 from contextlib import asynccontextmanager
 from typing import Optional, List, Dict, Any
 
