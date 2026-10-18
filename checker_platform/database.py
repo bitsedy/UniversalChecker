@@ -25,6 +25,9 @@ DB_PATH = os.environ.get("CHECKER_DB_PATH", os.path.join(os.path.dirname(__file_
 
 def get_db_connection():
     """Returns a SQLite connection configured for concurrent web workloads."""
+    db_dir = os.path.dirname(os.path.abspath(DB_PATH))
+    if db_dir and not os.path.exists(db_dir):
+        os.makedirs(db_dir, exist_ok=True)
     conn = sqlite3.connect(DB_PATH, timeout=20.0, isolation_level=None)
     conn.row_factory = sqlite3.Row
     # Enable WAL mode for high concurrency read/write isolation
@@ -211,13 +214,19 @@ def init_db():
         conn.close()
 
 def get_setting(key: str, default: str = "") -> str:
-    """Retrieves a site setting."""
+    """Retrieves a site setting with environment variable priority over sample defaults."""
     conn = get_db_connection()
     try:
         row = conn.execute("SELECT value FROM site_settings WHERE key = ?", (key,)).fetchone()
-        return row["value"] if row else default
+        db_val = row["value"] if row else ""
+        if db_val and "sample" not in db_val:
+            return db_val
+        env_val = os.environ.get(key.upper())
+        if env_val and env_val.strip():
+            return env_val.strip()
+        return db_val if db_val else default
     except sqlite3.OperationalError:
-        return default
+        return os.environ.get(key.upper(), default)
     finally:
         conn.close()
 

@@ -34,7 +34,9 @@ if __name__ == "__main__":
     print(f"Storefront:        http://{display_host}:{port} (or http://localhost:{port})")
     print(f"Self-Service:      http://{display_host}:{port}/lookup")
     print(f"Portal Guides:     http://{display_host}:{port}/guides")
-    print(f"Admin Operations:  http://{display_host}:{port}/admin")
+    gate_key = os.environ.get("ADMIN_GATE_KEY", "")
+    gate_param = f"?gate={gate_key}" if gate_key else "?gate=<GATE_KEY>"
+    print(f"Admin Operations:  http://{display_host}:{port}/admin{gate_param} (Stealth Gated)")
     print(f"API Documentation: http://{display_host}:{port}/docs")
     print(f"Health Check:      http://{display_host}:{port}/health")
     print("=" * 60)

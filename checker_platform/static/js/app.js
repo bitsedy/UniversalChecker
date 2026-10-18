@@ -253,7 +253,7 @@ function showPaymentPrompt(data) {
 function payWithPaystack() {
   if (!currentOrder) return;
   if (!currentPaystackKey || currentPaystackKey.includes("sample")) {
-    alert("Paystack Notice:\nYou currently have default sample keys configured.\n\nTo accept live or test payments via Paystack popup:\n1. Go to /admin\n2. Paste your Paystack Public Key (pk_test_... or pk_live_...)\n3. Click 'Save Settings & Prices'\n\nFor now, you can click 'Quick Sandbox Test' below to test the instant voucher delivery!");
+    alert("Payment Gateway Notice:\nThe payment gateway is currently establishing a secure connection. Please refresh or contact support if this persists.");
     return;
   }
   if (typeof PaystackPop === "undefined") {

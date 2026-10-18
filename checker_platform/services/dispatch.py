@@ -131,13 +131,14 @@ class DispatchManager:
             "TIER_HERO": "Master Placement Dossier"
         }
         tier_label = tier_names.get(tier, "Placement Dossier")
+        base_url = _get_app_setting("app_base_url", os.environ.get("APP_BASE_URL", "https://checkerpay.gh")).rstrip("/")
         return (
             f"ADVISORY UNLOCKED ({tier_label})\n"
             f"Order Ref: {order_ref}\n"
             f"Unlock Code: {order_ref}\n"
             f"Access your complete placement analysis report at:\n"
-            f"https://aggregateghana.com/advisor\n"
-            f"Keep code safe. AggreGate Ghana."
+            f"{base_url}/advisor\n"
+            f"Keep code safe. CheckerPay Ghana."
         )
 
     @staticmethod
