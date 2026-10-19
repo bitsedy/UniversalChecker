@@ -54,39 +54,31 @@
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600&family=Cinzel:wght@600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/css/style.css?v=2026.13">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css?v=2026.14">
   {% block extra_head %}{% endblock %}
 </head>
 <body>
   <!-- Accessible Skip-to-Content Link -->
   <a href="#main-content" class="skip-to-content">Skip to main content</a>
 
-  <!-- Top Sovereign Republic of Ghana Authority Banner -->
-  <aside class="sovereign-banner" aria-label="Official Regulatory Notice">
-    <div class="sovereign-banner-left">
-      <span aria-hidden="true">🇬🇭</span>
-      <span><strong>Official Republic of Ghana Educational Gateway</strong> &bull; Statutory compliance under Data Protection Act, 2012 (Act 843) &amp; Act 772</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <span class="sovereign-banner-status">
-        <span class="pulse-dot" style="width: 6px; height: 6px; background-color: #10b981;"></span>
-        Gateway Operational &bull; 99.98% Uptime
-      </span>
-      <a href="/guides" style="font-size: 0.725rem;">Voucher Protection Rules &rarr;</a>
-    </div>
-  </aside>
-
   <!-- Navbar -->
   <header class="app-header">
     <nav class="navbar" aria-label="Primary Platform Navigation">
       <a href="/" class="brand-link" title="AggreGate Ghana Official Gateway" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
-        <svg width="156" height="34" viewBox="0 0 220 48" xmlns="http://www.w3.org/2000/svg" style="height: 34px; width: auto; display: block;" role="img" aria-label="AggreGate">
-          <path d="M8 40V16a8 8 0 0 1 8-8h16a8 8 0 0 1 8 8v24" stroke="#14213D" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <path d="M16 26l5 5 12-13" stroke="#B8712C" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <text x="52" y="32" font-family="'Playfair Display', Georgia, serif" font-weight="800" font-size="26">
-            <tspan fill="#14213D">Aggre</tspan><tspan fill="#B8712C">Gate</tspan>
+        <svg width="168" height="36" viewBox="0 0 230 48" xmlns="http://www.w3.org/2000/svg" style="height: 36px; width: auto; display: block;" role="img" aria-label="AggreGate">
+          <defs>
+            <linearGradient id="brandGoldGradNav" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#F59E0B" />
+              <stop offset="100%" stop-color="#10B981" />
+            </linearGradient>
+          </defs>
+          <path d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.15)" stroke-width="2.5" fill="none"/>
+          <circle cx="24" cy="24" r="21" stroke="url(#brandGoldGradNav)" stroke-width="3" stroke-linecap="round" stroke-dasharray="32 100" fill="none"/>
+          <text x="56" y="33" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="26" letter-spacing="-0.03em">
+            <tspan fill="#0A0F1D">Aggre</tspan><tspan fill="#0F766E">Gate</tspan>
           </text>
         </svg>
         <span class="brand-ghana-tag">Ghana</span>
@@ -132,11 +124,19 @@
         <!-- Column 1: Brand & Mission -->
         <div>
           <div style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px;">
-            <svg width="150" height="32" viewBox="0 0 220 48" xmlns="http://www.w3.org/2000/svg" style="height: 30px; width: auto; display: block;" role="img" aria-label="AggreGate">
-              <path d="M8 40V16a8 8 0 0 1 8-8h16a8 8 0 0 1 8 8v24" stroke="#14213D" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              <path d="M16 26l5 5 12-13" stroke="#B8712C" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              <text x="52" y="32" font-family="'Playfair Display', Georgia, serif" font-weight="800" font-size="26">
-                <tspan fill="#14213D">Aggre</tspan><tspan fill="#B8712C">Gate</tspan>
+            <svg width="168" height="36" viewBox="0 0 230 48" xmlns="http://www.w3.org/2000/svg" style="height: 32px; width: auto; display: block;" role="img" aria-label="AggreGate">
+              <defs>
+                <linearGradient id="brandGoldGradFoot" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#F59E0B" />
+                  <stop offset="100%" stop-color="#10B981" />
+                </linearGradient>
+              </defs>
+              <path d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <path d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <circle cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.15)" stroke-width="2.5" fill="none"/>
+              <circle cx="24" cy="24" r="21" stroke="url(#brandGoldGradFoot)" stroke-width="3" stroke-linecap="round" stroke-dasharray="32 100" fill="none"/>
+              <text x="56" y="33" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="26" letter-spacing="-0.03em">
+                <tspan fill="#0A0F1D">Aggre</tspan><tspan fill="#0F766E">Gate</tspan>
               </text>
             </svg>
             <span class="brand-ghana-tag">Ghana</span>

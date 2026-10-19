@@ -1,4 +1,15 @@
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M8 40V16a8 8 0 0 1 8-8h16a8 8 0 0 1 8 8v24" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M16 26l5 5 12-13" stroke="#B8712C" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <defs>
+    <linearGradient id="iconMarkGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+  </defs>
+  <!-- Architectural Gateway Arch -->
+  <path d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Verified Checkmark Crest -->
+  <path d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Orbital Kinetic Track & Solar Gold Ring -->
+  <circle cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.15)" stroke-width="2.5"/>
+  <circle cx="24" cy="24" r="21" stroke="url(#iconMarkGoldGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="32 100"/>
 </svg>

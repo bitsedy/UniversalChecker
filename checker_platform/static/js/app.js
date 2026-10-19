@@ -363,6 +363,19 @@ function renderTelcoUssdGuide(networkName) {
   container.innerHTML = html;
 }
 
+function getSmartLoaderHtml(size = "sm", archColor = "#FFFFFF", checkColor = "#F59E0B") {
+  const sizeClass = size === "lg" ? "loader-lg" : (size === "md" ? "loader-md" : "loader-sm");
+  return `
+    <span class="smart-gateway-loader ${sizeClass}" style="margin-right: 8px;">
+      <svg class="loader-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="gateway-arch" d="M10 38V18a14 14 0 0 1 28 0v20" stroke="${archColor}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path class="gateway-check" d="M17 26l5 5 11-12" stroke="${checkColor}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle class="loader-orbital-arc" cx="24" cy="24" r="21" stroke="${archColor}" stroke-width="4" stroke-linecap="round" stroke-dasharray="30 100"/>
+      </svg>
+    </span>
+  `;
+}
+
 // Submit Order and Trigger Reservation
 async function submitOrder() {
   const category = document.getElementById("modal_category").value;
@@ -379,7 +392,7 @@ async function submitOrder() {
   }
 
   const btn = document.getElementById("btn_submit_order");
-  btn.innerText = "Reserving Voucher...";
+  btn.innerHTML = `${getSmartLoaderHtml("sm", "#FFFFFF", "#F59E0B")}<span>Reserving Voucher...</span>`;
   btn.disabled = true;
   window.SystemLoader.start();
 
@@ -399,7 +412,7 @@ async function submitOrder() {
     const data = await res.json();
     if (!res.ok || !data.success) {
       alert(data.message || "Failed to reserve voucher. It may be temporarily out of stock.");
-      btn.innerText = "Pay with Mobile Money →";
+      btn.innerHTML = "Pay with Mobile Money &rarr;";
       btn.disabled = false;
       window.SystemLoader.done();
       return;
@@ -410,7 +423,7 @@ async function submitOrder() {
     window.SystemLoader.done();
   } catch (err) {
     alert("Network error: " + err.message);
-    btn.innerText = "Pay with Mobile Money →";
+    btn.innerHTML = "Pay with Mobile Money &rarr;";
     btn.disabled = false;
     window.SystemLoader.done();
   }
@@ -480,6 +493,34 @@ function renderVouchersSkeleton(qty = 1) {
   const container = document.getElementById("vouchers_container");
   if (!container) return;
   container.replaceChildren();
+
+  const heroLoader = document.createElement("div");
+  heroLoader.style.textAlign = "center";
+  heroLoader.style.padding = "1.25rem 1rem 1.5rem 1rem";
+  heroLoader.innerHTML = `
+    <div class="smart-gateway-loader loader-lg" style="margin-bottom: 0.85rem;">
+      <svg class="loader-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="gateway-arch" d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path class="gateway-check" d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle class="loader-track" cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.12)" stroke-width="2.8"/>
+        <circle class="loader-orbital-arc" cx="24" cy="24" r="21" stroke="url(#modalGoldGrad)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="32 100"/>
+        <defs>
+          <linearGradient id="modalGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#F59E0B" />
+            <stop offset="100%" stop-color="#10B981" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div style="font-weight: 800; font-size: 1.05rem; color: var(--text-main); margin-bottom: 0.25rem;">
+      Securing Voucher from Vault...
+    </div>
+    <div style="font-size: 0.825rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+      Locking unique serial number and generating SMS dispatch
+    </div>
+  `;
+  container.appendChild(heroLoader);
+
   for (let i = 0; i < qty; i++) {
     const card = document.createElement("div");
     card.className = "skeleton-voucher-card";
@@ -510,7 +551,7 @@ function renderVouchersSkeleton(qty = 1) {
 async function verifyPaystackPayment(orderRef) {
   const btn = document.getElementById("btn_paystack_pay");
   if (btn) {
-    btn.innerText = "Confirming Paystack Payment...";
+    btn.innerHTML = `${getSmartLoaderHtml("sm", "#FFFFFF", "#F59E0B")}<span>Confirming Payment...</span>`;
     btn.disabled = true;
   }
 
@@ -969,5 +1010,25 @@ function initScrollEngine() {
 
   // Initial calculation on load
   updateScrollState();
+}
+
+/**
+ * Filter product cards by exam category (WASSCE, BECE, CSSPS, CTVET, or ALL)
+ */
+function filterCheckerCards(category, btn) {
+  const buttons = document.querySelectorAll(".quick-filter-bar .filter-pill");
+  buttons.forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+
+  const cards = document.querySelectorAll(".products-grid .product-card");
+  cards.forEach(card => {
+    const cardCat = card.getAttribute("data-category");
+    if (category === "ALL" || cardCat === category) {
+      card.style.display = "";
+      card.style.animation = "fadeScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards";
+    } else {
+      card.style.display = "none";
+    }
+  });
 }
 

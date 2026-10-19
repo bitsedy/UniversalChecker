@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Gateway Loader Preview | AggreGate Ghana</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0a0f1d;
+      --text-muted: #64748b;
+      --brand-emerald: #0f766e;
+      --brand-mint: #10b981;
+      --brand-gold: #f59e0b;
+      --border-subtle: #e2e8f0;
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-main);
+      padding: 3rem 1.5rem;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .preview-container {
+      max-width: 780px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    p {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(10, 15, 29, 0.04);
+    }
+    .card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+    .card-caption {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    /* Smart Gateway Loader Styles */
+    .smart-gateway-loader {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .smart-gateway-loader .loader-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .smart-gateway-loader .loader-orbital-arc {
+      transform-origin: 24px 24px;
+      animation: gatewayOrbitalSpin 1.25s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    .smart-gateway-loader .gateway-check {
+      transform-origin: 24px 24px;
+      animation: gatewayCorePulse 2s ease-in-out infinite;
+    }
+    @keyframes gatewayOrbitalSpin {
+      0% {
+        transform: rotate(0deg);
+        stroke-dashoffset: 0;
+      }
+      50% {
+        transform: rotate(180deg);
+        stroke-dashoffset: -20;
+      }
+      100% {
+        transform: rotate(360deg);
+        stroke-dashoffset: -40;
+      }
+    }
+    @keyframes gatewayCorePulse {
+      0%, 100% { opacity: 0.95; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    /* Button Mockup */
+    .mock-btn {
+      background: var(--brand-emerald);
+      color: #ffffff;
+      border: none;
+      padding: 0.85rem 1.75rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+    }
+    .mock-btn .gateway-arch {
+      stroke: #ffffff !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <h1>Smart Gateway Loading Icon</h1>
+    <p>Synced with payment processing, SMS dispatching, and transient grade evaluation.</p>
+
+    <div class="grid">
+      <!-- 80px Modal Hero State -->
+      <div class="card">
+        <div class="smart-gateway-loader" style="width: 80px; height: 80px;">
+          <svg class="loader-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="gateway-arch" d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="3.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="gateway-check" d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="3.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle class="loader-track" cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.12)" stroke-width="2.75"/>
+            <circle class="loader-orbital-arc" cx="24" cy="24" r="21" stroke="url(#goldGrad1)" stroke-width="3.25" stroke-linecap="round" stroke-dasharray="32 100"/>
+            <defs>
+              <linearGradient id="goldGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#F59E0B" />
+                <stop offset="100%" stop-color="#10B981" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="card-title">Modal / Processing State</div>
+        <div class="card-caption">80px — Checkout &amp; SMS Dispatch</div>
+      </div>
+
+      <!-- 48px Card State -->
+      <div class="card">
+        <div class="smart-gateway-loader" style="width: 48px; height: 48px;">
+          <svg class="loader-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="gateway-arch" d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="gateway-check" d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle class="loader-track" cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.12)" stroke-width="3"/>
+            <circle class="loader-orbital-arc" cx="24" cy="24" r="21" stroke="url(#goldGrad2)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="32 100"/>
+            <defs>
+              <linearGradient id="goldGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#F59E0B" />
+                <stop offset="100%" stop-color="#10B981" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="card-title">Standard Section State</div>
+        <div class="card-caption">48px — Lookup &amp; Advisor Engine</div>
+      </div>
+
+      <!-- 22px Button State -->
+      <div class="card">
+        <button class="mock-btn" style="margin-top: 10px; margin-bottom: 10px;">
+          <div class="smart-gateway-loader" style="width: 22px; height: 22px;">
+            <svg class="loader-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path class="gateway-arch" d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path class="gateway-check" d="M17 26l5 5 11-12" stroke="#F59E0B" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="loader-orbital-arc" cx="24" cy="24" r="21" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-dasharray="30 100"/>
+            </svg>
+          </div>
+          <span>Processing MoMo...</span>
+        </button>
+        <div class="card-title">Button State</div>
+        <div class="card-caption">22px — Inline Payment Button</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

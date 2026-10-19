@@ -40,6 +40,11 @@ file only summarizes.
 - Commit after each accepted task, not batched across several.
 - Never describe a stub, shortcut, or simplification as "done" — describe
   it as what it is, and say so explicitly in your task summary.
+- **UI Simplicity & Cleanliness Rules**:
+  1. NEVER use cylindrical bar text / floating pill badges above page headings.
+  2. NEVER add top rectangular info/authority banner bars above the navbar.
+  3. Strictly employ basic, simple, friendly language for all copy and features
+     so students, parents, and cafe attendants easily understand everything.
 
 ## Reference
 `docs/architecture-summary.md` in this folder has the current system-level

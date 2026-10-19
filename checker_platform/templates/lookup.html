@@ -3,35 +3,33 @@
 {% block title %}Retrieve My Voucher | CheckerPay Ghana{% endblock %}
 
 {% block content %}
-<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 800px;">
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 820px;">
   <div style="text-align: center; margin-bottom: 2.5rem;">
-    <div style="margin-bottom: 0.75rem; display: flex; justify-content: center;">
-      <div style="display: flex; align-items: center; justify-content: center;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-green);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      </div>
-    </div>
-    <h1 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem;">Retrieve Lost Result Checker</h1>
-    <p style="color: var(--text-muted); font-size: 0.95rem;">
-      Did your phone turn off or did you close the page? Type your phone number or Order Number below to find your cards again.
+    <h1 style="font-family: var(--font-heading); font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main); letter-spacing: -0.02em;">
+      Retrieve Lost Result Checker
+    </h1>
+    <p style="color: var(--text-muted); font-size: 0.98rem; max-width: 580px; margin: 0 auto; line-height: 1.5;">
+      Lost your voucher code or closed the page? Enter your phone number or Order Reference below to get your card details right away.
     </p>
   </div>
 
   <!-- Search Card -->
-  <div style="background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-gold); margin-bottom: 2.5rem;">
+  <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem 2rem; box-shadow: var(--shadow-sm); margin-bottom: 2.5rem;">
     <form method="GET" action="/lookup" style="display: flex; gap: 0.75rem; flex-wrap: wrap;" onsubmit="const sk = document.getElementById('lookup_skeleton_container'); if (sk) sk.style.display='block'; const res = document.getElementById('lookup_results_container'); if (res) res.style.display='none'; if (window.SystemLoader) window.SystemLoader.start();">
       <input 
         type="text" 
         name="q" 
         value="{{ query or '' }}" 
-        placeholder="Type Phone Number (e.g. 024 123 4567) or Order Number (ORD-...)" 
+        placeholder="Enter Phone Number (e.g. 024 123 4567) or Order Reference (ORD-...)" 
         class="form-input" 
-        style="flex: 1; min-width: 260px; min-height: 48px;" 
+        style="flex: 1; min-width: 260px; min-height: 48px; font-family: var(--font-mono); font-size: 0.92rem;" 
         inputmode="text"
         autocomplete="tel"
         aria-label="Phone Number or Order Reference"
         required
       >
-      <button type="submit" class="btn-buy" style="width: auto; min-height: 48px; padding: 0.85rem 1.75rem; display: inline-flex; align-items: center; justify-content: center;">
+      <button type="submit" class="btn-buy" style="width: auto; min-height: 48px; padding: 0.85rem 1.75rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         Retrieve My Voucher
       </button>
     </form>
@@ -39,9 +37,27 @@
 
   <!-- Instant Search Skeleton (Shown while retrieving records) -->
   <div id="lookup_skeleton_container" style="display: none; margin-bottom: 2.5rem; animation: fadeIn 0.3s ease-in-out;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-      <div class="skeleton skeleton-title skeleton-w-40" style="height: 22px; margin: 0;"></div>
-      <div class="skeleton skeleton-badge" style="width: 90px; height: 20px;"></div>
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem; text-align: center; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
+      <div class="smart-gateway-loader loader-lg" style="margin-bottom: 0.75rem;">
+        <svg class="loader-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="gateway-arch" d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path class="gateway-check" d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle class="loader-track" cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.12)" stroke-width="2.8"/>
+          <circle class="loader-orbital-arc" cx="24" cy="24" r="21" stroke="url(#lookupGoldGrad)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="32 100"/>
+          <defs>
+            <linearGradient id="lookupGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#F59E0B" />
+              <stop offset="100%" stop-color="#10B981" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div style="font-weight: 800; font-size: 1.05rem; color: var(--text-main); margin-bottom: 0.25rem;">
+        Searching Records...
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Checking database for your voucher codes
+      </div>
     </div>
     <div class="skeleton-card" style="margin-bottom: 1.5rem;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
@@ -53,7 +69,7 @@
       </div>
       
       <!-- Exact 4-Column Details Grid Skeleton -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 1rem; margin-bottom: 1.25rem; padding: 1rem; background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 1rem; margin-bottom: 1.25rem; padding: 1rem; background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);">
         <div>
           <div class="skeleton skeleton-line" style="width: 50px; height: 10px; margin-bottom: 6px;"></div>
           <div class="skeleton skeleton-line" style="width: 120px; height: 18px; margin: 0;"></div>
@@ -100,60 +116,60 @@
   <div id="lookup_results_container">
   {% if query %}
     {% if orders and orders|length > 0 %}
-      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1.25rem;">
+      <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; margin-bottom: 1.25rem; color: var(--text-main);">
         Found {{ orders|length }} Order(s) for "{{ query }}"
       </h3>
 
       {% for ord in orders %}
-      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 1.5rem;">
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
           <div>
-            <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Order Reference</div>
-            <div style="font-size: 1.15rem; font-weight: 800; color: var(--ghana-gold);">{{ ord.order_reference }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Order Reference</div>
+            <div style="font-family: var(--font-mono); font-size: 1.15rem; font-weight: 800; color: var(--brand-emerald);">{{ ord.order_reference }}</div>
           </div>
           <div style="text-align: right;">
-            <span class="card-badge {% if ord.payment_status == 'PAID' %}card-badge-demand{% else %}card-badge-popular{% endif %}">
+            <span class="card-badge {% if ord.payment_status == 'PAID' %}card-badge-popular{% else %}card-badge-demand{% endif %}">
               {{ ord.payment_status }}
             </span>
-            <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;">{{ ord.created_at }}</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px; font-family: var(--font-mono);">{{ ord.created_at }}</div>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 1rem; margin-bottom: 1.25rem; padding: 1rem; background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 1rem; margin-bottom: 1.25rem; padding: 1rem; background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);">
           <div>
-            <div style="font-size: 0.75rem; color: var(--text-dim);">Product</div>
-            <div style="font-weight: 700;">{{ ord.category }} Checker</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim);">Item / Card</div>
+            <div style="font-weight: 700; color: var(--text-main);">{{ ord.category }} Checker</div>
           </div>
           <div>
             <div style="font-size: 0.75rem; color: var(--text-dim);">Quantity</div>
-            <div style="font-weight: 700;">{{ ord.quantity }} Voucher(s)</div>
+            <div style="font-weight: 700; color: var(--text-main);">{{ ord.quantity }} Card(s)</div>
           </div>
           <div>
             <div style="font-size: 0.75rem; color: var(--text-dim);">Amount Paid</div>
-            <div style="font-weight: 700; color: var(--ghana-gold);">GH₵ {{ "%.2f"|format(ord.total_amount) }}</div>
+            <div style="font-family: var(--font-mono); font-weight: 800; color: var(--brand-emerald);">GH₵ {{ "%.2f"|format(ord.total_amount) }}</div>
           </div>
           <div>
-            <div style="font-size: 0.75rem; color: var(--text-dim);">Customer Phone</div>
-            <div style="font-weight: 700;">{{ ord.customer_phone }}</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim);">Phone Number</div>
+            <div style="font-family: var(--font-mono); font-weight: 700; color: var(--text-main);">{{ ord.customer_phone }}</div>
           </div>
         </div>
 
         {% if ord.payment_status == 'PAID' and ord.vouchers %}
           {% if is_phone_query %}
-          <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #b45309; display: flex; align-items: flex-start; gap: 8px;">
+          <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #92400e; display: flex; align-items: flex-start; gap: 8px;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #b45309; flex-shrink: 0; margin-top: 2px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <div><strong>Security Notice:</strong> To keep your card safe from strangers, PIN numbers are hidden when searching by phone number. Your full PIN was sent to your phone by SMS. If you want to see the full PIN on your screen, search using your <strong>Order Number (ORD-...)</strong>.</div>
+            <div><strong>Security Notice:</strong> To protect your cards, PIN codes are masked when searching with a phone number. Your full PIN was sent directly to you by SMS. To see the full PIN here on screen, search using your <strong>Order Reference (ORD-...)</strong>.</div>
           </div>
           {% endif %}
           <div style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
-            Your Card Details:
+            Your Voucher Details:
           </div>
 
           {% for v in ord.vouchers %}
           <div class="voucher-reveal-card" style="margin-bottom: 1rem;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-              <span style="font-size: 0.85rem; font-weight: 700; color: var(--ghana-gold);">Voucher #{{ loop.index }} ({{ ord.category }})</span>
-              <span style="font-size: 0.75rem; color: var(--ghana-green); font-weight: 700;">PAID & VERIFIED</span>
+              <span style="font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--brand-emerald);">Voucher #{{ loop.index }} ({{ ord.category }})</span>
+              <span style="font-size: 0.75rem; color: var(--brand-emerald-light); font-weight: 800; letter-spacing: 0.04em;">PAID &amp; VERIFIED</span>
             </div>
 
             <div class="voucher-field">
@@ -177,23 +193,23 @@
           <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
             {% if ord.category == 'CSSPS' %}
               <a href="https://cssps.gov.gh" target="_blank" class="btn-portal-launch" style="flex: 1;">
-                Open CSSPS Placement Portal &rarr;
+                Launch CSSPS Placement Portal &rarr;
               </a>
             {% elif ord.category == 'BECE' %}
               <a href="https://eresults.waecgh.org" target="_blank" class="btn-portal-launch" style="flex: 1;">
-                Open WAEC eResults Portal &rarr;
+                Launch WAEC eResults Portal &rarr;
               </a>
             {% else %}
               <a href="https://ghana.waecdirect.org" target="_blank" class="btn-portal-launch" style="flex: 1;">
-                Open Official WAEC Portal &rarr;
+                Launch Official WAEC Portal &rarr;
               </a>
             {% endif %}
             <button class="btn-print" onclick="window.print()">Print Slip</button>
           </div>
 
         {% else %}
-          <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-md); padding: 1rem; color: #b45309; font-size: 0.85rem;">
-            This order is currently <strong>{{ ord.payment_status }}</strong>. Cards only show up after your Mobile Money payment goes through.
+          <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; color: var(--text-muted); font-size: 0.85rem;">
+            This order status is currently <strong>{{ ord.payment_status }}</strong>. Vouchers are released immediately upon Mobile Money authorization confirmation.
           </div>
         {% endif %}
       </div>
@@ -202,13 +218,13 @@
     {% else %}
       <div style="text-align: center; padding: 3rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);">
         <div style="margin-bottom: 0.75rem; display: flex; justify-content: center;">
-          <div style="display: flex; align-items: center; justify-content: center;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-red);"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(220, 38, 38, 0.08); display: flex; align-items: center; justify-content: center;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #dc2626;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
           </div>
         </div>
-        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">No Records Found</h3>
-        <p style="color: var(--text-muted); font-size: 0.875rem; max-width: 450px; margin: 0 auto;">
-          We could not find any paid orders matching "{{ query }}". Please check that you typed the right phone number or order number.
+        <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">No Records Found</h3>
+        <p style="color: var(--text-muted); font-size: 0.875rem; max-width: 450px; margin: 0 auto; line-height: 1.5;">
+          We could not locate any settled transactions matching "{{ query }}". Please ensure your phone number or Order Reference was entered accurately.
         </p>
       </div>
     {% endif %}

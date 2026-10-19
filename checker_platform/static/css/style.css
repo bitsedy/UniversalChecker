@@ -1,65 +1,107 @@
 /* ==========================================================================
-   Ghanaian Result Checker Reseller Platform - Sovereign Editorial FinTech
-   Archetype: Modern Ghana Editorial Authority / Sovereign FinTech
-   Tokens: Sovereign Cream, Deep Authoritative Navy, Ghanaian Burnt Orange Gold,
-           Savannah Emerald, and Kente Structural Accents
+   AggreGate Ghana / CheckerPay - Modern Sovereign Neo-Bank Design System
+   Archetype: Modern Sovereign Neo-Bank & Institutional FinTech Gateway
+   Tokens: Crisp Stark White Canvas, Cool Slate Elevations, Savannah Emerald,
+           Deep Obsidian Ink, Precision Pill Geometry & JetBrains Monospace
    ========================================================================== */
 
 :root {
   color-scheme: light;
 
-  /* Canvas & Foundations */
-  --bg-main: #FDFBF5;         /* Sovereign Cream Canvas */
-  --bg-card: #FFFFFF;         /* Crisp White Elevation */
-  --bg-card-subtle: #F8FAF6;  /* Warm Neutral Tint */
-  --bg-card-hover: #FFFFFF;
-  --bg-input: #FFFFFF;
-  --border-subtle: #E5E0D4;   /* Warm Editorial Hairline */
-  --border-gold: rgba(184, 113, 44, 0.35);
+  /* --- 1. Canvas & Surface Hierarchy --- */
+  --bg-canvas: #FFFFFF;         /* Crisp Stark White Canvas */
+  --bg-main: #FFFFFF;           /* Primary App Surface */
+  --bg-subtle: #F8FAFC;         /* Cool Slate Level 1 Elevation */
+  --bg-card: #FFFFFF;           /* Card & Module Background */
+  --bg-card-subtle: #F8FAFC;    /* Secondary Section Panel */
+  --bg-card-hover: #F1F5F9;     /* Interactive Hover Tint */
+  --bg-elevated: #FFFFFF;       /* Modal & Popover Elevation */
+  --bg-dark: #0A0F1D;           /* Deep Obsidian Anchor Surface */
+  --bg-dark-subtle: #111827;    /* Secondary Dark Anchor */
+  --bg-input: #FFFFFF;          /* Form Field Surface */
+  --bg-input-focus: #FFFFFF;
 
-  /* Sovereign Brand Accents */
-  --navy-primary: #14213D;    /* Deep Authoritative Navy (Headings & Base Text) */
-  --gold-accent: #B8712C;     /* Ghanaian Burnt Orange / Gold (Primary Action & Pillars) */
-  --gold-glow: rgba(184, 113, 44, 0.16);
-  --emerald-accent: #0F6B5C;  /* Savannah Emerald (Success, Security & Verified States) */
-  --emerald-glow: rgba(15, 107, 92, 0.14);
-  --crimson-risk: #DC2626;    /* Critical Warning & Anti-Burn Alerts */
-  --crimson-soft: #FEF2F2;
+  /* --- 2. Hairline Micro-Borders --- */
+  --border-subtle: #E2E8F0;     /* Ultra-Crisp Slate Hairline */
+  --border-card: #E2E8F0;
+  --border-card-hover: #CBD5E1;
+  --border-strong: #94A3B8;
+  --border-focus: #0F766E;      /* Savannah Emerald Focus Ring */
+  --border-emerald: rgba(15, 118, 110, 0.35);
+  --border-gold: rgba(217, 119, 6, 0.3);
 
-  /* Backward Compatibility Aliases for Existing Components */
-  --ghana-gold: var(--gold-accent);
-  --ghana-gold-glow: var(--gold-glow);
-  --ghana-green: var(--emerald-accent);
-  --ghana-green-glow: var(--emerald-glow);
-  --ghana-red: var(--crimson-risk);
+  /* --- 3. Sovereign Brand Accents --- */
+  --brand-emerald: #0F766E;     /* Savannah Emerald (Primary Action & Verification) */
+  --brand-emerald-dark: #115E59;
+  --brand-emerald-light: #10B981;
+  --brand-emerald-tint: #ECFDF5;
+  --brand-emerald-glow: rgba(16, 185, 129, 0.16);
+  --brand-obsidian: #0A0F1D;    /* Deep Obsidian Anchor */
+  --brand-navy: #0F172A;
+  --accent-gold: #D97706;       /* Sovereign Precision Gold */
+  --accent-gold-tint: #FFFBEB;
+  --accent-crimson: #EF4444;    /* Security Crimson & Out-of-Stock */
+  --accent-crimson-tint: #FEF2F2;
 
-  --text-main: var(--navy-primary);
-  --text-muted: #2e3a50;      /* WCAG AAA compliant 7.2:1 contrast against cream */
-  --text-dim: #556277;        /* WCAG AA compliant 4.7:1 contrast against cream */
+  /* --- 4. Backward Compatibility Aliases --- */
+  --navy-primary: var(--brand-obsidian);
+  --gold-accent: var(--brand-emerald);
+  --gold-glow: var(--brand-emerald-glow);
+  --emerald-accent: var(--brand-emerald);
+  --emerald-glow: var(--brand-emerald-glow);
+  --crimson-risk: var(--accent-crimson);
+  --crimson-soft: var(--accent-crimson-tint);
+  --ghana-gold: var(--brand-emerald);
+  --ghana-gold-glow: var(--brand-emerald-glow);
+  --ghana-green: var(--brand-emerald);
+  --ghana-green-glow: var(--brand-emerald-glow);
+  --ghana-red: var(--accent-crimson);
 
-  /* Shadows & Elevation */
-  --shadow-editorial: 0 10px 30px -10px rgba(20, 33, 61, 0.08), 0 4px 6px -2px rgba(20, 33, 61, 0.03);
-  --shadow-kinetic: 0 12px 35px -8px rgba(184, 113, 44, 0.22);
-  --shadow-emerald: 0 12px 35px -8px rgba(15, 107, 92, 0.22);
-  --shadow-lg: var(--shadow-editorial);
-  --shadow-gold: var(--shadow-kinetic);
+  /* --- 5. High-Contrast Typography Ink (WCAG AAA Compliant) --- */
+  --text-main: #0A0F1D;         /* Deep Obsidian (15.8:1 on White) */
+  --text-primary: #0A0F1D;
+  --text-secondary: #334155;    /* Slate Body (7.3:1 on White) */
+  --text-muted: #475569;        /* Medium Slate (5.4:1 on White) */
+  --text-dim: #64748B;          /* Metadata Slate (4.5:1 on White) */
+  --text-inverse: #FFFFFF;      /* Pure White Text on Dark / Emerald */
+  --text-on-emerald: #FFFFFF;
 
-  /* Geometry & Border Radii */
-  --radius-lg: 18px;          /* Card Corner Radii */
-  --radius-md: 12px;          /* Secondary Panels */
-  --radius-pill: 9999px;      /* Interactive Pills & CTAs */
-
-  /* Classic Authoritative Editorial Typography System */
-  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  /* --- 6. Neo-Grotesque & Precision Monospace Fonts --- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-classic: var(--font-body);
-  --font-brand: 'Cinzel', Georgia, serif;
-  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --font-brand: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Roboto Mono', 'Courier New', monospace;
+
+  /* --- 7. Geometry & Tactile Pill Radii --- */
+  --radius-pill: 9999px;        /* Tactile Pill Buttons, Chips & Search */
+  --radius-card: 20px;          /* Neo-Bank Container Geometry */
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  /* --- 8. Ambient Elevation & Clean Drop Shadows --- */
+  --shadow-subtle: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-hover: 0 16px 32px -8px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+  --shadow-emerald: 0 10px 25px -5px rgba(15, 118, 110, 0.28);
+  --shadow-editorial: var(--shadow-hover);
+  --shadow-kinetic: var(--shadow-emerald);
+  --shadow-gold: var(--shadow-emerald);
+  --shadow-lg: var(--shadow-hover);
+
+  /* --- 9. Micro-Kinetic Physics & Easing Curves --- */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 220ms;
+  --duration-slow: 350ms;
 }
 
 /* Accessible Focus Ring System (WCAG 2.1 AA/AAA) */
 :focus-visible {
-  outline: 2px solid var(--gold-accent) !important;
+  outline: 2px solid var(--brand-emerald) !important;
   outline-offset: 2px !important;
 }
 
@@ -96,11 +138,11 @@ input[type="reset"],
 }
 
 html {
-  background-color: #FDFBF5;
+  background-color: #FFFFFF;
   color-scheme: light;
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: rgba(184, 113, 44, 0.45) #f5f0e4;
+  scrollbar-color: rgba(15, 118, 110, 0.45) #F8FAFC;
   width: 100%;
   max-width: 100vw;
   overflow-x: hidden;
@@ -113,7 +155,7 @@ html {
   margin: 0;
   padding: 0;
   scrollbar-width: thin;
-  scrollbar-color: rgba(217, 119, 6, 0.35) transparent;
+  scrollbar-color: rgba(15, 118, 110, 0.45) transparent;
   min-width: 0;
 }
 
@@ -136,13 +178,13 @@ html {
 }
 .skip-to-content:focus {
   top: 1rem;
-  outline: 3px solid var(--ghana-gold);
+  outline: 2px solid var(--brand-emerald);
 }
 
 
 /* ==========================================================================
    SOVEREIGN LUXURY NAVIGATION SCROLLBAR & KINETIC PROGRESS SYSTEM
-   Custom Ghana Gold & Savannah Emerald Precision Glassmorphic Track
+   Custom Savannah Emerald & Cool Slate Precision Track
    ========================================================================== */
 
 /* Eliminate Obsolete Desktop Browser Scrollbar Buttons / Arrows */
@@ -174,14 +216,9 @@ html {
   border-radius: 9999px;
 }
 
-/* Kinetic Jewel Pill Thumb: Ghana Gold with Emerald Subtones */
+/* Kinetic Jewel Pill Thumb: Savannah Emerald */
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    rgba(217, 119, 6, 0.55) 0%,
-    rgba(245, 158, 11, 0.75) 50%,
-    rgba(5, 150, 105, 0.6) 100%
-  );
+  background: rgba(15, 118, 110, 0.45);
   border-radius: 9999px;
   border: 2px solid #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -190,36 +227,25 @@ html {
               border-color 0.3s ease;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(217, 119, 6, 0.5);
+  background: rgba(15, 118, 110, 0.4);
   border-radius: 9999px;
   border: 1px solid #ffffff;
 }
 
-/* Interactive Hover: Glowing Ghanaian Gold Aurora */
+/* Interactive Hover: Glowing Emerald */
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    #d97706 0%,
-    #f59e0b 45%,
-    #059669 100%
-  );
-  border-color: #ffffff;
-  box-shadow: 0 0 12px rgba(217, 119, 6, 0.6);
+  background: var(--brand-emerald);
+  box-shadow: 0 0 12px rgba(15, 118, 110, 0.4);
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(217, 119, 6, 0.85);
-  box-shadow: 0 0 8px rgba(217, 119, 6, 0.4);
+  background: var(--brand-emerald);
+  box-shadow: 0 0 8px rgba(15, 118, 110, 0.3);
 }
 
 /* Active Drag: Kinetic Peak Brilliance */
 ::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(
-    180deg,
-    #f59e0b 0%,
-    #d97706 45%,
-    #10b981 100%
-  );
-  box-shadow: 0 0 16px rgba(217, 119, 6, 0.85);
+  background: var(--brand-emerald-dark);
+  box-shadow: 0 0 16px rgba(15, 118, 110, 0.6);
 }
 
 /* Corner junction */
@@ -501,13 +527,13 @@ body::before {
   transform: translateX(-50%);
   width: 1000px;
   height: 520px;
-  background: radial-gradient(circle, rgba(217, 119, 6, 0.05) 0%, rgba(5, 150, 105, 0.03) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(15, 118, 110, 0.04) 0%, rgba(16, 185, 129, 0.02) 45%, transparent 70%);
   filter: blur(60px);
   pointer-events: none;
   z-index: 0;
 }
 
-/* Classic Headings High-Contrast Legibility */
+/* Modern Neo-Grotesque Headings High-Contrast Legibility */
 h1, h2, h3, h4, h5, h6,
 .hero-title,
 .section-title,
@@ -515,7 +541,8 @@ h1, h2, h3, h4, h5, h6,
 .advisor-card-title,
 .verdict-headline {
   font-family: var(--font-heading);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.025em;
+  font-weight: 800;
   color: var(--text-main);
 }
 
@@ -523,7 +550,7 @@ h1, h2, h3, h4, h5, h6,
 .brand-ghana-tag,
 .badge-pill,
 .trust-seal-title {
-  font-family: var(--font-brand);
+  font-family: var(--font-sans);
 }
 
 .voucher-pin,
@@ -534,12 +561,12 @@ h1, h2, h3, h4, h5, h6,
 
 /* Sovereign Editorial Top Authority Strip */
 .sovereign-banner {
-  background: var(--navy-primary);
-  color: #FFFFFF;
-  border-bottom: 1px solid rgba(184, 113, 44, 0.35);
-  padding: 0.45rem 1.25rem;
+  background: var(--bg-dark);
+  color: #F8FAFC;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 1.25rem;
   font-size: 0.775rem;
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -550,10 +577,15 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .sovereign-banner a {
-  color: #F8D39E;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  color: #10B981;
+  text-decoration: none;
   font-weight: 600;
+  transition: color var(--duration-fast) ease;
+}
+
+.sovereign-banner a:hover {
+  color: #34D399;
+  text-decoration: underline;
 }
 
 .sovereign-banner-left {
@@ -572,23 +604,23 @@ h1, h2, h3, h4, h5, h6,
   font-size: 0.725rem;
   color: #A7F3D0;
   white-space: nowrap;
-  background: rgba(15, 107, 92, 0.35);
-  padding: 2px 8px;
+  background: rgba(15, 118, 110, 0.35);
+  padding: 2px 10px;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 /* App Header & Navbar */
 .app-header {
   border-bottom: 1px solid var(--border-subtle);
-  background: rgba(253, 251, 245, 0.94);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   position: sticky;
   top: 0;
   z-index: 40;
-  box-shadow: 0 1px 4px rgba(20, 33, 61, 0.04);
-  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+  transition: all var(--duration-normal) ease;
 }
 
 .navbar {
@@ -610,7 +642,7 @@ h1, h2, h3, h4, h5, h6,
   font-weight: 800;
   font-size: 1.25rem;
   letter-spacing: -0.02em;
-  transition: transform 0.2s ease;
+  transition: transform var(--duration-fast) var(--ease-spring);
 }
 
 .brand-link:hover {
@@ -624,7 +656,7 @@ h1, h2, h3, h4, h5, h6,
   background: transparent;
   border: none;
   box-shadow: none;
-  transition: all 0.25s ease;
+  transition: all var(--duration-fast) ease;
 }
 
 .brand-link:hover .brand-badge-star {
@@ -634,38 +666,38 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .brand-title span {
-  color: var(--ghana-gold);
+  color: var(--brand-emerald);
 }
 
 .brand-ghana-tag {
   font-size: 0.65rem;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: var(--radius-pill);
-  background: rgba(184, 113, 44, 0.12);
-  border: 1px solid var(--border-gold);
-  color: #8A4C12;
+  background: var(--brand-emerald-tint);
+  border: 1px solid var(--border-emerald);
+  color: var(--brand-emerald-dark);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 800;
-  margin-left: 5px;
+  margin-left: 6px;
   vertical-align: middle;
 }
 
 .nav-links {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.65rem;
   align-items: center;
 }
 
 .nav-link {
   color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
   min-height: 44px;
-  padding: 0.5rem 0.85rem;
+  padding: 0.5rem 0.95rem;
   border-radius: var(--radius-pill);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--duration-fast) var(--ease-spring);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -674,23 +706,23 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .nav-link:hover {
-  color: var(--gold-accent);
-  background: rgba(184, 113, 44, 0.08);
+  color: var(--brand-emerald);
+  background: var(--brand-emerald-tint);
 }
 
 .nav-link.active {
-  color: var(--navy-primary);
-  font-weight: 800;
-  background: rgba(184, 113, 44, 0.12);
-  border: 1px solid var(--border-gold);
+  color: var(--brand-obsidian);
+  font-weight: 700;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
 }
 
 .btn-nav-lookup {
   min-height: 44px;
   padding: 0.5rem 1.25rem;
-  background: linear-gradient(135deg, rgba(184, 113, 44, 0.12) 0%, rgba(184, 113, 44, 0.05) 100%);
-  border: 1.5px solid var(--border-gold);
-  color: var(--gold-accent);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  color: var(--text-primary);
   border-radius: var(--radius-pill);
   font-weight: 700;
   text-decoration: none;
@@ -699,16 +731,21 @@ h1, h2, h3, h4, h5, h6,
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 6px rgba(184, 113, 44, 0.08);
+  transition: all var(--duration-fast) var(--ease-spring);
+  box-shadow: var(--shadow-subtle);
   white-space: nowrap;
 }
 
 .btn-nav-lookup:hover {
-  background: var(--gold-accent);
+  background: var(--brand-obsidian);
   color: #FFFFFF;
+  border-color: var(--brand-obsidian);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-kinetic);
+  box-shadow: 0 4px 14px rgba(10, 15, 29, 0.15);
+}
+
+.btn-nav-lookup:active {
+  transform: scale(0.97);
 }
 
 /* Container */
@@ -727,26 +764,20 @@ h1, h2, h3, h4, h5, h6,
   position: relative;
 }
 
-.hero-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 9999px;
-  font-size: 0.85rem;
-  color: var(--ghana-green);
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+/* PERMANENT RULE: Cylindrical bar text badges (.hero-pill, .hero-telemetry-badge) are strictly forbidden */
+.hero-pill,
+.hero-telemetry-badge {
+  display: none !important;
 }
 
-.pulse-dot {
+.pulse-dot,
+.pulse-beacon {
   width: 8px;
   height: 8px;
-  background-color: var(--ghana-green);
+  background-color: var(--brand-emerald-light);
   border-radius: 50%;
   animation: pulse-glow 2s infinite;
+  flex-shrink: 0;
 }
 
 @keyframes pulse-glow {
@@ -756,22 +787,106 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .hero-title {
-  font-size: clamp(1.85rem, 5vw + 0.5rem, 2.8rem);
+  font-size: clamp(2rem, 5vw + 0.5rem, 3.2rem);
   font-weight: 900;
-  letter-spacing: -0.03em;
-  line-height: 1.15;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
   margin-bottom: 1.25rem;
-  max-width: 850px;
+  max-width: 880px;
   margin-left: auto;
   margin-right: auto;
   color: var(--text-main);
 }
 
+.text-emerald {
+  color: var(--brand-emerald) !important;
+}
+
 .hero-subtitle {
   font-size: 1.125rem;
   color: var(--text-muted);
-  max-width: 680px;
+  max-width: 720px;
+  margin: 0 auto 2.25rem;
+  line-height: 1.6;
+}
+
+/* Neo-Bank Telemetry Strip */
+.telemetry-strip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  max-width: 980px;
   margin: 0 auto 2.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+}
+
+.telemetry-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.telemetry-metric svg {
+  color: var(--brand-emerald);
+  flex-shrink: 0;
+}
+
+.telemetry-metric strong {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+/* Quick Jump Category Filter */
+.quick-filter-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.75rem;
+}
+
+.filter-pill {
+  min-height: 40px;
+  padding: 0.4rem 1.15rem;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-spring);
+  outline: none;
+  touch-action: manipulation;
+}
+
+.filter-pill:hover {
+  color: var(--brand-emerald);
+  border-color: var(--brand-emerald-light);
+  background: var(--brand-emerald-tint);
+}
+
+.filter-pill.active {
+  background: var(--brand-obsidian);
+  color: #FFFFFF;
+  border-color: var(--brand-obsidian);
+  box-shadow: 0 4px 12px rgba(10, 15, 29, 0.15);
+}
+
+.filter-pill:active {
+  transform: scale(0.97);
 }
 
 /* Supported Payments Bar */
@@ -779,14 +894,14 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
   flex-wrap: wrap;
-  margin-bottom: 2.25rem;
-  padding: 0.5rem 1.25rem;
-  background: #ffffff;
+  margin-bottom: 2.5rem;
+  padding: 0.5rem 1.5rem;
+  background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 9999px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-subtle);
   width: fit-content;
   max-width: 100%;
   margin-left: auto;
@@ -980,57 +1095,70 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .price-currency {
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .price-amount {
-  font-size: 1.8rem;
-  font-weight: 900;
-  color: var(--ghana-gold);
+  font-family: var(--font-mono);
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--brand-obsidian);
+  letter-spacing: -0.03em;
 }
 
 .btn-buy {
   width: 100%;
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #c97c35, #B8712C);
+  background: var(--brand-emerald);
   color: #ffffff;
-  border: 1px solid rgba(184, 113, 44, 0.35);
-  border-radius: 9999px;
+  border: 1px solid rgba(15, 118, 110, 0.4);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(184, 113, 44, 0.28);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(15, 118, 110, 0.28);
+  transition: all var(--duration-fast) var(--ease-spring);
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
+  touch-action: manipulation;
 }
 
 .btn-buy:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(184, 113, 44, 0.38);
+  background: var(--brand-emerald-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(15, 118, 110, 0.38);
 }
 
 .btn-buy:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.2);
 }
 
 /* Trap Prevention Callout Banner */
 .safety-banner {
-  background: #ffffff;
-  border: 1px solid var(--border-gold);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--brand-emerald);
+  border-radius: var(--radius-card);
+  padding: 1.75rem 2rem;
   margin-bottom: 4rem;
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 1.5rem;
   align-items: center;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-fast) ease;
+}
+
+.safety-banner:hover {
+  box-shadow: var(--shadow-card);
 }
 
 .safety-icon {
@@ -1040,11 +1168,14 @@ h1, h2, h3, h4, h5, h6,
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  background: var(--brand-emerald-tint);
+  border: 1px solid var(--border-emerald);
+  border-radius: 50%;
 }
 
 .safety-icon svg {
-  width: 42px;
-  height: 42px;
+  width: 26px;
+  height: 26px;
   display: block;
 }
 
@@ -1054,6 +1185,7 @@ h1, h2, h3, h4, h5, h6,
   font-weight: 800;
   color: var(--text-main);
   margin-bottom: 0.35rem;
+  letter-spacing: -0.02em;
 }
 
 .safety-content p {
@@ -1064,27 +1196,31 @@ h1, h2, h3, h4, h5, h6,
 
 .btn-safety-guide {
   padding: 0.75rem 1.4rem;
-  background: #ffffff;
-  border: 1.5px solid var(--border-gold);
-  color: var(--ghana-gold);
-  border-radius: 9999px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  color: var(--text-primary);
+  border-radius: var(--radius-pill);
   font-weight: 700;
   font-size: 0.875rem;
   text-decoration: none;
   white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--duration-fast) var(--ease-spring);
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
 .btn-safety-guide:hover {
-  background: rgba(184, 113, 44, 0.08);
-  color: var(--ghana-gold);
-  border-color: var(--ghana-gold);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(184, 113, 44, 0.2);
+  background: var(--brand-obsidian);
+  color: #FFFFFF;
+  border-color: var(--brand-obsidian);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(10, 15, 29, 0.15);
+}
+
+.btn-safety-guide:active {
+  transform: scale(0.97);
 }
 
 /* Modals */
@@ -1094,15 +1230,16 @@ h1, h2, h3, h4, h5, h6,
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
+  background: rgba(10, 15, 29, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.25s ease;
+  transition: opacity var(--duration-normal) ease;
   padding: 1rem;
 }
 
@@ -1113,24 +1250,24 @@ h1, h2, h3, h4, h5, h6,
 
 .modal-card {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
   width: 100%;
   max-width: min(520px, calc(100vw - 2rem));
   max-height: min(90vh, calc(100dvh - 2rem));
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
-  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  box-shadow: var(--shadow-xl);
   padding: clamp(1.25rem, 4vw, 2rem);
   position: relative;
-  transform: translateY(20px);
+  transform: translateY(20px) scale(0.98);
   color: var(--text-main);
-  transition: transform 0.25s ease;
+  transition: transform var(--duration-normal) var(--ease-spring);
 }
 
 .modal-overlay.active .modal-card {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 .modal-close {
@@ -1142,22 +1279,26 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(20, 33, 61, 0.05);
+  background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
   color: var(--text-muted);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   cursor: pointer;
   line-height: 1;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--duration-fast) var(--ease-spring);
   z-index: 10;
 }
 
 .modal-close:hover {
-  background: rgba(220, 38, 38, 0.1);
-  color: var(--crimson-risk);
-  border-color: rgba(220, 38, 38, 0.3);
+  background: var(--accent-crimson-tint);
+  color: var(--accent-crimson);
+  border-color: rgba(239, 68, 68, 0.3);
   transform: rotate(90deg);
+}
+
+.modal-close:active {
+  transform: scale(0.92);
 }
 
 .modal-header {
@@ -1167,6 +1308,7 @@ h1, h2, h3, h4, h5, h6,
 .modal-header h2 {
   font-size: 1.4rem;
   font-weight: 800;
+  letter-spacing: -0.025em;
   color: var(--text-main);
   margin-bottom: 0.25rem;
 }
@@ -1188,17 +1330,62 @@ h1, h2, h3, h4, h5, h6,
   width: 100%;
   padding: 0.85rem 1rem;
   background: #ffffff;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   color: var(--text-main);
   font-size: 0.95rem;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
 }
 
 .form-input:focus {
-  border-color: var(--ghana-gold);
-  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+  border-color: var(--brand-emerald);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+}
+
+/* Quantity Selector Controls */
+.qty-controls {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle);
+  overflow: hidden;
+}
+
+.qty-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast) ease;
+  touch-action: manipulation;
+}
+
+.qty-btn:hover {
+  background: var(--bg-card-hover);
+}
+
+.qty-btn:active {
+  transform: scale(0.92);
+}
+
+.qty-value {
+  width: 44px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
+  border: none;
+  background: transparent;
 }
 
 /* Telco Selector Radios */
@@ -1225,10 +1412,10 @@ h1, h2, h3, h4, h5, h6,
   align-items: center;
   justify-content: center;
   height: 56px;
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: #ffffff;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-spring);
 }
 
 .telco-radio-logo {
@@ -1241,9 +1428,9 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .telco-radio-card input:checked + .telco-radio-box {
-  border-color: var(--ghana-gold);
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
+  border-color: var(--brand-emerald);
+  background: var(--brand-emerald-tint);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
 }
 
 /* Payment Processing / USSD State & Carrier Badges */
@@ -1263,7 +1450,7 @@ h1, h2, h3, h4, h5, h6,
   letter-spacing: 0.04em;
   background: #f1f5f9;
   color: var(--text-main);
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border-subtle);
   pointer-events: none;
   animation: fadeIn 0.2s ease;
 }
@@ -1290,9 +1477,9 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fffbeb;
+  background: var(--accent-gold-tint);
   border: 1px solid #fef3c7;
-  border-left: 4px solid var(--ghana-gold);
+  border-left: 4px solid var(--accent-gold);
   padding: 0.65rem 0.9rem;
   border-radius: var(--radius-md);
   margin-bottom: 1rem;
@@ -2667,5 +2854,84 @@ footer {
   border: 1px solid #cbd5e1;
   color: #0f172a;
 }
+
+/* ==========================================================================
+   Smart Sovereign Gateway Loader (UI/UX Pro Max Dynamic Kinetic System)
+   ========================================================================== */
+.smart-gateway-loader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.smart-gateway-loader .loader-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+
+.smart-gateway-loader .loader-orbital-arc {
+  transform-origin: 24px 24px;
+  animation: gatewayOrbitalSpin 1.25s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.smart-gateway-loader .gateway-check {
+  transform-origin: 24px 24px;
+  animation: gatewayCorePulse 2s ease-in-out infinite;
+}
+
+@keyframes gatewayOrbitalSpin {
+  0% {
+    transform: rotate(0deg);
+    stroke-dashoffset: 0;
+  }
+  50% {
+    transform: rotate(180deg);
+    stroke-dashoffset: -20;
+  }
+  100% {
+    transform: rotate(360deg);
+    stroke-dashoffset: -40;
+  }
+}
+
+@keyframes gatewayCorePulse {
+  0%, 100% {
+    opacity: 0.92;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Size Variants */
+.smart-gateway-loader.loader-sm {
+  width: 20px;
+  height: 20px;
+}
+
+.smart-gateway-loader.loader-md {
+  width: 40px;
+  height: 40px;
+}
+
+.smart-gateway-loader.loader-lg {
+  width: 64px;
+  height: 64px;
+}
+
+.smart-gateway-loader.loader-xl {
+  width: 80px;
+  height: 80px;
+}
+
 
 
