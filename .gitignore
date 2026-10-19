@@ -7,3 +7,4 @@ venv/
 .env
 *.db-journal
 .DS_Store
+.vscode/

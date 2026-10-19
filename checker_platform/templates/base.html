@@ -18,6 +18,40 @@
   <meta property="og:description" content="Get your real Ghana exam result card right on your screen and by SMS. Fast, safe, and 100% private.">
   <meta property="og:image" content="/static/img/icon-mark.svg">
   <meta property="og:type" content="website">
+  {% if request is defined and request.url is defined %}
+  <link rel="canonical" href="{{ request.url }}">
+  {% endif %}
+
+  <!-- Core Structured Data (Schema.org) for Authoritative Discoverability -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "{{ request.base_url if request is defined else 'https://checkerpay.com.gh/' }}#organization",
+        "name": "AggreGate Ghana",
+        "alternateName": "CheckerPay Ghana",
+        "url": "{{ request.base_url if request is defined else 'https://checkerpay.com.gh/' }}",
+        "logo": "{{ request.base_url if request is defined else 'https://checkerpay.com.gh/' }}static/img/favicon.svg",
+        "description": "Official Ghanaian result checker and eVoucher distribution platform for WAEC WASSCE, BECE, and CSSPS.",
+        "areaServed": {
+          "@type": "Country",
+          "name": "Ghana"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "{{ request.base_url if request is defined else 'https://checkerpay.com.gh/' }}#website",
+        "url": "{{ request.base_url if request is defined else 'https://checkerpay.com.gh/' }}",
+        "name": "AggreGate Ghana",
+        "publisher": {
+          "@id": "{{ request.base_url if request is defined else 'https://checkerpay.com.gh/' }}#organization"
+        }
+      }
+    ]
+  }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +60,8 @@
   {% block extra_head %}{% endblock %}
 </head>
 <body>
-
+  <!-- Accessible Skip-to-Content Link -->
+  <a href="#main-content" class="skip-to-content">Skip to main content</a>
 
   <!-- Navbar -->
   <header class="app-header">
@@ -70,7 +105,7 @@
   </header>
 
   <!-- Main Content -->
-  <main>
+  <main id="main-content">
     {% block content %}{% endblock %}
   </main>
 

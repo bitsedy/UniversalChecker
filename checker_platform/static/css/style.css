@@ -58,6 +58,29 @@ html {
   min-width: 0;
 }
 
+/* Accessibility Skip-To-Content Link (WCAG 2.1 Level AA) */
+.skip-to-content {
+  position: absolute;
+  top: -9999px;
+  left: 1rem;
+  z-index: 99999;
+  padding: 0.75rem 1.25rem;
+  background: var(--text-main);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  text-decoration: none;
+  transition: top 0.2s ease-in-out;
+}
+.skip-to-content:focus {
+  top: 1rem;
+  outline: 3px solid var(--ghana-gold);
+}
+
+
 /* ==========================================================================
    SOVEREIGN LUXURY NAVIGATION SCROLLBAR & KINETIC PROGRESS SYSTEM
    Custom Ghana Gold & Savannah Emerald Precision Glassmorphic Track
@@ -1090,24 +1113,169 @@ h1, h2, h3, h4, h5, h6,
   box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
 }
 
-/* Payment Processing / USSD State */
+/* Payment Processing / USSD State & Carrier Badges */
+.telco-detected-badge {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #f1f5f9;
+  color: var(--text-main);
+  border: 1px solid #cbd5e1;
+  pointer-events: none;
+  animation: fadeIn 0.2s ease;
+}
+
+.telco-badge-mtn {
+  background: #fef9c3;
+  color: #854d0e;
+  border-color: #fde047;
+}
+
+.telco-badge-telecel {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.telco-badge-at {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #7dd3fc;
+}
+
+.reservation-countdown-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-left: 4px solid var(--ghana-gold);
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+  font-size: 0.825rem;
+  color: var(--text-main);
+}
+
+.momo-timer-digits {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ghana-gold);
+}
+
+.momo-approval-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ghana-green);
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(15, 107, 92, 0.08);
+  border-radius: var(--radius-md);
+}
+
+.momo-pulse-beacon {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ghana-green);
+  box-shadow: 0 0 0 0 rgba(15, 107, 92, 0.7);
+  animation: momoPulse 1.8s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes momoPulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(15, 107, 92, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(15, 107, 92, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(15, 107, 92, 0);
+  }
+}
+
 .momo-ussd-box {
-  background: rgba(217, 119, 6, 0.08);
-  border: 1.5px dashed var(--border-gold);
+  background: #fdfbf5;
+  border: 1.5px solid var(--border-gold);
   border-radius: var(--radius-md);
   padding: 1.25rem;
   margin-bottom: 1.5rem;
-  text-align: center;
+}
+
+.telco-badge-inline {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: var(--text-main);
+}
+
+.telco-guidance-card {
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  font-size: 0.825rem;
+}
+
+.telco-guidance-card h5 {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.telco-step-list {
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.telco-dial-code {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: var(--ghana-gold);
+  background: #fef3c7;
+  padding: 1px 4px;
+  border-radius: 3px;
 }
 
 .ussd-code {
-  font-family: monospace;
+  font-family: var(--font-mono);
   font-size: 1.25rem;
   font-weight: 800;
   color: #b45309;
   letter-spacing: 0.05em;
   margin: 0.5rem 0;
 }
+
 
 /* Voucher Reveal Card */
 .voucher-reveal-card {
@@ -2157,4 +2325,184 @@ footer {
 .system-laser-loader {
   display: none !important;
 }
+
+/* ==========================================================================
+   Portal Guides, Anti-Burn Knowledge Engine & GEO Passage Cards
+   ========================================================================== */
+
+.guides-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 5rem;
+}
+
+.guide-quick-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  margin: 1.75rem auto 2.5rem;
+}
+
+.guide-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  font-size: 0.825rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(20, 33, 61, 0.04);
+}
+
+.guide-nav-pill:hover {
+  background: #fdfbf5;
+  border-color: var(--ghana-gold);
+  color: var(--ghana-gold);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.guide-article {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-lg);
+  transition: border-color 0.2s ease;
+}
+
+.guide-article:target {
+  border-color: var(--ghana-gold);
+  scroll-margin-top: 5rem;
+}
+
+.geo-passage-box {
+  background: linear-gradient(135deg, #ffffff 0%, #fffdf8 100%);
+  border: 1px solid var(--border-gold);
+  border-left: 4px solid var(--ghana-gold);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.geo-passage-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ghana-gold);
+  margin-bottom: 0.4rem;
+}
+
+.geo-passage-box h3,
+.geo-passage-box h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+  line-height: 1.35;
+}
+
+.geo-passage-box p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.geo-passage-box.critical-risk {
+  border-left-color: var(--ghana-red);
+  background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
+}
+
+.geo-passage-box.critical-risk .geo-passage-tag {
+  color: var(--ghana-red);
+}
+
+.geo-passage-box.verified-success {
+  border-left-color: var(--ghana-green);
+  background: linear-gradient(135deg, #ffffff 0%, #f6fbf8 100%);
+}
+
+.geo-passage-box.verified-success .geo-passage-tag {
+  color: var(--ghana-green);
+}
+
+.portal-action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  background: #14213D;
+  color: #ffffff !important;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portal-action-pill:hover {
+  background: #1e335e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(20, 33, 61, 0.2);
+}
+
+.portal-steps-list {
+  list-style: none;
+  counter-reset: portal-step;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.portal-steps-list li {
+  counter-increment: portal-step;
+  position: relative;
+  padding-left: 2.75rem;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.portal-steps-list li::before {
+  content: counter(portal-step);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(184, 113, 44, 0.12);
+  color: var(--ghana-gold);
+  border: 1px solid rgba(184, 113, 44, 0.3);
+  font-weight: 800;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.code-pill-spec {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+
 

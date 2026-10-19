@@ -1,9 +1,39 @@
+# Git & IDE
+.git
+.gitignore
+.github
+.agents
+.agent
+.gemini
+
+# Python bytecode & environments
 __pycache__
 *.pyc
 *.pyo
 *.pyd
-.env
 .venv
+venv/
+env/
+.pytest_cache
+
+# Local databases & operational logs (Zero database leaking)
+*.db
 *.db-journal
-.git
-.gitignore
+*.db-wal
+*.db-shm
+*.sqlite*
+*.log
+scratch/
+test_batches/
+
+# Secrets & Environment configs
+.env
+.env.*
+!.env.example
+
+# Build & archive artifacts
+*.zip
+*.tar.gz
+node_modules/
+Dockerfile
+.dockerignore

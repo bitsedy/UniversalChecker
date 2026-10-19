@@ -2,6 +2,50 @@
 
 {% block title %}Frequently Asked Questions & Customer Feedback | CheckerPay Ghana{% endblock %}
 
+{% block extra_head %}
+<!-- FAQ Structured Data (Schema.org) for Google Expandable Search Answers & AI Search Engines -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Are CheckerPay vouchers authentic and accepted on official portals?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Every serial number and PIN is officially sourced and guaranteed authentic for checking WAEC WASSCE, WAEC BECE, and CSSPS placement results."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which payment methods are supported in Ghana?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We support all major Ghanaian Mobile Money networks including MTN MoMo (*170#), Telecel Cash (*110#), and AT Money (*110#), as well as Visa and debit cards."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How quickly do I receive my PIN and Serial Number?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Instantly. Once your mobile money prompt is approved, your voucher credentials appear on your screen and are simultaneously sent to your phone via SMS."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What should I do if I lose my voucher or closed the browser?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use our self-service Retrieve My Voucher page at /lookup. Enter your phone number or Order Reference to retrieve all your purchased voucher PINs."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 960px;">
   

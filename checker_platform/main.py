@@ -152,6 +152,65 @@ async def get_favicon():
     if os.path.exists(favicon_path):
         return FileResponse(favicon_path, media_type="image/svg+xml")
     return Response(status_code=204)
+
+@app.get("/robots.txt", include_in_schema=False)
+async def robots_txt(request: Request):
+    """
+    Standard robots exclusion protocol.
+    Directs search engines & AI bots to public routes while strictly shielding /admin.
+    """
+    base_url = str(request.base_url).rstrip("/")
+    content = (
+        "User-agent: *\n"
+        "Disallow: /admin\n"
+        "Disallow: /api/admin\n"
+        "Disallow: /api/webhooks\n"
+        "Allow: /\n"
+        "Allow: /advisor\n"
+        "Allow: /guides\n"
+        "Allow: /faq\n"
+        "Allow: /about\n"
+        "Allow: /lookup\n"
+        "Allow: /terms\n"
+        "Allow: /privacy\n"
+        "Allow: /delivery-returns\n"
+        "Allow: /static/\n\n"
+        f"Sitemap: {base_url}/sitemap.xml\n"
+    )
+    return Response(content=content, media_type="text/plain")
+
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap_xml(request: Request):
+    """
+    XML Sitemap compliant with sitemaps.org standard.
+    Lists only vetted, public, canonical routes. Strictly excludes admin and internal APIs.
+    """
+    base_url = str(request.base_url).rstrip("/")
+    public_routes = [
+        {"path": "/", "priority": "1.0", "changefreq": "daily"},
+        {"path": "/advisor", "priority": "0.9", "changefreq": "weekly"},
+        {"path": "/lookup", "priority": "0.9", "changefreq": "weekly"},
+        {"path": "/guides", "priority": "0.8", "changefreq": "monthly"},
+        {"path": "/faq", "priority": "0.7", "changefreq": "monthly"},
+        {"path": "/about", "priority": "0.6", "changefreq": "monthly"},
+        {"path": "/delivery-returns", "priority": "0.5", "changefreq": "monthly"},
+        {"path": "/terms", "priority": "0.4", "changefreq": "yearly"},
+        {"path": "/privacy", "priority": "0.4", "changefreq": "yearly"},
+    ]
+    xml_lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    ]
+    for r in public_routes:
+        xml_lines.append("  <url>")
+        xml_lines.append(f"    <loc>{base_url}{r['path']}</loc>")
+        xml_lines.append(f"    <changefreq>{r['changefreq']}</changefreq>")
+        xml_lines.append(f"    <priority>{r['priority']}</priority>")
+        xml_lines.append("  </url>")
+    xml_lines.append("</urlset>")
+    
+    return Response(content="\n".join(xml_lines), media_type="application/xml")
+
 MAX_STANDARD_BODY = 65536    # 64 KB for standard JSON/API requests
 MAX_BULK_BODY = 2097152       # 2 MB for bulk voucher imports
 

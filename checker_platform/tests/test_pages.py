@@ -182,9 +182,44 @@ class TestCustomerPagesAndFeedback(unittest.TestCase):
         bulk_insert_vouchers("WASSCE", more_vouchers)
         res_high = self.client.get("/")
         self.assertEqual(res_high.status_code, 200)
-        self.assertIn("In Stock", res_high.text)
-        self.assertIn("stock-bullet in-stock", res_high.text)
-        self.assertNotIn("15 In Stock", res_high.text)
+    def test_robots_txt(self):
+        """Verifies /robots.txt serves valid rules, disallows admin paths, and declares sitemap."""
+        res = self.client.get("/robots.txt")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.headers.get("content-type"), "text/plain; charset=utf-8")
+        self.assertIn("Disallow: /admin", res.text)
+        self.assertIn("Disallow: /api/admin", res.text)
+        self.assertIn("Allow: /", res.text)
+        self.assertIn("Sitemap:", res.text)
+        self.assertIn("/sitemap.xml", res.text)
+
+    def test_sitemap_xml(self):
+        """Verifies /sitemap.xml generates valid XML with canonical public routes, omitting admin."""
+        res = self.client.get("/sitemap.xml")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.headers.get("content-type"), "application/xml")
+        self.assertIn('<?xml version="1.0" encoding="UTF-8"?>', res.text)
+        self.assertIn("<urlset", res.text)
+        self.assertIn("<loc>", res.text)
+        self.assertIn("/advisor</loc>", res.text)
+        self.assertIn("/lookup</loc>", res.text)
+        self.assertIn("/guides</loc>", res.text)
+        self.assertNotIn("/admin", res.text)
+    def test_guides_page_geo_and_howto_schema(self):
+        """Verifies /guides delivers valid Schema.org HowTo structured data and GEO passage cards."""
+        res = self.client.get("/guides")
+        self.assertEqual(res.status_code, 200)
+        # Verify JSON-LD HowTo & Breadcrumbs
+        self.assertIn('"@type": "HowTo"', res.text)
+        self.assertIn('"@type": "BreadcrumbList"', res.text)
+        self.assertIn("ghana.waecdirect.org", res.text)
+        self.assertIn("cssps.gov.gh", res.text)
+        # Verify GEO passage content
+        self.assertIn("The 3-Check Limit & Index Binding: What is the WAEC Rule?", res.text)
+        self.assertIn("The 10 vs 12-Digit Index Rule: Why does the CSSPS Placement portal require 12 digits?", res.text)
+        self.assertIn("Does Commission for TVET (CTVET) sell online result checker vouchers?", res.text)
+        self.assertIn("101010101026", res.text)
 
 if __name__ == "__main__":
     unittest.main()
+

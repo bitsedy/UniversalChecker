@@ -127,19 +127,46 @@
       body * {
         visibility: hidden;
       }
-      #results_section, #results_section * {
+      body.printing-modal #dossier_modal,
+      body.printing-modal #dossier_modal * {
         visibility: visible;
       }
-      #results_section {
+      body.printing-modal #dossier_modal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      body:not(.printing-modal) #results_section,
+      body:not(.printing-modal) #results_section * {
+        visibility: visible;
+      }
+      body:not(.printing-modal) #results_section {
         position: absolute;
         left: 0;
         top: 0;
         width: 100%;
         margin: 0;
         padding: 0;
+        border: none !important;
+        box-shadow: none !important;
       }
-      .no-print, button, #suggested_filters, #preview_limit_banner, #pricing_decoy_section, .advisor-process-strip, #advisory_checkout_modal, #dossier_modal {
+      .print-only {
+        display: block !important;
+        visibility: visible !important;
+      }
+      .no-print, button, #suggested_filters, #preview_limit_banner, #pricing_decoy_section, .advisor-process-strip, #advisory_checkout_modal {
         display: none !important;
+      }
+      .card-badge, .institution-card, .reality-check-card, .verdict-card {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        box-shadow: none !important;
       }
     }
   </style>
@@ -774,6 +801,21 @@
       <div
         style="background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: var(--radius-lg); padding: 2.25rem; margin-bottom: 2.5rem; position: relative;">
 
+        <!-- Official Academic Briefing Print Header (Strictly visible on physical print/PDF) -->
+        <div class="print-only" style="display: none; border-bottom: 2px solid #14213D; padding-bottom: 12px; margin-bottom: 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800; color: #B8712C;">AggreGate Ghana &bull; Official Placement &amp; Admissions Briefing</div>
+              <div style="font-family: 'Playfair Display', Georgia, serif; font-size: 1.5rem; font-weight: 900; color: #14213D; margin: 4px 0 2px 0;">Official Academic Advisory Report</div>
+              <div style="font-size: 0.8rem; color: #64748b;">Statutory Standards: GES CSSPS Senior High School Placement &amp; GTEC University Cut-Off Rules</div>
+            </div>
+            <div style="text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #475569;">
+              <div>Issue Date: <span id="print_report_date"></span></div>
+              <div style="color: #0F6B5C; font-weight: 700;">Act 843 Zero-Persistence Verified</div>
+            </div>
+          </div>
+        </div>
+
         <div
           style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle);">
           <div>
@@ -1222,7 +1264,12 @@
             style="padding: 0.5rem 1rem; font-size: 0.825rem;">
             Close
           </button>
-          <div style="display: flex; gap: 8px;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" id="btn_print_dossier" onclick="printDossierCard()" class="btn-lookup"
+              style="padding: 0.5rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              Print Card
+            </button>
             <button type="button" id="btn_copy_dossier" onclick="copyDossierText()" class="btn-lookup"
               style="padding: 0.5rem 1.1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
               Copy Text
@@ -1869,6 +1916,9 @@
         if (hashEl) hashEl.innerHTML = `Act 843 Ephemeral Proof: <span style="color:#0284c7;">${analysis.compliance_attestation_hash}</span>`;
       }
 
+      const printDateEl = document.getElementById("print_report_date");
+      if (printDateEl) printDateEl.innerText = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+
       // Render Brutally Honest Final Verdict Card
       renderFinalVerdict(analysis.final_verdict, "BECE");
 
@@ -2098,6 +2148,9 @@
         const hashEl = document.getElementById("res_attestation_hash");
         if (hashEl) hashEl.innerHTML = `Act 843 Ephemeral Proof: <span style="color:#0284c7;">${analysis.compliance_attestation_hash}</span>`;
       }
+
+      const printDateEl = document.getElementById("print_report_date");
+      if (printDateEl) printDateEl.innerText = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
       // Render Brutally Honest Final Verdict Card
       renderFinalVerdict(analysis.final_verdict, "WASSCE");
@@ -2498,6 +2551,14 @@
     function closeDossierModal() {
       const modal = document.getElementById("dossier_modal");
       if (modal) modal.style.display = "none";
+    }
+
+    function printDossierCard() {
+      document.body.classList.add("printing-modal");
+      window.print();
+      setTimeout(() => {
+        document.body.classList.remove("printing-modal");
+      }, 1000);
     }
 
     function copyDossierText() {

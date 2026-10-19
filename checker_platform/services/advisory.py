@@ -1556,7 +1556,7 @@ def format_wassce_whatsapp_dossier(analysis: Dict[str, Any]) -> str:
         "*VERIFIED INTEGRITY ATTENUATION:*",
         f"Proof Hash: `{analysis.get('compliance_attestation_hash', '')[:16]}...`",
         "Grounded in official GTEC/WAEC benchmarks under Ghana Act 843.",
-        "Check live admissions: https://checkerpay.onrender.com/advisor"
+        "Check live admissions: https://checkerpay.com.gh/advisor"
     ])
     return "\n".join(lines)
 

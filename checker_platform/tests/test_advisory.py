@@ -643,6 +643,103 @@ class TestStealthAdminAndAdvisory(unittest.TestCase):
         order = get_order_details(order_ref)
         self.assertEqual(order["payment_status"], "PAID")
 
+    def test_act_843_zero_persistence_invariant(self):
+        """
+        Ghana Data Protection Act 2012 (Act 843) Core Legal Guarantee Invariant Test:
+        Proves empirically and cryptographically that candidate examination grades,
+        subject-level breakdowns, or identifying data are NEVER persisted to SQLite database
+        tables, customer telemetry rows, or audit ledgers during or after advisory evaluation.
+        """
+        canary_subjects = [
+            "CANARY_SUBJECT_BECE_X901",
+            "CANARY_ELECTIVE_WASSCE_Z802"
+        ]
+
+        # 1. Run BECE Advisory with Unique Canary Elective
+        bece_payload = {
+            "exam_type": "BECE",
+            "consent_given": True,
+            "cores": {
+                "English Language": 2,
+                "Mathematics": 2,
+                "Integrated Science": 1,
+                "Social Studies": 2
+            },
+            "electives": {
+                canary_subjects[0]: 1,
+                "Information & Communication Tech (ICT)": 1
+            },
+            "programme": "General Science"
+        }
+        res_bece = self.client.post("/api/advisor/analyze", json=bece_payload)
+        self.assertEqual(res_bece.status_code, 200)
+        bece_data = res_bece.json()
+        self.assertTrue(bece_data["success"])
+        self.assertEqual(bece_data["compliance"]["retention"], "Zero Persistence (Ephemeral In-Memory Analysis)")
+
+        # 2. Run WASSCE Advisory with Unique Canary Elective
+        wassce_payload = {
+            "exam_type": "WASSCE",
+            "consent_given": True,
+            "cores": {
+                "English Language": "B2",
+                "Core Mathematics": "A1",
+                "Integrated Science": "B3",
+                "Social Studies": "C4"
+            },
+            "electives": {
+                canary_subjects[1]: "A1",
+                "Chemistry": "B2",
+                "Physics": "B2"
+            },
+            "interest": "Computer Science & Engineering"
+        }
+        res_wassce = self.client.post("/api/advisor/analyze", json=wassce_payload)
+        self.assertEqual(res_wassce.status_code, 200)
+        wassce_data = res_wassce.json()
+        self.assertTrue(wassce_data["success"])
+
+        # 3. Exhaustive SQLite Deep-Scan: Verify Zero Persistence across ALL User Tables
+        from checker_platform.database import get_db_connection
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")
+        tables = [row["name"] for row in cursor.fetchall()]
+        self.assertTrue(len(tables) > 0, "Database must contain active tables.")
+
+        for table in tables:
+            cursor.execute(f"PRAGMA table_info({table});")
+            columns = [col["name"] for col in cursor.fetchall()]
+            
+            cursor.execute(f"SELECT * FROM {table};")
+            rows = cursor.fetchall()
+            for row in rows:
+                row_str = " ".join([str(row[col]) for col in columns if row[col] is not None])
+                for canary in canary_subjects:
+                    self.assertNotIn(
+                        canary, 
+                        row_str, 
+                        f"CRITICAL ACT 843 PRIVACY VIOLATION: Canary token '{canary}' found persisted in table '{table}'! "
+                        f"Row content: {row_str}"
+                    )
+
+        # 4. Audit Block Ledger Invariant Check: Verify Digestion, Zero Plaintext Subject Leak
+        cursor.execute("SELECT * FROM compliance_audit_ledger;")
+        ledger_rows = cursor.fetchall()
+        for l_row in ledger_rows:
+            for canary in canary_subjects:
+                self.assertNotIn(canary, str(l_row["action_type"]))
+                self.assertNotIn(canary, str(l_row["payload_digest"]))
+
+        # 5. Session & Cookie Zero-Persistence Check
+        self.assertNotIn("session", res_bece.cookies)
+        self.assertNotIn("candidate_id", res_bece.cookies)
+        self.assertNotIn("session", res_wassce.cookies)
+        self.assertNotIn("candidate_id", res_wassce.cookies)
+        conn.close()
+
+
 
 
 

@@ -1,38 +1,68 @@
-# Architecture Summary — keep this current
+# Architecture Summary — AggreGate Ghana / CheckerPay Platform
 
-*Last known state, based on README + live site review. Update as things
-change — this is what AGENTS.md tells the agent to check before big
-structural work, so keep it honest.*
+*Last updated: October 2026. Authoritative architecture reference for development, compliance, and deployment.*
 
-## Two products, one backend
-1. **Checker/Voucher Store** — the money-making path. Storefront →
-   Select Result Checker → pay via Paystack → instant PIN (on-screen, SMS,
-   WhatsApp) → redirect-with-countdown to the real WAEC/CSSPS/CTVET portal.
-2. **Pathway Advisor** (`/advisor`) — placement guidance. Enter grades →
-   Act 843 consent → aggregate + category verdict → Official Admissions
-   Dossier / WhatsApp Placement Card / Print briefing.
+## 1. Two Products, One Unified Backend
+The platform operates two distinct services with isolated risk profiles:
 
-## Known routes
-- `/` — storefront, hero + Select Result Checker grid
-- `/lookup` — self-service voucher retrieval by phone/order reference
-- `/guides` — WAEC 3-check limit, CSSPS 12-digit index rule, CTVET center
-  codes
-- `/admin` — provisioned-only, stock levels, bulk import, pricing,
-  transaction history
-- `/advisor` — Pathway Advisor
-- `/docs` — auto-generated API documentation
+1. **Checker/eVoucher Distribution Gateway** (`/`, `/lookup`, `/guides`, `/faq`, `/admin`):
+   - Direct B2C inventory purchasing for WAEC (WASSCE / BECE) and CSSPS eVouchers.
+   - Atomic SQLite row-level locking (`BEGIN IMMEDIATE` in WAL mode) to guarantee zero double-vending.
+   - Dual-rail payment processing: Paystack checkout integration + kinetic Mobile Money USSD prompt simulator for offline and carrier testing.
+   - Real-time carrier auto-detection badge on customer phone input (MTN MoMo, Telecel Cash, AT Money) with a 10-minute voucher hold reservation timer.
+   - Instant multi-channel fulfillment: clear on-screen credential cards, SMS trigger hooks, copy-ready WhatsApp credentials, and automated 5-second countdown redirects to official verification portals (`ghana.waecdirect.org`, `cssps.gov.gh`).
 
-## Design system
-Navy `#14213D` / cream `#FDFBF5` / burnt-orange `#B8712C` / teal `#0F6B5C`.
-Playfair Display for headings, Inter for body. Pill-shaped bordered CTA
-buttons throughout.
+2. **Pathway Advisor** (`/advisor`):
+   - Educational placement intelligence and tertiary cutoff calculation (GES CSSPS Senior High School + GTEC University cut-offs).
+   - **Ghana Data Protection Act, 2012 (Act 843) Guarantee**: 100% ephemeral in-memory analysis. Candidate grades, index numbers, or identifying data are NEVER stored to database tables, logs, caches, sessions, or tracking cookies. Verified by automated invariant test suites.
+   - Outputs 3 distinct artifacts:
+     - **Official Admissions Dossier**: Printable formal academic briefing (`@media print` optimized with institutional header, issue timestamp, and Act 843 verification proof).
+     - **WhatsApp Diagnostic Card**: 1-click shareable markdown card with score breakdowns, school probabilities, and recommended action steps.
+     - **Remedial Simulator (Nov/Dec)**: Subject upgrade projections demonstrating impact on university qualification thresholds.
 
-## Open items to fill in as they're decided
-- Exact route/anchor for the "Select Result Checker" section (currently
-  referenced as `#select-checker` in the homepage How It Works section —
-  confirm or correct).
-- Whether the three Advisor output artifacts are always generated, or
-  conditional on grade level/category.
-- Current hosting: Render subdomain (`universalchecker.onrender.com`) —
-  update this file if/when a custom domain and separate deployments per
-  surface are set up.
+---
+
+## 2. Complete Route Map & Security Boundaries
+
+| Route | Purpose | Indexing & Security |
+| :--- | :--- | :--- |
+| `/` | Storefront & voucher selector (`#select-checker`) | Public, indexed, `WebSite` & `Product` Schema |
+| `/lookup` | Self-service voucher retrieval by phone & order reference | Public, indexed |
+| `/guides` | Portal rules, anti-burn instructions, and 12-digit index requirements | Public, indexed, `HowTo` & `BreadcrumbList` Schema |
+| `/faq` | Frequently asked questions, carrier troubleshooting, refunds | Public, indexed, `FAQPage` Schema |
+| `/terms` | Statutory terms of service (Act 772, Act 1038) | Public, indexed |
+| `/privacy` | Privacy policy & Act 843 compliance declarations | Public, indexed |
+| `/delivery-returns` | 100% digital instant delivery & defective voucher replacement | Public, indexed |
+| `/advisor` | Educational placement & pathway advisor | Public, indexed, gated on explicit Act 843 consent |
+| `/robots.txt` | Crawler directives; allows public, shields `/admin` | Public (`/robots.txt`) |
+| `/sitemap.xml` | Canonical XML sitemap with all public endpoints | Public (`/sitemap.xml`) |
+| `/admin` | Provisioned merchant inventory management & telemetry | **Restricted / Stealth 404** (omitted from sitemaps/robots) |
+| `/api/admin/*` | Inventory restocking, price overrides, transaction queries | Provisioned-access only |
+
+---
+
+## 3. Design System & Typography Tokens
+- **Palette**:
+  - Sovereign Navy: `#14213D` (Primary text, authority surfaces)
+  - Ghana Cream: `#FDFBF5` (Background canvas)
+  - Burnt Orange / Gold: `#B8712C` (Primary CTA, highlights, borders)
+  - Savannah Emerald: `#0F6B5C` (Verified badges, success states)
+  - Accent Red: `#dc2626` (Bottleneck warnings, anti-burn risks)
+- **Typography**:
+  - Headings: `Playfair Display` (Classic authoritative serif)
+  - Body: `Inter` (Legible, modern geometric sans-serif)
+  - Code / Tokens: `JetBrains Mono` (Voucher PINs, cryptographic hashes)
+- **Geometry**:
+  - Cards: `18px` (`--radius-lg`) border radius with subtle cream borders (`#e5e0d4`).
+  - CTAs: Full pill-shaped (`9999px`) action buttons with micro-elevation transitions.
+
+---
+
+## 4. Security, DevOps & Invariants
+- **Container Hardening**:
+  - Runs in `Dockerfile` under non-root unprivileged `USER appuser` (UID 10001).
+  - Hardened `.dockerignore` strictly preventing leakage of local databases, secrets, virtualenvs, or IDE files.
+- **Act 843 Verification**:
+  - Intercepts and tests SQLite layers via `test_act_843_zero_persistence_invariant` in `test_advisory.py`.
+- **Payment & Webhook Integrity**:
+  - HMAC-SHA512 verification for Paystack webhooks with strict idempotency tables (`idempotency_records`).

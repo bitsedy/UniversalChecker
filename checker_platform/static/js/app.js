@@ -5,9 +5,9 @@
  */
 
 const TELCO_PREFIXES = {
-  MTN: ["024", "054", "055", "059", "053"],
+  MTN: ["024", "054", "055", "059", "053", "025"],
   TELECEL: ["020", "050"],
-  AT: ["027", "057", "026"]
+  AT: ["027", "057", "026", "056"]
 };
 
 let currentOrder = null;
@@ -77,10 +77,32 @@ document.addEventListener("DOMContentLoaded", () => {
   setupVoucherCopyDelegation();
 });
 
-// Auto-detect Ghanaian network from phone number
+// Auto-detect Ghanaian network from phone number & update carrier badge
 function setupTelcoAutoDetect() {
   const phoneInput = document.getElementById("customer_phone");
+  const badge = document.getElementById("telco_detected_badge");
+  const badgeName = document.getElementById("telco_detected_name");
   if (!phoneInput) return;
+
+  function setBadge(telcoKey) {
+    if (!badge || !badgeName) return;
+    badge.className = "telco-detected-badge";
+    if (telcoKey === "mtn") {
+      badge.classList.add("telco-badge-mtn");
+      badgeName.textContent = "MTN MoMo";
+      badge.style.display = "flex";
+    } else if (telcoKey === "telecel") {
+      badge.classList.add("telco-badge-telecel");
+      badgeName.textContent = "Telecel Cash";
+      badge.style.display = "flex";
+    } else if (telcoKey === "at") {
+      badge.classList.add("telco-badge-at");
+      badgeName.textContent = "AT Money";
+      badge.style.display = "flex";
+    } else {
+      badge.style.display = "none";
+    }
+  }
 
   phoneInput.addEventListener("input", (e) => {
     let val = e.target.value.replace(/\D/g, "");
@@ -88,16 +110,24 @@ function setupTelcoAutoDetect() {
       val = "0" + val.substring(3);
     }
     const prefix = val.substring(0, 3);
-    
+    let matched = false;
+
     for (const [telco, prefixes] of Object.entries(TELCO_PREFIXES)) {
       if (prefixes.includes(prefix)) {
-        const radio = document.getElementById(`radio_${telco.toLowerCase()}`);
+        const key = telco.toLowerCase();
+        const radio = document.getElementById(`radio_${key}`);
         if (radio) {
           radio.checked = true;
-          highlightTelcoBox(telco.toLowerCase());
+          highlightTelcoBox(key);
+          setBadge(key);
+          matched = true;
         }
         break;
       }
+    }
+
+    if (!matched && val.length < 3) {
+      setBadge(null);
     }
   });
 
@@ -105,6 +135,7 @@ function setupTelcoAutoDetect() {
     radio.addEventListener("change", (e) => {
       const telcoKey = e.target.id.replace("radio_", "");
       highlightTelcoBox(telcoKey);
+      setBadge(telcoKey);
     });
   });
 }
@@ -118,6 +149,7 @@ function highlightTelcoBox(telcoKey) {
     targetCard.classList.add(`active-${telcoKey}`);
   }
 }
+
 
 // Calculate total based on quantity
 function setupQuantityListeners() {
@@ -170,12 +202,137 @@ let isRedirectPaused = false;
 let activePortalUrl = "";
 let activePortalName = "";
 
+let momoCountdownInterval = null;
+
 function closeModal() {
   if (redirectTimer) {
     clearInterval(redirectTimer);
     redirectTimer = null;
   }
+  if (momoCountdownInterval) {
+    clearInterval(momoCountdownInterval);
+    momoCountdownInterval = null;
+  }
   document.getElementById("checkout_modal").classList.remove("active");
+}
+
+function cancelPaymentStep() {
+  if (momoCountdownInterval) {
+    clearInterval(momoCountdownInterval);
+    momoCountdownInterval = null;
+  }
+  document.getElementById("checkout_step_payment").style.display = "none";
+  document.getElementById("checkout_step_details").style.display = "block";
+  const btn = document.getElementById("btn_submit_order");
+  if (btn) {
+    btn.innerText = "Pay with Mobile Money →";
+    btn.disabled = false;
+  }
+}
+
+function startMomoHoldCountdown(durationSeconds = 600) {
+  if (momoCountdownInterval) {
+    clearInterval(momoCountdownInterval);
+    momoCountdownInterval = null;
+  }
+
+  let remaining = durationSeconds;
+  const timerElem = document.getElementById("momo_reservation_timer");
+
+  function updateDisplay() {
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+    if (timerElem) {
+      timerElem.textContent = `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    }
+  }
+
+  updateDisplay();
+
+  momoCountdownInterval = setInterval(() => {
+    remaining--;
+    if (remaining <= 0) {
+      clearInterval(momoCountdownInterval);
+      momoCountdownInterval = null;
+      if (timerElem) {
+        timerElem.textContent = "00:00 (Expired)";
+        timerElem.style.color = "var(--ghana-red)";
+      }
+      const beaconText = document.getElementById("momo_beacon_text");
+      if (beaconText) {
+        beaconText.textContent = "Reservation window expired. Please go back to re-reserve.";
+      }
+      const payBtn = document.getElementById("btn_paystack_pay");
+      if (payBtn) payBtn.disabled = true;
+    } else {
+      updateDisplay();
+    }
+  }, 1000);
+}
+
+function renderTelcoUssdGuide(networkName) {
+  const container = document.getElementById("telco_guidance_container");
+  const badgeElem = document.getElementById("momo_display_network_badge");
+  if (!container) return;
+
+  const net = (networkName || "").toUpperCase();
+  let html = "";
+
+  if (net.includes("MTN")) {
+    if (badgeElem) {
+      badgeElem.textContent = "MTN MoMo";
+      badgeElem.className = "telco-badge-inline telco-badge-mtn";
+    }
+    html = `
+      <h5>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        MTN Mobile Money Authorization Steps
+      </h5>
+      <ol class="telco-step-list">
+        <li>Look on your phone for the <strong>MTN MoMo approval prompt</strong>.</li>
+        <li>Enter your secret 4-digit <strong>MoMo PIN</strong> to authorize the debit.</li>
+        <li><strong>Missed the prompt?</strong> Dial <span class="telco-dial-code">*170#</span> on your phone.</li>
+        <li>Choose Option <strong>6 (My Wallet)</strong> &rarr; Option <strong>3 (My Approvals)</strong>.</li>
+        <li>Enter your MoMo PIN and select the pending CheckerPay order to complete.</li>
+      </ol>
+    `;
+  } else if (net.includes("TELECEL") || net.includes("VODAFONE")) {
+    if (badgeElem) {
+      badgeElem.textContent = "Telecel Cash";
+      badgeElem.className = "telco-badge-inline telco-badge-telecel";
+    }
+    html = `
+      <h5>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        Telecel Cash Authorization Steps
+      </h5>
+      <ol class="telco-step-list">
+        <li>Enter your <strong>Telecel Cash PIN</strong> when the payment notification arrives.</li>
+        <li><strong>Didn't receive the prompt?</strong> Dial <span class="telco-dial-code">*110#</span>.</li>
+        <li>Select Option <strong>4 (Make Payment)</strong> &rarr; Option <strong>1 (Approvals)</strong>.</li>
+        <li>Select this pending transaction and enter your PIN to approve.</li>
+      </ol>
+    `;
+  } else {
+    if (badgeElem) {
+      badgeElem.textContent = "AT Money";
+      badgeElem.className = "telco-badge-inline telco-badge-at";
+    }
+    html = `
+      <h5>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        AT Money Authorization Steps
+      </h5>
+      <ol class="telco-step-list">
+        <li>Check your phone screen for the prompt and authorize with your <strong>AT Money PIN</strong>.</li>
+        <li><strong>If no prompt displays:</strong> Dial <span class="telco-dial-code">*110#</span>.</li>
+        <li>Select Option <strong>5 (My Account)</strong> &rarr; Option <strong>2 (Pending Approvals)</strong>.</li>
+        <li>Confirm your payment to instantly receive your result checker PIN.</li>
+      </ol>
+    `;
+  }
+
+  container.innerHTML = html;
 }
 
 // Submit Order and Trigger Reservation
@@ -214,7 +371,7 @@ async function submitOrder() {
     const data = await res.json();
     if (!res.ok || !data.success) {
       alert(data.message || "Failed to reserve voucher. It may be temporarily out of stock.");
-      btn.innerText = "Proceed to Payment";
+      btn.innerText = "Pay with Mobile Money →";
       btn.disabled = false;
       window.SystemLoader.done();
       return;
@@ -225,7 +382,7 @@ async function submitOrder() {
     window.SystemLoader.done();
   } catch (err) {
     alert("Network error: " + err.message);
-    btn.innerText = "Proceed to Payment";
+    btn.innerText = "Pay with Mobile Money →";
     btn.disabled = false;
     window.SystemLoader.done();
   }
@@ -233,20 +390,27 @@ async function submitOrder() {
 
 let currentPaystackKey = "";
 
-// Show MoMo USSD Prompt Screen
+// Show MoMo USSD Prompt Screen with Kinetic Instructions & 10-Minute Hold Timer
 function showPaymentPrompt(data) {
   document.getElementById("checkout_step_details").style.display = "none";
   document.getElementById("checkout_step_payment").style.display = "block";
 
   currentPaystackKey = data.paystack_public_key || "";
 
-  const promptInfo = data.payment_prompt;
-  document.getElementById("momo_display_network").innerText = promptInfo.network;
-  document.getElementById("momo_display_phone").innerText = promptInfo.phone_formatted;
-  document.getElementById("momo_display_amount").innerText = `GHS ${promptInfo.amount_ghs.toFixed(2)}`;
+  const promptInfo = data.payment_prompt || {};
+  const network = promptInfo.network || "MTN Mobile Money";
+  const phoneFormatted = promptInfo.phone_formatted || data.order.customer_phone;
+  const amountGhs = promptInfo.amount_ghs || data.order.total_amount;
+
+  document.getElementById("momo_display_phone").innerText = phoneFormatted;
+  document.getElementById("momo_display_amount").innerText = `GHS ${parseFloat(amountGhs).toFixed(2)}`;
   document.getElementById("momo_display_order_ref").innerText = data.order.order_reference;
-  document.getElementById("momo_prompt_instructions").innerText = promptInfo.prompt_text;
-  document.getElementById("momo_manual_steps").innerText = promptInfo.manual_steps;
+
+  // Render network specific USSD walkthrough
+  renderTelcoUssdGuide(network);
+
+  // Start 10-minute reservation countdown
+  startMomoHoldCountdown(600);
 }
 
 // Trigger Official Paystack Popup Modal (MoMo & Card)

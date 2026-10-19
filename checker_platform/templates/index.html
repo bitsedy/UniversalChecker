@@ -1,5 +1,43 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+<!-- Product Catalog Structured Data (Schema.org) for Rich SERP Results & Google Shopping -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Official Ghanaian Result Checker & Placement Cards",
+  "itemListElement": [
+    {% for cat_id, prod in products.items() %}
+    {
+      "@type": "ListItem",
+      "position": {{ loop.index }},
+      "item": {
+        "@type": "Product",
+        "name": "{{ prod.name }}",
+        "description": "Authentic {{ prod.name }} for checking official Ghanaian examination results online with instant on-screen and SMS delivery.",
+        "brand": {
+          "@type": "Brand",
+          "name": "WAEC / CSSPS Ghana"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "{{ prod.price }}",
+          "priceCurrency": "GHS",
+          "availability": "{% if prod.available_stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+          "seller": {
+            "@type": "Organization",
+            "name": "AggreGate Ghana"
+          }
+        }
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
   <!-- Hero Section -->
@@ -598,10 +636,24 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Mobile Money Phone Number</label>
-        <input type="tel" id="customer_phone" class="form-input" placeholder="e.g. 024 123 4567 or 050 000 0000" required>
+        <label class="form-label" for="customer_phone">Mobile Money Phone Number</label>
+        <div style="position: relative; display: flex; align-items: center;">
+          <input 
+            type="tel" 
+            id="customer_phone" 
+            class="form-input" 
+            placeholder="e.g. 024 123 4567 or 050 000 0000" 
+            inputmode="numeric" 
+            autocomplete="tel" 
+            required 
+            style="padding-right: 125px;"
+          >
+          <div id="telco_detected_badge" class="telco-detected-badge" style="display: none;" aria-live="polite">
+            <span id="telco_detected_name">MTN</span>
+          </div>
+        </div>
         <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
-          We will choose your network automatically from your number (MTN, Telecel, or AT).
+          Carrier detected automatically (MTN, Telecel, or AT).
         </span>
       </div>
 
@@ -656,37 +708,57 @@
     <div id="checkout_step_payment" style="display: none;">
       <div class="modal-header">
         <h2>Approve Payment on Your Phone</h2>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Please check your phone screen to approve the payment</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Please check your mobile phone screen to authorize payment</p>
+      </div>
+
+      <!-- RESERVATION HOLD COUNTDOWN BAR -->
+      <div class="reservation-countdown-pill">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span>Voucher Reserved For You:</span>
+        </div>
+        <strong id="momo_reservation_timer" class="momo-timer-digits">10:00</strong>
+      </div>
+
+      <!-- LIVE BEACON STATUS -->
+      <div class="momo-approval-status">
+        <span class="momo-pulse-beacon"></span>
+        <span id="momo_beacon_text">Prompt sent. Awaiting your approval...</span>
       </div>
 
       <div class="momo-ussd-box">
-        <div style="font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Network</div>
-        <div id="momo_display_network" style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.25rem;">MTN Mobile Money</div>
-        <div id="momo_display_phone" style="font-size: 0.9rem; color: var(--text-muted);">024 000 0000</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 4px;">
+          <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Account</div>
+          <span id="momo_display_network_badge" class="telco-badge-inline">MTN MoMo</span>
+        </div>
+        <div id="momo_display_phone" style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); text-align: left; margin-bottom: 0.75rem;">024 000 0000</div>
 
-        <div style="margin: 1rem 0; padding: 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
-          <div style="font-size: 0.8rem; color: var(--text-dim);">Amount to Pay:</div>
-          <div id="momo_display_amount" style="font-size: 1.5rem; font-weight: 900; color: var(--ghana-gold);">GHS 22.00</div>
-          <div style="font-size: 0.75rem; color: var(--text-dim);">Order Number: <span id="momo_display_order_ref">ORD-12345</span></div>
+        <div style="margin: 0.75rem 0 1rem 0; padding: 0.85rem; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+            <span style="font-size: 0.8rem; color: var(--text-dim);">Total Amount:</span>
+            <span id="momo_display_amount" style="font-size: 1.35rem; font-weight: 900; color: var(--ghana-gold);">GHS 22.00</span>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); display: flex; justify-content: space-between;">
+            <span>Reference:</span>
+            <span id="momo_display_order_ref" style="font-family: var(--font-mono); font-weight: 700; color: var(--text-main);">ORD-12345</span>
+          </div>
         </div>
 
-        <div style="font-size: 0.85rem; color: var(--text-main); font-weight: 700; margin-bottom: 0.5rem;" id="momo_prompt_instructions">
-          Check your phone now!
-        </div>
-        <div style="font-size: 0.78rem; color: var(--text-muted);" id="momo_manual_steps">
-          If you do not see the prompt on your phone, open your approvals menu (*170# for MTN, *110# for Telecel).
+        <!-- TELCO SPECIFIC STEP-BY-STEP GUIDANCE -->
+        <div id="telco_guidance_container" class="telco-guidance-card">
+          <!-- Injected via JavaScript based on carrier -->
         </div>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-        <button id="btn_paystack_pay" class="btn-buy" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); font-weight: 800;" onclick="payWithPaystack()">
+        <button id="btn_paystack_pay" class="btn-buy" style="background: linear-gradient(135deg, #0F6B5C 0%, #10b981 100%); font-weight: 800;" onclick="payWithPaystack()">
           Pay with Mobile Money or Card
         </button>
         <button id="btn_approve_payment" class="btn-safety-guide" style="display: none; text-align: center; cursor: pointer; font-size: 0.85rem;" onclick="approveSimulatedPayment()">
           Check Payment Status
         </button>
-        <button class="btn-print" onclick="document.getElementById('checkout_step_payment').style.display='none'; document.getElementById('checkout_step_details').style.display='block';">
-          &larr; Back
+        <button class="btn-print" onclick="cancelPaymentStep()">
+          &larr; Back to Order Details
         </button>
       </div>
     </div>
