@@ -25,10 +25,13 @@
         value="{{ query or '' }}" 
         placeholder="Type Phone Number (e.g. 024 123 4567) or Order Number (ORD-...)" 
         class="form-input" 
-        style="flex: 1; min-width: 260px;" 
+        style="flex: 1; min-width: 260px; min-height: 48px;" 
+        inputmode="text"
+        autocomplete="tel"
+        aria-label="Phone Number or Order Reference"
         required
       >
-      <button type="submit" class="btn-buy" style="width: auto; padding: 0.85rem 1.75rem;">
+      <button type="submit" class="btn-buy" style="width: auto; min-height: 48px; padding: 0.85rem 1.75rem; display: inline-flex; align-items: center; justify-content: center;">
         Retrieve My Voucher
       </button>
     </form>

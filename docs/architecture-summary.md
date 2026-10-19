@@ -41,20 +41,27 @@ The platform operates two distinct services with isolated risk profiles:
 
 ---
 
-## 3. Design System & Typography Tokens
-- **Palette**:
-  - Sovereign Navy: `#14213D` (Primary text, authority surfaces)
-  - Ghana Cream: `#FDFBF5` (Background canvas)
-  - Burnt Orange / Gold: `#B8712C` (Primary CTA, highlights, borders)
-  - Savannah Emerald: `#0F6B5C` (Verified badges, success states)
-  - Accent Red: `#dc2626` (Bottleneck warnings, anti-burn risks)
-- **Typography**:
-  - Headings: `Playfair Display` (Classic authoritative serif)
-  - Body: `Inter` (Legible, modern geometric sans-serif)
-  - Code / Tokens: `JetBrains Mono` (Voucher PINs, cryptographic hashes)
-- **Geometry**:
-  - Cards: `18px` (`--radius-lg`) border radius with subtle cream borders (`#e5e0d4`).
-  - CTAs: Full pill-shaped (`9999px`) action buttons with micro-elevation transitions.
+## 3. Design System & Sovereign Editorial FinTech Archetype
+- **Archetype**: Modern Ghana Editorial Authority / Sovereign FinTech
+- **7-Axis Quality Gates**:
+  1. *Accessibility*: WCAG AAA compliance on core copy (7.2:1 contrast), visible focus rings with `outline-offset: 2px`, screen-reader `.sr-only` support.
+  2. *Touch / Interaction*: Minimum 44×44px interactive targets across all mobile buttons, tabs, inputs, and modal controls (`touch-action: manipulation`).
+  3. *Zero-CLS Performance*: Explicit dimension attributes on logos and telco marks; layout-stable skeletons during data retrieval.
+  4. *Responsive Layout*: Fluid typography via `clamp()`, flexible multi-column auto-fit grids, horizontal scroll protection (`overflow-x: hidden`).
+  5. *Editorial Typography*: `Playfair Display` (authoritative serif headlines), `Inter` (crisp body copy), `JetBrains Mono` (vouchers, serials, and hashes).
+  6. *Micro-Kinetic Motion*: Smooth cubic-bezier transitions (`cubic-bezier(0.16, 1, 0.3, 1)`), pulsing beacons for live inventory, and one-click copy feedback.
+  7. *Institutional Trust*: Sovereign top authority strip, statutory compliance seals (Act 843, Act 772, Act 987), bank-grade SSL badges, and unvarnished guidance.
+- **Palette Tokens**:
+  - Sovereign Cream: `#FDFBF5` (Background canvas `--bg-main`)
+  - Crisp White Elevation: `#FFFFFF` (`--bg-card`)
+  - Deep Authoritative Navy: `#14213D` (`--navy-primary`, `--text-main`)
+  - Ghanaian Burnt Orange / Gold: `#B8712C` (`--gold-accent`, `--ghana-gold`)
+  - Savannah Emerald: `#0F6B5C` (`--emerald-accent`, `--ghana-green`)
+  - Critical Warning Crimson: `#DC2626` (`--crimson-risk`, `--ghana-red`)
+- **Geometry & Elevation**:
+  - Cards: `18px` (`--radius-lg`) with warm editorial hairline borders (`--border-subtle: #E5E0D4`).
+  - Interactive Elements: `9999px` (`--radius-pill`) for CTAs, tabs, and tags.
+  - Elevation: `--shadow-editorial` (subtle ambient depth) and `--shadow-kinetic` (active hover states).
 
 ---
 

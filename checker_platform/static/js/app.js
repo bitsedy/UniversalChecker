@@ -72,10 +72,38 @@ document.addEventListener("DOMContentLoaded", () => {
   setupSystemNavigationLoader();
   setupTelcoAutoDetect();
   setupQuantityListeners();
+  setupModalAccessibility();
   // initLiveSocialProof(); // Halted during testing stage to preserve authenticity
   initScrollEngine();
   setupVoucherCopyDelegation();
 });
+
+// Accessible Modal Keyboard & Backdrop Handlers
+function setupModalAccessibility() {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const checkoutModal = document.getElementById("checkout_modal");
+      if (checkoutModal && checkoutModal.classList.contains("active")) {
+        closeModal();
+      }
+      const dossierModal = document.getElementById("dossier_modal");
+      if (dossierModal && dossierModal.style.display !== "none") {
+        if (typeof closeDossierModal === "function") {
+          closeDossierModal();
+        }
+      }
+    }
+  });
+
+  const checkoutModal = document.getElementById("checkout_modal");
+  if (checkoutModal) {
+    checkoutModal.addEventListener("click", (e) => {
+      if (e.target === checkoutModal) {
+        closeModal();
+      }
+    });
+  }
+}
 
 // Auto-detect Ghanaian network from phone number & update carrier badge
 function setupTelcoAutoDetect() {

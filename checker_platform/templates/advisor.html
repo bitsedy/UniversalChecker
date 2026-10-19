@@ -1261,21 +1261,21 @@
         <div
           style="background: #f8fafc; border-top: 1px solid var(--border-subtle); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <button type="button" onclick="closeDossierModal()" class="btn-lookup"
-            style="padding: 0.5rem 1rem; font-size: 0.825rem;">
+            style="min-height: 44px; padding: 0.5rem 1.15rem; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-pill);">
             Close
           </button>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" id="btn_print_dossier" onclick="printDossierCard()" class="btn-lookup"
-              style="padding: 0.5rem 1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              style="min-height: 44px; padding: 0.5rem 1.15rem; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius-pill);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
               Print Card
             </button>
-            <button type="button" id="btn_copy_dossier" onclick="copyDossierText()" class="btn-lookup"
-              style="padding: 0.5rem 1.1rem; font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
+            <button type="button" id="btn_copy_dossier" onclick="copyDossierText()" class="btn-copy"
+              style="min-height: 44px; padding: 0.5rem 1.15rem; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius-pill);">
               Copy Text
             </button>
             <button type="button" onclick="shareDossierWhatsApp()" class="btn-safety-guide"
-              style="background: #16a34a; color: #ffffff; padding: 0.5rem 1.25rem; font-size: 0.825rem; font-weight: 800; display: inline-flex; align-items: center; gap: 6px;">
+              style="min-height: 44px; background: #16a34a; color: #ffffff; padding: 0.5rem 1.25rem; font-size: 0.85rem; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius-pill);">
               Share on WhatsApp
             </button>
           </div>
