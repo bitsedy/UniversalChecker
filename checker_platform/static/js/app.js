@@ -452,12 +452,19 @@ function showPaymentPrompt(data) {
 
   // Start 10-minute reservation countdown
   startMomoHoldCountdown(600);
+
+  // Automatically open official Paystack checkout modal in live mode
+  if (currentPaystackKey && typeof PaystackPop !== "undefined") {
+    setTimeout(() => {
+      payWithPaystack();
+    }, 150);
+  }
 }
 
 // Trigger Official Paystack Popup Modal (MoMo & Card)
 function payWithPaystack() {
   if (!currentOrder) return;
-  if (!currentPaystackKey || currentPaystackKey.includes("sample")) {
+  if (!currentPaystackKey) {
     alert("Payment Gateway Notice:\nThe payment gateway is currently establishing a secure connection. Please refresh or contact support if this persists.");
     return;
   }

@@ -1147,10 +1147,7 @@
 
               <div style="display: flex; flex-direction: column; gap: 8px;">
                 <button type="button" id="btn_confirm_checkout" onclick="executeAdvisoryPayment()" class="btn-safety-guide" style="width: 100%; padding: 0.8rem; font-size: 0.92rem; font-weight: 900; background: #b45309; color: #ffffff; border: none; border-radius: var(--radius-md); cursor: pointer; text-align: center;">
-                  Pay With Mobile Money Prompt
-                </button>
-                <button type="button" id="btn_advisory_demo_pass" onclick="executeAdvisoryDemoUnlock()" class="btn-lookup" style="display: none; width: 100%; padding: 0.65rem; font-size: 0.82rem; font-weight: 800; border-radius: var(--radius-md); color: #059669; border-color: #86efac; background: #f0fdf4; cursor: pointer; text-align: center;">
-                  ⚡️ Instant Test Unlock (1-Click Demo Pass)
+                  Pay with Mobile Money or Card
                 </button>
               </div>
             </div>
@@ -2867,7 +2864,7 @@
       const btn = document.getElementById("btn_confirm_checkout");
       const origText = btn.innerText;
       btn.disabled = true;
-      btn.innerText = "Sending Mobile Money Prompt...";
+      btn.innerText = "Securing order...";
 
       try {
         const orderRes = await fetch("/api/advisor/order", {
@@ -2884,40 +2881,69 @@
           throw new Error(orderData.message || "Failed to initiate payment.");
         }
 
-        btn.innerText = "Confirming Authorization...";
-        const verifyRes = await fetch("/api/advisor/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            order_reference: orderData.order_reference,
-            provider: "MOBILE_MONEY"
-          })
-        });
-        const verifyData = await verifyRes.json();
-        if (!verifyRes.ok || !verifyData.success) {
-          throw new Error(verifyData.detail || "Payment verification failed.");
+        const paystackKey = orderData.paystack_public_key;
+        if (!paystackKey) {
+          throw new Error("Payment gateway is initializing. Please refresh and try again.");
+        }
+        if (typeof PaystackPop === "undefined") {
+          throw new Error("Payment system is loading. Please check your internet connection and try again.");
         }
 
-        activeUnlockCode = verifyData.unlock_code;
-        activeAdvisoryTier = verifyData.tier;
+        btn.innerText = "Opening Paystack...";
+        const handler = PaystackPop.setup({
+          key: paystackKey,
+          email: `buyer_${orderData.order_reference.toLowerCase().replace(/[^a-z0-9]/g, "")}@checkerpay.gh`,
+          amount: Math.round(orderData.amount * 100),
+          currency: "GHS",
+          ref: orderData.order_reference,
+          channels: ["mobile_money", "card"],
+          metadata: {
+            custom_fields: [
+              { display_name: "Customer Phone", variable_name: "customer_phone", value: phone },
+              { display_name: "Tier", variable_name: "tier", value: selectedAdvisoryTier }
+            ]
+          },
+          callback: async function(response) {
+            btn.innerText = "Confirming payment...";
+            try {
+              const verifyRes = await fetch("/api/advisor/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  order_reference: response.reference,
+                  provider: "PAYSTACK"
+                })
+              });
+              const verifyData = await verifyRes.json();
+              if (!verifyRes.ok || !verifyData.success) {
+                throw new Error(verifyData.detail || "Payment verification failed.");
+              }
 
-        closeAdvisoryCheckoutModal();
-        alert(`Payment successful! Your ${verifyData.tier.replace(/_/g, " ")} has been unlocked.`);
-        refreshAnalysisWithTier(activeAdvisoryTier, activeUnlockCode);
+              activeUnlockCode = verifyData.unlock_code;
+              activeAdvisoryTier = verifyData.tier;
+
+              closeAdvisoryCheckoutModal();
+              alert(`Payment successful! Your ${verifyData.tier.replace(/_/g, " ")} has been unlocked.`);
+              refreshAnalysisWithTier(activeAdvisoryTier, activeUnlockCode);
+            } catch (vErr) {
+              alert("Payment confirmation error: " + vErr.message);
+            } finally {
+              btn.disabled = false;
+              btn.innerText = origText;
+            }
+          },
+          onClose: function() {
+            btn.disabled = false;
+            btn.innerText = origText;
+          }
+        });
+        handler.openIframe();
 
       } catch (err) {
         alert("Checkout error: " + err.message);
-      } finally {
         btn.disabled = false;
         btn.innerText = origText;
       }
-    }
-
-    function executeAdvisoryDemoUnlock() {
-      activeUnlockCode = "GHANA2026";
-      activeAdvisoryTier = "TIER_HERO";
-      closeAdvisoryCheckoutModal();
-      refreshAnalysisWithTier("TIER_HERO", "GHANA2026");
     }
 
     function refreshAnalysisWithTier(tier, unlockCode) {

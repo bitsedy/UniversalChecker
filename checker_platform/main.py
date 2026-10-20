@@ -1120,9 +1120,13 @@ async def api_create_order(req: OrderCreateRequest, request: Request):
         provider=req.payment_method
     )
 
+    secret_key = get_setting("paystack_secret_key", "")
+    is_live = bool(secret_key and not secret_key.startswith("sk_test_sample") and not is_test_environment())
+
     result_payload = {
         "success": True,
         "order": order,
+        "is_live": is_live,
         "payment_prompt": prompt_info,
         "paystack_public_key": get_setting("paystack_public_key")
     }
@@ -1603,13 +1607,18 @@ async def api_create_advisory_order(req: AdvisoryOrderRequest):
         payment_method=req.payment_method
     )
 
+    secret_key = get_setting("paystack_secret_key", "")
+    is_live = bool(secret_key and not secret_key.startswith("sk_test_sample") and not is_test_environment())
+
     return {
         "success": True,
         "order_reference": order_ref,
         "amount": unit_price,
         "tier": tier,
         "currency": "GHS",
-        "order": order_data
+        "order": order_data,
+        "is_live": is_live,
+        "paystack_public_key": get_setting("paystack_public_key")
     }
 
 @app.post("/api/advisor/verify")
