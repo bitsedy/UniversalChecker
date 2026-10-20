@@ -1112,7 +1112,37 @@ async def api_create_order(req: OrderCreateRequest, request: Request):
         payment_method=req.payment_method
     )
 
-    # Generate Payment Prompt
+    secret_key = get_setting("paystack_secret_key", "")
+    is_live = bool(secret_key and not secret_key.startswith("sk_test_sample") and not is_test_environment())
+
+    charge_result = None
+    authorization_url = None
+    access_code = None
+
+    if is_live:
+        # Directly trigger authentic telco USSD prompt on customer's phone
+        charge_result = PaystackProvider.charge_mobile_money(
+            phone=req.customer_phone,
+            network=req.payment_method,
+            amount_ghs=order["total_amount"],
+            order_ref=order_ref,
+            email=req.customer_email
+        )
+        # Also initialize checkout session for optional card/popup fallback
+        try:
+            init_res = PaystackProvider.initialize_transaction(
+                email=req.customer_email or f"buyer_{order_ref.lower().replace('-', '_')}@checkerpay.gh",
+                amount_ghs=order["total_amount"],
+                order_ref=order_ref,
+                callback_url=str(request.base_url).rstrip("/") + f"/lookup?ref={order_ref}"
+            )
+            if init_res.get("status"):
+                authorization_url = init_res.get("data", {}).get("authorization_url")
+                access_code = init_res.get("data", {}).get("access_code")
+        except Exception as e:
+            logger.warning(f"Paystack transaction init fallback failed: {e}")
+
+    # Telco step instructions
     prompt_info = GhanaMoMoSimulator.trigger_momo_prompt(
         order_ref=order_ref,
         phone=req.customer_phone,
@@ -1120,13 +1150,14 @@ async def api_create_order(req: OrderCreateRequest, request: Request):
         provider=req.payment_method
     )
 
-    secret_key = get_setting("paystack_secret_key", "")
-    is_live = bool(secret_key and not secret_key.startswith("sk_test_sample") and not is_test_environment())
-
     result_payload = {
         "success": True,
         "order": order,
         "is_live": is_live,
+        "charge_status": charge_result.get("status") if charge_result else None,
+        "charge_data": charge_result.get("data") if charge_result else None,
+        "authorization_url": authorization_url,
+        "access_code": access_code,
         "payment_prompt": prompt_info,
         "paystack_public_key": get_setting("paystack_public_key")
     }
@@ -1610,6 +1641,16 @@ async def api_create_advisory_order(req: AdvisoryOrderRequest):
     secret_key = get_setting("paystack_secret_key", "")
     is_live = bool(secret_key and not secret_key.startswith("sk_test_sample") and not is_test_environment())
 
+    charge_result = None
+    if is_live:
+        charge_result = PaystackProvider.charge_mobile_money(
+            phone=clean_phone,
+            network=req.payment_method,
+            amount_ghs=unit_price,
+            order_ref=order_ref,
+            email=req.customer_email
+        )
+
     return {
         "success": True,
         "order_reference": order_ref,
@@ -1618,6 +1659,7 @@ async def api_create_advisory_order(req: AdvisoryOrderRequest):
         "currency": "GHS",
         "order": order_data,
         "is_live": is_live,
+        "charge_status": charge_result.get("status") if charge_result else None,
         "paystack_public_key": get_setting("paystack_public_key")
     }
 

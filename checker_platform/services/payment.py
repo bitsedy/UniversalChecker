@@ -176,7 +176,8 @@ class PaystackProvider:
             data=json.dumps(payload).encode("utf-8"),
             headers={
                 "Authorization": f"Bearer {secret_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "User-Agent": "CheckerPay-GhanaPlatform/1.0 (Linux x86_64; HTTPS)"
             }
         )
         try:
@@ -192,6 +193,80 @@ class PaystackProvider:
             return {"status": False, "message": str(e)}
 
     @classmethod
+    def charge_mobile_money(
+        cls,
+        phone: str,
+        network: str,
+        amount_ghs: float,
+        order_ref: str,
+        email: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Sends an authentic real-time Mobile Money USSD authorization prompt
+        directly to the customer's phone in Ghana (MTN MoMo, Telecel Cash, AT Money).
+        """
+        secret_key = cls.get_secret_key()
+        url = "https://api.paystack.co/charge"
+        amount_pesewas = int(round(amount_ghs * 100))
+        
+        # Standardize phone number for Ghana (10-digit format e.g. 0241234567)
+        clean_phone = re.sub(r"\D", "", phone)
+        if clean_phone.startswith("233") and len(clean_phone) == 12:
+            clean_phone = "0" + clean_phone[3:]
+            
+        # Map network to Paystack Ghana telco provider tags
+        net_upper = (network or "").upper()
+        if "MTN" in net_upper:
+            provider_tag = "mtn"
+        elif "TELECEL" in net_upper or "VODAFONE" in net_upper:
+            provider_tag = "vod"
+        elif "AT" in net_upper or "AIRTEL" in net_upper or "TIGO" in net_upper:
+            provider_tag = "atl"
+        else:
+            detected = detect_ghana_telco(clean_phone)
+            provider_map = {"MTN": "mtn", "TELECEL": "vod", "AT": "atl"}
+            provider_tag = provider_map.get(detected, "mtn")
+
+        buyer_email = email.strip() if (email and email.strip()) else f"buyer_{order_ref.lower().replace('-', '_')}@checkerpay.gh"
+
+        payload = {
+            "email": buyer_email,
+            "amount": str(amount_pesewas),
+            "currency": "GHS",
+            "reference": order_ref,
+            "mobile_money": {
+                "phone": clean_phone,
+                "provider": provider_tag
+            },
+            "metadata": {
+                "order_reference": order_ref,
+                "customer_phone": clean_phone,
+                "network": provider_tag,
+                "platform": "UniversalChecker Ghana"
+            }
+        }
+
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {secret_key}",
+                "Content-Type": "application/json",
+                "User-Agent": "CheckerPay-GhanaPlatform/1.0 (Linux x86_64; HTTPS)"
+            }
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8")
+            logger.warning(f"Paystack charge HTTP error: {err_body}")
+            return {"status": False, "message": f"Paystack error: {err_body}"}
+        except Exception as e:
+            logger.exception("Failed to contact Paystack Charge API")
+            return {"status": False, "message": str(e)}
+
+    @classmethod
     def verify_transaction(cls, reference: str) -> Dict[str, Any]:
         """Verifies transaction status directly against Paystack."""
         secret_key = cls.get_secret_key()
@@ -199,11 +274,18 @@ class PaystackProvider:
         url = f"https://api.paystack.co/transaction/verify/{quoted_ref}"
         req = urllib.request.Request(
             url,
-            headers={"Authorization": f"Bearer {secret_key}"}
+            headers={
+                "Authorization": f"Bearer {secret_key}",
+                "User-Agent": "CheckerPay-GhanaPlatform/1.0 (Linux x86_64; HTTPS)"
+            }
         )
         try:
             with urllib.request.urlopen(req, timeout=15) as response:
                 return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8")
+            logger.warning(f"Paystack verification error for {reference}: {err_body}")
+            return {"status": False, "message": f"Paystack error: {err_body}"}
         except Exception as e:
             logger.error(f"Paystack verification error for {reference}: {e}")
             return {"status": False, "message": str(e)}

@@ -231,6 +231,51 @@ let activePortalUrl = "";
 let activePortalName = "";
 
 let momoCountdownInterval = null;
+let paymentPollingInterval = null;
+
+function stopPaymentPolling() {
+  if (paymentPollingInterval) {
+    clearInterval(paymentPollingInterval);
+    paymentPollingInterval = null;
+  }
+}
+
+function startPaymentPolling(orderRef) {
+  stopPaymentPolling();
+  let attempts = 0;
+  const maxAttempts = 120; // Poll for up to 6 minutes (every 3 seconds)
+  
+  paymentPollingInterval = setInterval(async () => {
+    attempts++;
+    if (attempts > maxAttempts) {
+      stopPaymentPolling();
+      return;
+    }
+    try {
+      const res = await fetch("/api/orders/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_reference: orderRef,
+          provider: "PAYSTACK"
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        stopPaymentPolling();
+        if (momoCountdownInterval) {
+          clearInterval(momoCountdownInterval);
+          momoCountdownInterval = null;
+        }
+        document.getElementById("checkout_step_payment").style.display = "none";
+        document.getElementById("checkout_step_success").style.display = "block";
+        showSuccessVouchers(data);
+      }
+    } catch (e) {
+      // Polling quietly in background
+    }
+  }, 3000);
+}
 
 function closeModal() {
   if (redirectTimer) {
@@ -241,6 +286,7 @@ function closeModal() {
     clearInterval(momoCountdownInterval);
     momoCountdownInterval = null;
   }
+  stopPaymentPolling();
   document.getElementById("checkout_modal").classList.remove("active");
 }
 
@@ -249,6 +295,7 @@ function cancelPaymentStep() {
     clearInterval(momoCountdownInterval);
     momoCountdownInterval = null;
   }
+  stopPaymentPolling();
   document.getElementById("checkout_step_payment").style.display = "none";
   document.getElementById("checkout_step_details").style.display = "block";
   const btn = document.getElementById("btn_submit_order");
@@ -437,6 +484,7 @@ function showPaymentPrompt(data) {
   document.getElementById("checkout_step_payment").style.display = "block";
 
   currentPaystackKey = data.paystack_public_key || "";
+  currentOrder = data.order;
 
   const promptInfo = data.payment_prompt || {};
   const network = promptInfo.network || "MTN Mobile Money";
@@ -447,17 +495,24 @@ function showPaymentPrompt(data) {
   document.getElementById("momo_display_amount").innerText = `GHS ${parseFloat(amountGhs).toFixed(2)}`;
   document.getElementById("momo_display_order_ref").innerText = data.order.order_reference;
 
+  const beaconEl = document.getElementById("momo_beacon_text");
+  if (beaconEl) {
+    if (data.is_live && data.charge_status) {
+      beaconEl.innerText = "Payment prompt sent to your phone! Enter your MoMo PIN to complete.";
+    } else {
+      beaconEl.innerText = "Awaiting your payment authorization on your phone...";
+    }
+  }
+
   // Render network specific USSD walkthrough
   renderTelcoUssdGuide(network);
 
   // Start 10-minute reservation countdown
   startMomoHoldCountdown(600);
 
-  // Automatically open official Paystack checkout modal in live mode
-  if (currentPaystackKey && typeof PaystackPop !== "undefined") {
-    setTimeout(() => {
-      payWithPaystack();
-    }, 150);
+  // Start real-time background polling for instant handset approval
+  if (data.order && data.order.order_reference) {
+    startPaymentPolling(data.order.order_reference);
   }
 }
 
@@ -556,6 +611,7 @@ function renderVouchersSkeleton(qty = 1) {
 }
 
 async function verifyPaystackPayment(orderRef) {
+  stopPaymentPolling();
   const btn = document.getElementById("btn_paystack_pay");
   if (btn) {
     btn.innerHTML = `${getSmartLoaderHtml("sm", "#FFFFFF", "#F59E0B")}<span>Confirming Payment...</span>`;

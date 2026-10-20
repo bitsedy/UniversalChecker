@@ -2882,63 +2882,102 @@
         }
 
         const paystackKey = orderData.paystack_public_key;
-        if (!paystackKey) {
-          throw new Error("Payment gateway is initializing. Please refresh and try again.");
+
+        // If Paystack sent prompt directly to handset, notify user and start polling
+        if (orderData.charge_status) {
+          btn.innerText = "Prompt sent to your phone! Approving...";
+        } else {
+          btn.innerText = "Opening secure gateway...";
         }
-        if (typeof PaystackPop === "undefined") {
-          throw new Error("Payment system is loading. Please check your internet connection and try again.");
-        }
 
-        btn.innerText = "Opening Paystack...";
-        const handler = PaystackPop.setup({
-          key: paystackKey,
-          email: `buyer_${orderData.order_reference.toLowerCase().replace(/[^a-z0-9]/g, "")}@checkerpay.gh`,
-          amount: Math.round(orderData.amount * 100),
-          currency: "GHS",
-          ref: orderData.order_reference,
-          channels: ["mobile_money", "card"],
-          metadata: {
-            custom_fields: [
-              { display_name: "Customer Phone", variable_name: "customer_phone", value: phone },
-              { display_name: "Tier", variable_name: "tier", value: selectedAdvisoryTier }
-            ]
-          },
-          callback: async function(response) {
-            btn.innerText = "Confirming payment...";
-            try {
-              const verifyRes = await fetch("/api/advisor/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  order_reference: response.reference,
-                  provider: "PAYSTACK"
-                })
-              });
-              const verifyData = await verifyRes.json();
-              if (!verifyRes.ok || !verifyData.success) {
-                throw new Error(verifyData.detail || "Payment verification failed.");
-              }
-
-              activeUnlockCode = verifyData.unlock_code;
-              activeAdvisoryTier = verifyData.tier;
-
-              closeAdvisoryCheckoutModal();
-              alert(`Payment successful! Your ${verifyData.tier.replace(/_/g, " ")} has been unlocked.`);
-              refreshAnalysisWithTier(activeAdvisoryTier, activeUnlockCode);
-            } catch (vErr) {
-              alert("Payment confirmation error: " + vErr.message);
-            } finally {
-              btn.disabled = false;
-              btn.innerText = origText;
-            }
-          },
-          onClose: function() {
+        let isPolling = true;
+        let attempts = 0;
+        const poller = setInterval(async () => {
+          if (!isPolling) return;
+          attempts++;
+          if (attempts > 100) {
+            clearInterval(poller);
+            isPolling = false;
             btn.disabled = false;
             btn.innerText = origText;
+            return;
           }
-        });
-        handler.openIframe();
+          try {
+            const vRes = await fetch("/api/advisor/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                order_reference: orderData.order_reference,
+                provider: "PAYSTACK"
+              })
+            });
+            const vData = await vRes.json();
+            if (vRes.ok && vData.success) {
+              clearInterval(poller);
+              isPolling = false;
+              activeUnlockCode = vData.unlock_code;
+              activeAdvisoryTier = vData.tier;
+              closeAdvisoryCheckoutModal();
+              alert(`Payment successful! Your ${vData.tier.replace(/_/g, " ")} has been unlocked.`);
+              refreshAnalysisWithTier(activeAdvisoryTier, activeUnlockCode);
+            }
+          } catch (e) {
+            // Polling quietly in background
+          }
+        }, 3000);
 
+        // Open Paystack iframe popup if needed or requested
+        if (paystackKey && typeof PaystackPop !== "undefined" && !orderData.charge_status) {
+          const handler = PaystackPop.setup({
+            key: paystackKey,
+            email: `buyer_${orderData.order_reference.toLowerCase().replace(/[^a-z0-9]/g, "")}@checkerpay.gh`,
+            amount: Math.round(orderData.amount * 100),
+            currency: "GHS",
+            ref: orderData.order_reference,
+            channels: ["mobile_money", "card"],
+            metadata: {
+              custom_fields: [
+                { display_name: "Customer Phone", variable_name: "customer_phone", value: phone },
+                { display_name: "Tier", variable_name: "tier", value: selectedAdvisoryTier }
+              ]
+            },
+            callback: async function(response) {
+              isPolling = false;
+              clearInterval(poller);
+              btn.innerText = "Confirming payment...";
+              try {
+                const verifyRes = await fetch("/api/advisor/verify", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    order_reference: response.reference,
+                    provider: "PAYSTACK"
+                  })
+                });
+                const verifyData = await verifyRes.json();
+                if (!verifyRes.ok || !verifyData.success) {
+                  throw new Error(verifyData.detail || "Payment verification failed.");
+                }
+
+                activeUnlockCode = verifyData.unlock_code;
+                activeAdvisoryTier = verifyData.tier;
+
+                closeAdvisoryCheckoutModal();
+                alert(`Payment successful! Your ${verifyData.tier.replace(/_/g, " ")} has been unlocked.`);
+                refreshAnalysisWithTier(activeAdvisoryTier, activeUnlockCode);
+              } catch (vErr) {
+                alert("Payment confirmation error: " + vErr.message);
+              } finally {
+                btn.disabled = false;
+                btn.innerText = origText;
+              }
+            },
+            onClose: function() {
+              console.log("Paystack modal closed. Waiting for phone approval.");
+            }
+          });
+          handler.openIframe();
+        }
       } catch (err) {
         alert("Checkout error: " + err.message);
         btn.disabled = false;
