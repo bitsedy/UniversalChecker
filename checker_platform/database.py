@@ -8,6 +8,7 @@ import sqlite3
 import os
 import random
 import time
+import re
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional, Tuple
 
@@ -653,6 +654,30 @@ def lookup_orders_by_customer(query: str) -> List[Dict[str, Any]]:
             results.append(item)
             
         return results
+    finally:
+        conn.close()
+
+def is_returning_customer_phone(phone: str) -> bool:
+    """Checks if a customer phone number has previously completed a verified paid order."""
+    if not phone:
+        return False
+    raw_query = phone.strip()
+    phone_clean = re.sub(r"\D", "", raw_query)
+    variants = [phone_clean, raw_query]
+    if phone_clean.startswith("0") and len(phone_clean) == 10:
+        variants.append("+233" + phone_clean[1:])
+        variants.append("233" + phone_clean[1:])
+    elif phone_clean.startswith("233") and len(phone_clean) == 12:
+        variants.append("0" + phone_clean[3:])
+        variants.append("+" + phone_clean)
+    conn = get_db_connection()
+    try:
+        placeholders = ",".join("?" for _ in variants)
+        row = conn.execute(
+            f"SELECT COUNT(*) as cnt FROM orders WHERE customer_phone IN ({placeholders}) AND payment_status = 'PAID'",
+            variants
+        ).fetchone()
+        return bool(row and row["cnt"] > 0)
     finally:
         conn.close()
 

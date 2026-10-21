@@ -1123,32 +1123,73 @@
             </div>
 
             <div style="padding: 1.5rem;">
-              <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.25rem; font-size: 0.825rem; color: var(--text-muted);">
-                🔐 <strong>Instant Access Guarantee:</strong> Enter your Mobile Money number. Upon confirmation, your full 10-school analysis and CSSPS selection sequence unlock immediately.
-              </div>
+              <!-- ADVISORY DETAILS STEP -->
+              <div id="advisory_step_form">
+                <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.25rem; font-size: 0.825rem; color: var(--text-muted);">
+                  🔐 <strong>Instant Access Guarantee:</strong> Enter your Mobile Money number. Upon confirmation, your full 10-school analysis and CSSPS selection sequence unlock immediately.
+                </div>
 
-              <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-size: 0.825rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
-                  Mobile Money Phone Number (Ghana)
-                </label>
-                <input type="tel" id="checkout_phone" placeholder="e.g. 024 123 4567" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 700; color: var(--text-main);">
-              </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; font-size: 0.825rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                    Mobile Money Phone Number (Ghana)
+                  </label>
+                  <input type="tel" id="checkout_phone" placeholder="e.g. 024 123 4567" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 700; color: var(--text-main);">
+                </div>
 
-              <div style="margin-bottom: 1.25rem;">
-                <label style="display: block; font-size: 0.825rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
-                  Select Mobile Network
-                </label>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                  <button type="button" class="net-btn selected-net" onclick="selectCheckoutNet('MTN_MOMO', this)" style="padding: 0.6rem 0.4rem; font-size: 0.78rem; font-weight: 800; border: 1px solid #eab308; background: #fef9c3; border-radius: var(--radius-md); cursor: pointer;">MTN MoMo</button>
-                  <button type="button" class="net-btn" onclick="selectCheckoutNet('TELECEL_CASH', this)" style="padding: 0.6rem 0.4rem; font-size: 0.78rem; font-weight: 800; border: 1px solid var(--border-subtle); background: #ffffff; border-radius: var(--radius-md); cursor: pointer;">Telecel Cash</button>
-                  <button type="button" class="net-btn" onclick="selectCheckoutNet('AT_MONEY', this)" style="padding: 0.6rem 0.4rem; font-size: 0.78rem; font-weight: 800; border: 1px solid var(--border-subtle); background: #ffffff; border-radius: var(--radius-md); cursor: pointer;">AT Money</button>
+                <div style="margin-bottom: 1.25rem;">
+                  <label style="display: block; font-size: 0.825rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                    Select Mobile Network
+                  </label>
+                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                    <button type="button" class="net-btn selected-net" onclick="selectCheckoutNet('MTN_MOMO', this)" style="padding: 0.6rem 0.4rem; font-size: 0.78rem; font-weight: 800; border: 1px solid #eab308; background: #fef9c3; border-radius: var(--radius-md); cursor: pointer;">MTN MoMo</button>
+                    <button type="button" class="net-btn" onclick="selectCheckoutNet('TELECEL_CASH', this)" style="padding: 0.6rem 0.4rem; font-size: 0.78rem; font-weight: 800; border: 1px solid var(--border-subtle); background: #ffffff; border-radius: var(--radius-md); cursor: pointer;">Telecel Cash</button>
+                    <button type="button" class="net-btn" onclick="selectCheckoutNet('AT_MONEY', this)" style="padding: 0.6rem 0.4rem; font-size: 0.78rem; font-weight: 800; border: 1px solid var(--border-subtle); background: #ffffff; border-radius: var(--radius-md); cursor: pointer;">AT Money</button>
+                  </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <button type="button" id="btn_confirm_checkout" onclick="executeAdvisoryPayment()" class="btn-safety-guide" style="width: 100%; padding: 0.8rem; font-size: 0.92rem; font-weight: 900; background: #b45309; color: #ffffff; border: none; border-radius: var(--radius-md); cursor: pointer; text-align: center;">
+                    Pay with Mobile Money or Card
+                  </button>
                 </div>
               </div>
 
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button type="button" id="btn_confirm_checkout" onclick="executeAdvisoryPayment()" class="btn-safety-guide" style="width: 100%; padding: 0.8rem; font-size: 0.92rem; font-weight: 900; background: #b45309; color: #ffffff; border: none; border-radius: var(--radius-md); cursor: pointer; text-align: center;">
-                  Pay with Mobile Money or Card
+              <!-- ADVISORY OTP VERIFICATION STEP (FIRST TIME PHONES) -->
+              <div id="advisory_step_otp" style="display: none; text-align: center;">
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem; text-align: left;">
+                  <p style="font-size: 0.875rem; color: #166534; line-height: 1.45; margin: 0;">
+                    A one-time verification code has been sent by SMS to <strong id="advisory_otp_phone" style="color: #14532d;">024 000 0000</strong>. Enter the code below to complete setup.
+                  </p>
+                </div>
+
+                <div style="margin-bottom: 1.25rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                    6-Digit SMS Code
+                  </label>
+                  <input 
+                    type="tel" 
+                    id="advisory_otp_input" 
+                    placeholder="123456" 
+                    maxlength="6" 
+                    inputmode="numeric"
+                    style="letter-spacing: 8px; font-size: 1.6rem; text-align: center; font-weight: 800; padding: 10px; width: 220px; margin: 0 auto; display: block; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);"
+                  >
+                  <div id="advisory_otp_err" style="display: none; color: #dc2626; font-size: 0.85rem; margin-top: 6px; font-weight: 600;"></div>
+                </div>
+
+                <button type="button" id="btn_advisory_submit_otp" onclick="submitAdvisoryOtp()" class="btn-safety-guide" style="width: 100%; padding: 0.8rem; font-size: 0.92rem; font-weight: 900; background: #166534; color: #ffffff; border: none; border-radius: var(--radius-md); cursor: pointer; text-align: center;">
+                  Confirm Code &amp; Send Payment Prompt &rarr;
                 </button>
+
+                <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: center; font-size: 0.85rem;">
+                  <button type="button" id="btn_advisory_resend_otp" onclick="resendAdvisoryOtp()" style="background: none; border: none; color: #166534; font-weight: 700; cursor: pointer; text-decoration: underline;">
+                    Didn't get the code? Resend SMS
+                  </button>
+                  <span id="advisory_otp_resend_countdown" style="color: var(--text-dim); font-size: 0.8rem; display: none;"></span>
+                  <button type="button" onclick="cancelAdvisoryOtp()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; margin-top: 4px;">
+                    &larr; Change phone number
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -2844,12 +2885,217 @@
         if (priceEl) priceEl.innerText = "Price: GH₵ 15.00 (One-time Access)";
       }
 
+      const formEl = document.getElementById("advisory_step_form");
+      const otpEl = document.getElementById("advisory_step_otp");
+      if (formEl) formEl.style.display = "block";
+      if (otpEl) otpEl.style.display = "none";
+
       if (modal) modal.style.display = "flex";
     }
 
     function closeAdvisoryCheckoutModal() {
       const modal = document.getElementById("advisory_checkout_modal");
       if (modal) modal.style.display = "none";
+      if (advisoryOtpInterval) {
+        clearInterval(advisoryOtpInterval);
+        advisoryOtpInterval = null;
+      }
+    }
+
+    let activeAdvisoryOrderData = null;
+    let advisoryOtpCountdown = 30;
+    let advisoryOtpInterval = null;
+
+    function startAdvisoryOtpTimer() {
+      if (advisoryOtpInterval) {
+        clearInterval(advisoryOtpInterval);
+        advisoryOtpInterval = null;
+      }
+      advisoryOtpCountdown = 30;
+      const btnResend = document.getElementById("btn_advisory_resend_otp");
+      const countSpan = document.getElementById("advisory_otp_resend_countdown");
+      if (btnResend) {
+        btnResend.disabled = true;
+        btnResend.style.opacity = "0.5";
+        btnResend.style.cursor = "not-allowed";
+      }
+      if (countSpan) {
+        countSpan.style.display = "inline";
+        countSpan.textContent = `(Resend in ${advisoryOtpCountdown}s)`;
+      }
+      advisoryOtpInterval = setInterval(() => {
+        advisoryOtpCountdown--;
+        if (advisoryOtpCountdown <= 0) {
+          clearInterval(advisoryOtpInterval);
+          advisoryOtpInterval = null;
+          if (btnResend) {
+            btnResend.disabled = false;
+            btnResend.style.opacity = "1";
+            btnResend.style.cursor = "pointer";
+          }
+          if (countSpan) countSpan.style.display = "none";
+        } else {
+          if (countSpan) countSpan.textContent = `(Resend in ${advisoryOtpCountdown}s)`;
+        }
+      }, 1000);
+    }
+
+    function showAdvisoryOtpPrompt(orderData) {
+      activeAdvisoryOrderData = orderData;
+      document.getElementById("advisory_step_form").style.display = "none";
+      document.getElementById("advisory_step_otp").style.display = "block";
+      const phoneEl = document.getElementById("advisory_otp_phone");
+      if (phoneEl) {
+        phoneEl.textContent = (orderData.order && orderData.order.customer_phone) || document.getElementById("checkout_phone").value.trim();
+      }
+      const inp = document.getElementById("advisory_otp_input");
+      if (inp) {
+        inp.value = "";
+        setTimeout(() => inp.focus(), 250);
+      }
+      const errEl = document.getElementById("advisory_otp_err");
+      if (errEl) errEl.style.display = "none";
+      startAdvisoryOtpTimer();
+    }
+
+    function cancelAdvisoryOtp() {
+      if (advisoryOtpInterval) {
+        clearInterval(advisoryOtpInterval);
+        advisoryOtpInterval = null;
+      }
+      document.getElementById("advisory_step_otp").style.display = "none";
+      document.getElementById("advisory_step_form").style.display = "block";
+      const btn = document.getElementById("btn_confirm_checkout");
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = "Pay with Mobile Money or Card";
+      }
+    }
+
+    async function submitAdvisoryOtp() {
+      const inp = document.getElementById("advisory_otp_input");
+      const errEl = document.getElementById("advisory_otp_err");
+      const btn = document.getElementById("btn_advisory_submit_otp");
+      const otp = (inp ? inp.value : "").trim();
+      if (!otp || otp.length < 4) {
+        if (errEl) {
+          errEl.textContent = "Please enter the 6-digit code sent to your phone.";
+          errEl.style.display = "block";
+        }
+        return;
+      }
+      if (errEl) errEl.style.display = "none";
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "Verifying Code...";
+      }
+      try {
+        const res = await fetch("/api/orders/submit-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            order_reference: activeAdvisoryOrderData.order_reference,
+            otp: otp
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          if (errEl) {
+            errEl.textContent = data.message || "Invalid code. Please try again.";
+            errEl.style.display = "block";
+          }
+          if (btn) {
+            btn.disabled = false;
+            btn.innerText = "Confirm Code & Send Payment Prompt \u2192";
+          }
+          return;
+        }
+        // Verified!
+        document.getElementById("advisory_step_otp").style.display = "none";
+        document.getElementById("advisory_step_form").style.display = "block";
+        const confirmBtn = document.getElementById("btn_confirm_checkout");
+        if (confirmBtn) {
+          confirmBtn.innerText = "Code verified! Approve prompt on your phone...";
+          confirmBtn.disabled = true;
+        }
+        startAdvisoryPolling(activeAdvisoryOrderData);
+      } catch (e) {
+        if (errEl) {
+          errEl.textContent = "Network error: " + e.message;
+          errEl.style.display = "block";
+        }
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = "Confirm Code & Send Payment Prompt \u2192";
+        }
+      }
+    }
+
+    async function resendAdvisoryOtp() {
+      const errEl = document.getElementById("advisory_otp_err");
+      try {
+        const res = await fetch("/api/orders/resend-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            order_reference: activeAdvisoryOrderData.order_reference
+          })
+        });
+        const data = await res.json();
+        if (errEl) {
+          errEl.style.color = "#166534";
+          errEl.textContent = data.message || "A new verification code has been sent.";
+          errEl.style.display = "block";
+        }
+        startAdvisoryOtpTimer();
+      } catch (e) {
+        if (errEl) {
+          errEl.style.color = "#dc2626";
+          errEl.textContent = "Failed to resend code: " + e.message;
+          errEl.style.display = "block";
+        }
+      }
+    }
+
+    function startAdvisoryPolling(orderData) {
+      let isPolling = true;
+      let attempts = 0;
+      const poller = setInterval(async () => {
+        if (!isPolling) return;
+        attempts++;
+        if (attempts > 120) {
+          clearInterval(poller);
+          isPolling = false;
+          const btn = document.getElementById("btn_confirm_checkout");
+          if (btn) {
+            btn.disabled = false;
+            btn.innerText = "Pay with Mobile Money or Card";
+          }
+          return;
+        }
+        try {
+          const vRes = await fetch("/api/advisor/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              order_reference: orderData.order_reference,
+              provider: "PAYSTACK"
+            })
+          });
+          const vData = await vRes.json();
+          if (vRes.ok && vData.success) {
+            clearInterval(poller);
+            isPolling = false;
+            activeUnlockCode = vData.unlock_code;
+            activeAdvisoryTier = vData.tier;
+            closeAdvisoryCheckoutModal();
+            alert(`Payment successful! Your ${vData.tier.replace(/_/g, " ")} has been unlocked.`);
+            refreshAnalysisWithTier(activeAdvisoryTier, activeUnlockCode);
+          }
+        } catch (e) {
+          // Polling quietly in background
+        }
+      }, 3000);
     }
 
     async function executeAdvisoryPayment() {
@@ -2881,6 +3127,14 @@
           throw new Error(orderData.message || "Failed to initiate payment.");
         }
 
+        // If phone requires SMS OTP verification
+        if (orderData.requires_otp || (orderData.charge_substatus === "send_otp")) {
+          btn.disabled = false;
+          btn.innerText = origText;
+          showAdvisoryOtpPrompt(orderData);
+          return;
+        }
+
         const paystackKey = orderData.paystack_public_key;
 
         // If Paystack sent prompt directly to handset, notify user and start polling
@@ -2890,41 +3144,7 @@
           btn.innerText = "Opening secure gateway...";
         }
 
-        let isPolling = true;
-        let attempts = 0;
-        const poller = setInterval(async () => {
-          if (!isPolling) return;
-          attempts++;
-          if (attempts > 100) {
-            clearInterval(poller);
-            isPolling = false;
-            btn.disabled = false;
-            btn.innerText = origText;
-            return;
-          }
-          try {
-            const vRes = await fetch("/api/advisor/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                order_reference: orderData.order_reference,
-                provider: "PAYSTACK"
-              })
-            });
-            const vData = await vRes.json();
-            if (vRes.ok && vData.success) {
-              clearInterval(poller);
-              isPolling = false;
-              activeUnlockCode = vData.unlock_code;
-              activeAdvisoryTier = vData.tier;
-              closeAdvisoryCheckoutModal();
-              alert(`Payment successful! Your ${vData.tier.replace(/_/g, " ")} has been unlocked.`);
-              refreshAnalysisWithTier(activeAdvisoryTier, activeUnlockCode);
-            }
-          } catch (e) {
-            // Polling quietly in background
-          }
-        }, 3000);
+        startAdvisoryPolling(orderData);
 
         // Open Paystack iframe popup if needed or requested
         if (paystackKey && typeof PaystackPop !== "undefined" && !orderData.charge_status) {

@@ -267,6 +267,77 @@ class PaystackProvider:
             return {"status": False, "message": str(e)}
 
     @classmethod
+    def submit_otp(cls, reference: str, otp: str) -> Dict[str, Any]:
+        """
+        Submits customer-entered OTP verification code to Paystack
+        when charge status returns 'send_otp' (first-time phone number verification).
+        """
+        secret_key = cls.get_secret_key()
+        url = "https://api.paystack.co/charge/submit_otp"
+        payload = {
+            "reference": str(reference).strip(),
+            "otp": str(otp).strip()
+        }
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {secret_key}",
+                "Content-Type": "application/json",
+                "User-Agent": "CheckerPay-GhanaPlatform/1.0 (Linux x86_64; HTTPS)"
+            }
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8")
+            logger.warning(f"Paystack submit_otp HTTP error: {err_body}")
+            try:
+                parsed = json.loads(err_body)
+                return parsed
+            except Exception:
+                return {"status": False, "message": f"Paystack error: {err_body}"}
+        except Exception as e:
+            logger.exception("Failed to contact Paystack submit_otp API")
+            return {"status": False, "message": str(e)}
+
+    @classmethod
+    def resend_otp(cls, reference: str) -> Dict[str, Any]:
+        """
+        Requests Paystack to resend the OTP verification code to customer's phone.
+        """
+        secret_key = cls.get_secret_key()
+        url = "https://api.paystack.co/charge/resend_otp"
+        payload = {
+            "reference": str(reference).strip()
+        }
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {secret_key}",
+                "Content-Type": "application/json",
+                "User-Agent": "CheckerPay-GhanaPlatform/1.0 (Linux x86_64; HTTPS)"
+            }
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8")
+            logger.warning(f"Paystack resend_otp HTTP error: {err_body}")
+            try:
+                parsed = json.loads(err_body)
+                return parsed
+            except Exception:
+                return {"status": False, "message": f"Paystack error: {err_body}"}
+        except Exception as e:
+            logger.exception("Failed to contact Paystack resend_otp API")
+            return {"status": False, "message": str(e)}
+
+
+    @classmethod
     def verify_transaction(cls, reference: str) -> Dict[str, Any]:
         """Verifies transaction status directly against Paystack."""
         secret_key = cls.get_secret_key()

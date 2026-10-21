@@ -68,6 +68,7 @@ from .database import (
     verify_database_integrity,
     save_customer_feedback,
     get_customer_feedback,
+    is_returning_customer_phone,
     get_db_connection
 )
 from .services.payment import (
@@ -1012,6 +1013,13 @@ class OrderVerifyRequest(BaseModel):
     order_reference: str
     provider: str = "MOMO_SIMULATOR"
 
+class OrderSubmitOtpRequest(BaseModel):
+    order_reference: str
+    otp: str
+
+class OrderResendOtpRequest(BaseModel):
+    order_reference: str
+
 class BulkImportRequest(BaseModel):
     category: str
     raw_data: str
@@ -1150,12 +1158,22 @@ async def api_create_order(req: OrderCreateRequest, request: Request):
         provider=req.payment_method
     )
 
+    charge_data = charge_result.get("data") if (charge_result and isinstance(charge_result.get("data"), dict)) else {}
+    charge_substatus = charge_data.get("status")
+    display_text = charge_data.get("display_text")
+    requires_otp = (charge_substatus == "send_otp")
+    is_returning = is_returning_customer_phone(req.customer_phone)
+
     result_payload = {
         "success": True,
         "order": order,
         "is_live": is_live,
         "charge_status": charge_result.get("status") if charge_result else None,
         "charge_data": charge_result.get("data") if charge_result else None,
+        "charge_substatus": charge_substatus,
+        "requires_otp": requires_otp,
+        "display_text": display_text,
+        "is_returning_customer": is_returning,
         "authorization_url": authorization_url,
         "access_code": access_code,
         "payment_prompt": prompt_info,
@@ -1175,6 +1193,71 @@ async def api_create_order(req: OrderCreateRequest, request: Request):
         logger.warning(f"Audit block append failed: {e}")
 
     return result_payload
+
+@app.post("/api/orders/submit-otp")
+async def api_submit_order_otp(req: OrderSubmitOtpRequest):
+    """
+    Submits customer-entered OTP verification code to Paystack
+    when charge status returns 'send_otp' (first-time phone number verification).
+    """
+    order = get_order_details(req.order_reference)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order reference not found")
+    
+    secret_key = get_setting("paystack_secret_key", "")
+    is_live = bool(secret_key and not secret_key.startswith("sk_test_sample") and not is_test_environment())
+    
+    if is_live:
+        res = PaystackProvider.submit_otp(reference=req.order_reference, otp=req.otp)
+        if res.get("status"):
+            data = res.get("data") or {}
+            return {
+                "success": True,
+                "status": data.get("status", "pay_offline"),
+                "display_text": data.get("display_text") or "Verification code verified successfully. Please approve the prompt on your phone."
+            }
+        else:
+            err_msg = res.get("message") or "Verification failed. Please check the code and try again."
+            return {
+                "success": False,
+                "message": err_msg
+            }
+    else:
+        # In test / simulation mode
+        clean_otp = req.otp.strip()
+        if clean_otp in ("123456", "000000") or len(clean_otp) >= 4:
+            return {
+                "success": True,
+                "status": "pay_offline",
+                "display_text": "Code verified! Please approve the prompt on your phone."
+            }
+        return {
+            "success": False,
+            "message": "Invalid verification code. Please enter 123456 in demo mode."
+        }
+
+@app.post("/api/orders/resend-otp")
+async def api_resend_order_otp(req: OrderResendOtpRequest):
+    """
+    Requests Paystack to resend the OTP verification code to customer's phone.
+    """
+    order = get_order_details(req.order_reference)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order reference not found")
+    
+    secret_key = get_setting("paystack_secret_key", "")
+    is_live = bool(secret_key and not secret_key.startswith("sk_test_sample") and not is_test_environment())
+    
+    if is_live:
+        res = PaystackProvider.resend_otp(reference=req.order_reference)
+        return {
+            "success": res.get("status", False),
+            "message": res.get("message") or "A new verification code has been sent to your phone."
+        }
+    return {
+        "success": True,
+        "message": "A new verification code has been simulated and sent to your phone."
+    }
 
 @app.post("/api/orders/verify")
 async def api_verify_order(req: OrderVerifyRequest, background_tasks: BackgroundTasks, request: Request):
@@ -1651,6 +1734,12 @@ async def api_create_advisory_order(req: AdvisoryOrderRequest):
             email=req.customer_email
         )
 
+    charge_data = charge_result.get("data") if (charge_result and isinstance(charge_result.get("data"), dict)) else {}
+    charge_substatus = charge_data.get("status")
+    display_text = charge_data.get("display_text")
+    requires_otp = (charge_substatus == "send_otp")
+    is_returning = is_returning_customer_phone(clean_phone)
+
     return {
         "success": True,
         "order_reference": order_ref,
@@ -1660,6 +1749,11 @@ async def api_create_advisory_order(req: AdvisoryOrderRequest):
         "order": order_data,
         "is_live": is_live,
         "charge_status": charge_result.get("status") if charge_result else None,
+        "charge_data": charge_result.get("data") if charge_result else None,
+        "charge_substatus": charge_substatus,
+        "requires_otp": requires_otp,
+        "display_text": display_text,
+        "is_returning_customer": is_returning,
         "paystack_public_key": get_setting("paystack_public_key")
     }
 

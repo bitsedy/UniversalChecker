@@ -218,6 +218,8 @@ function openBuyModal(category, name, price, stock) {
 
   // Reset steps
   document.getElementById("checkout_step_details").style.display = "block";
+  const otpStep = document.getElementById("checkout_step_otp");
+  if (otpStep) otpStep.style.display = "none";
   document.getElementById("checkout_step_payment").style.display = "none";
   document.getElementById("checkout_step_success").style.display = "none";
 
@@ -466,7 +468,11 @@ async function submitOrder() {
     }
 
     currentOrder = data.order;
-    showPaymentPrompt(data);
+    if (data.requires_otp || (data.charge_substatus === "send_otp")) {
+      showOtpPrompt(data);
+    } else {
+      showPaymentPrompt(data);
+    }
     window.SystemLoader.done();
   } catch (err) {
     alert("Network error: " + err.message);
@@ -476,7 +482,192 @@ async function submitOrder() {
   }
 }
 
+let currentOrderData = null;
+let otpResendCountdown = 30;
+let otpResendInterval = null;
+
+function showOtpPrompt(data) {
+  currentOrderData = data;
+  currentOrder = data.order;
+
+  document.getElementById("checkout_step_details").style.display = "none";
+  document.getElementById("checkout_step_payment").style.display = "none";
+  const otpStep = document.getElementById("checkout_step_otp");
+  if (otpStep) otpStep.style.display = "block";
+
+  const phoneElem = document.getElementById("otp_display_phone");
+  if (phoneElem) {
+    phoneElem.textContent = data.order.customer_phone || "your phone";
+  }
+
+  const input = document.getElementById("otp_code_input");
+  if (input) {
+    input.value = "";
+    setTimeout(() => input.focus(), 250);
+  }
+
+  const errEl = document.getElementById("otp_error_msg");
+  if (errEl) errEl.style.display = "none";
+
+  const btn = document.getElementById("btn_verify_otp");
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = "Confirm Code & Send Payment Prompt &rarr;";
+  }
+
+  startOtpResendTimer();
+}
+
+function startOtpResendTimer() {
+  if (otpResendInterval) {
+    clearInterval(otpResendInterval);
+    otpResendInterval = null;
+  }
+  otpResendCountdown = 30;
+  const btnResend = document.getElementById("btn_resend_otp");
+  const countSpan = document.getElementById("otp_resend_countdown");
+
+  if (btnResend) {
+    btnResend.disabled = true;
+    btnResend.style.opacity = "0.5";
+    btnResend.style.cursor = "not-allowed";
+  }
+  if (countSpan) {
+    countSpan.style.display = "inline";
+    countSpan.textContent = `(Resend in ${otpResendCountdown}s)`;
+  }
+
+  otpResendInterval = setInterval(() => {
+    otpResendCountdown--;
+    if (otpResendCountdown <= 0) {
+      clearInterval(otpResendInterval);
+      otpResendInterval = null;
+      if (btnResend) {
+        btnResend.disabled = false;
+        btnResend.style.opacity = "1";
+        btnResend.style.cursor = "pointer";
+      }
+      if (countSpan) {
+        countSpan.style.display = "none";
+      }
+    } else {
+      if (countSpan) {
+        countSpan.textContent = `(Resend in ${otpResendCountdown}s)`;
+      }
+    }
+  }, 1000);
+}
+
+async function submitOtpCode() {
+  const input = document.getElementById("otp_code_input");
+  const errEl = document.getElementById("otp_error_msg");
+  const btn = document.getElementById("btn_verify_otp");
+
+  const otp = (input ? input.value : "").trim();
+  if (!otp || otp.length < 4) {
+    if (errEl) {
+      errEl.textContent = "Please enter the 6-digit code sent to your phone.";
+      errEl.style.display = "block";
+    }
+    return;
+  }
+
+  if (errEl) errEl.style.display = "none";
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `${getSmartLoaderHtml("sm", "#FFFFFF", "#10B981")}<span>Verifying Code...</span>`;
+  }
+
+  try {
+    const res = await fetch("/api/orders/submit-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        order_reference: currentOrder.order_reference,
+        otp: otp
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      if (errEl) {
+        errEl.textContent = data.message || "Invalid verification code. Please check and try again.";
+        errEl.style.display = "block";
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = "Confirm Code & Send Payment Prompt &rarr;";
+      }
+      return;
+    }
+
+    // OTP Verified! Telco USSD PIN prompt is now pushed to the phone.
+    if (otpResendInterval) {
+      clearInterval(otpResendInterval);
+      otpResendInterval = null;
+    }
+    const otpStep = document.getElementById("checkout_step_otp");
+    if (otpStep) otpStep.style.display = "none";
+
+    showPaymentPrompt(Object.assign({}, currentOrderData, {
+      is_live: true,
+      charge_status: true
+    }));
+  } catch (e) {
+    if (errEl) {
+      errEl.textContent = "Network error: " + e.message;
+      errEl.style.display = "block";
+    }
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = "Confirm Code & Send Payment Prompt &rarr;";
+    }
+  }
+}
+
+async function resendOtpCode() {
+  const errEl = document.getElementById("otp_error_msg");
+  try {
+    const res = await fetch("/api/orders/resend-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        order_reference: currentOrder.order_reference
+      })
+    });
+    const data = await res.json();
+    if (errEl) {
+      errEl.style.color = "var(--ghana-green)";
+      errEl.textContent = data.message || "A new verification code has been sent.";
+      errEl.style.display = "block";
+    }
+    startOtpResendTimer();
+  } catch (e) {
+    if (errEl) {
+      errEl.style.color = "#dc2626";
+      errEl.textContent = "Failed to resend code: " + e.message;
+      errEl.style.display = "block";
+    }
+  }
+}
+
+function cancelOtpStep() {
+  if (otpResendInterval) {
+    clearInterval(otpResendInterval);
+    otpResendInterval = null;
+  }
+  const otpStep = document.getElementById("checkout_step_otp");
+  if (otpStep) otpStep.style.display = "none";
+  document.getElementById("checkout_step_details").style.display = "block";
+
+  const btn = document.getElementById("btn_submit_order");
+  if (btn) {
+    btn.innerHTML = "Pay with Mobile Money &rarr;";
+    btn.disabled = false;
+  }
+}
+
 let currentPaystackKey = "";
+
 
 // Show MoMo USSD Prompt Screen with Kinetic Instructions & 10-Minute Hold Timer
 function showPaymentPrompt(data) {

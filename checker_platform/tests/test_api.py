@@ -381,5 +381,63 @@ class TestApiEndpoints(unittest.TestCase):
         self.assertEqual(res_tampered.status_code, 303)
         self.assertIn("/admin/login", res_tampered.headers.get("location", ""))
 
+    def test_order_submit_otp_and_resend_flow(self):
+        """Verifies OTP submission and resend endpoints for first-time phone numbers."""
+        # 1. Create order
+        order_res = self.client.post("/api/orders/create", json={
+            "category": "WASSCE",
+            "quantity": 1,
+            "customer_phone": "0249876543",
+            "payment_method": "MOMO_MTN"
+        })
+        self.assertEqual(order_res.status_code, 200)
+        order_data = order_res.json()
+        ref = order_data["order"]["order_reference"]
+
+        # 2. Resend OTP
+        resend_res = self.client.post("/api/orders/resend-otp", json={
+            "order_reference": ref
+        })
+        self.assertEqual(resend_res.status_code, 200)
+        self.assertTrue(resend_res.json()["success"])
+
+        # 3. Invalid OTP submission
+        bad_otp_res = self.client.post("/api/orders/submit-otp", json={
+            "order_reference": ref,
+            "otp": "12"
+        })
+        self.assertEqual(bad_otp_res.status_code, 200)
+        self.assertFalse(bad_otp_res.json()["success"])
+
+        # 4. Valid OTP submission
+        good_otp_res = self.client.post("/api/orders/submit-otp", json={
+            "order_reference": ref,
+            "otp": "123456"
+        })
+        self.assertEqual(good_otp_res.status_code, 200)
+        self.assertTrue(good_otp_res.json()["success"])
+        self.assertEqual(good_otp_res.json()["status"], "pay_offline")
+
+    def test_is_returning_customer_detection(self):
+        """Verifies detection of first-time vs returning phone numbers."""
+        from checker_platform.database import is_returning_customer_phone, complete_voucher_sale
+        
+        test_phone = "0551122334"
+        self.assertFalse(is_returning_customer_phone(test_phone))
+
+        # Create order and fulfill it
+        create_res = self.client.post("/api/orders/create", json={
+            "category": "WASSCE",
+            "quantity": 1,
+            "customer_phone": test_phone,
+            "payment_method": "MOMO_MTN"
+        })
+        ref = create_res.json()["order"]["order_reference"]
+        complete_voucher_sale(ref)
+
+        # Now phone is returning customer
+        self.assertTrue(is_returning_customer_phone(test_phone))
+        self.assertTrue(is_returning_customer_phone("233551122334"))
+
 if __name__ == "__main__":
     unittest.main()

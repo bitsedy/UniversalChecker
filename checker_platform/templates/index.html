@@ -760,6 +760,49 @@
       </button>
     </div>
 
+    <!-- STEP 1.5: ONE-TIME VERIFICATION CODE (FIRST-TIME PHONE NUMBERS) -->
+    <div id="checkout_step_otp" style="display: none;">
+      <div class="modal-header">
+        <h2>Enter Verification Code</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Confirming your mobile money number for payment</p>
+      </div>
+
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem; text-align: left;">
+        <p style="font-size: 0.875rem; color: #166534; line-height: 1.45; margin: 0;">
+          A one-time verification code has been sent by SMS to <strong id="otp_display_phone" style="color: #14532d;">024 000 0000</strong>. Enter the code below to complete setup.
+        </p>
+      </div>
+
+      <div class="form-group" style="text-align: center;">
+        <label class="form-label" for="otp_code_input" style="text-align: center; margin-bottom: 0.5rem;">6-Digit SMS Code</label>
+        <input 
+          type="tel" 
+          id="otp_code_input" 
+          class="form-input" 
+          placeholder="123456" 
+          maxlength="6" 
+          inputmode="numeric" 
+          autocomplete="one-time-code"
+          style="letter-spacing: 8px; font-size: 1.6rem; text-align: center; font-weight: 800; padding: 10px; max-width: 240px; margin: 0 auto; display: block;"
+        >
+        <div id="otp_error_msg" style="display: none; color: #dc2626; font-size: 0.85rem; margin-top: 8px; font-weight: 600;"></div>
+      </div>
+
+      <button id="btn_verify_otp" class="btn-buy" onclick="submitOtpCode()" style="margin-top: 0.75rem;">
+        Confirm Code & Send Payment Prompt &rarr;
+      </button>
+
+      <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: center; font-size: 0.85rem;">
+        <button id="btn_resend_otp" type="button" onclick="resendOtpCode()" style="background: none; border: none; color: var(--ghana-green); font-weight: 700; cursor: pointer; text-decoration: underline;">
+          Didn't get the code? Resend SMS
+        </button>
+        <span id="otp_resend_countdown" style="color: var(--text-dim); font-size: 0.8rem; display: none;"></span>
+        <button type="button" onclick="cancelOtpStep()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; margin-top: 4px;">
+          &larr; Change phone number
+        </button>
+      </div>
+    </div>
+
     <!-- STEP 2: USSD PROMPT / PAYMENT INSTRUCTIONS -->
     <div id="checkout_step_payment" style="display: none;">
       <div class="modal-header">
