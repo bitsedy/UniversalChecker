@@ -141,17 +141,18 @@
       <!-- 80px Modal Hero State -->
       <div class="card">
         <div class="smart-gateway-loader" style="width: 80px; height: 80px;">
-          <svg class="loader-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="gateway-arch" d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="3.75" stroke-linecap="round" stroke-linejoin="round"/>
-            <path class="gateway-check" d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="3.75" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle class="loader-track" cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.12)" stroke-width="2.75"/>
-            <circle class="loader-orbital-arc" cx="24" cy="24" r="21" stroke="url(#goldGrad1)" stroke-width="3.25" stroke-linecap="round" stroke-dasharray="32 100"/>
-            <defs>
-              <linearGradient id="goldGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#F59E0B" />
-                <stop offset="100%" stop-color="#10B981" />
-              </linearGradient>
-            </defs>
+          <svg class="loader-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle class="loader-track" cx="50" cy="50" r="46" stroke="rgba(44, 116, 105, 0.18)" stroke-width="3"/>
+            <circle class="loader-orbital-arc" cx="50" cy="50" r="46" stroke="#247867" stroke-width="4" stroke-linecap="round" stroke-dasharray="70 220"/>
+            <g transform="translate(18, 18) scale(0.64)">
+              <rect width="100" height="100" rx="22" fill="#2C7469"/>
+              <polygon points="43,21 49,21 26,79 17,79" fill="#0D1D2C"/>
+              <polygon points="43,21 49,21 58,47 52,47" fill="#0D1D2C"/>
+              <polygon points="56,61 61,61 68,79 59,79" fill="#0D1D2C"/>
+              <path d="M30 53 L44 67 C45 68 47 68 48 67 L81 27 C82 25.5 81 24 79 24.5 L46 61 L32 49 C30.5 47.5 29 49 29.5 51 Z" fill="#0D1D2C"/>
+              <path d="M74 14 C74 17.5 76 19.5 79.5 19.5 C76 19.5 74 21.5 74 25 C74 21.5 72 19.5 68.5 19.5 C72 19.5 74 17.5 74 14 Z" fill="#FFFFFF"/>
+              <circle cx="74" cy="19.5" r="1.4" fill="#E6FFFA"/>
+            </g>
           </svg>
         </div>
         <div class="card-title">Modal / Processing State</div>
@@ -161,17 +162,18 @@
       <!-- 48px Card State -->
       <div class="card">
         <div class="smart-gateway-loader" style="width: 48px; height: 48px;">
-          <svg class="loader-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="gateway-arch" d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path class="gateway-check" d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle class="loader-track" cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.12)" stroke-width="3"/>
-            <circle class="loader-orbital-arc" cx="24" cy="24" r="21" stroke="url(#goldGrad2)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="32 100"/>
-            <defs>
-              <linearGradient id="goldGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#F59E0B" />
-                <stop offset="100%" stop-color="#10B981" />
-              </linearGradient>
-            </defs>
+          <svg class="loader-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle class="loader-track" cx="50" cy="50" r="46" stroke="rgba(44, 116, 105, 0.18)" stroke-width="3"/>
+            <circle class="loader-orbital-arc" cx="50" cy="50" r="46" stroke="#247867" stroke-width="4" stroke-linecap="round" stroke-dasharray="70 220"/>
+            <g transform="translate(18, 18) scale(0.64)">
+              <rect width="100" height="100" rx="22" fill="#2C7469"/>
+              <polygon points="43,21 49,21 26,79 17,79" fill="#0D1D2C"/>
+              <polygon points="43,21 49,21 58,47 52,47" fill="#0D1D2C"/>
+              <polygon points="56,61 61,61 68,79 59,79" fill="#0D1D2C"/>
+              <path d="M30 53 L44 67 C45 68 47 68 48 67 L81 27 C82 25.5 81 24 79 24.5 L46 61 L32 49 C30.5 47.5 29 49 29.5 51 Z" fill="#0D1D2C"/>
+              <path d="M74 14 C74 17.5 76 19.5 79.5 19.5 C76 19.5 74 21.5 74 25 C74 21.5 72 19.5 68.5 19.5 C72 19.5 74 17.5 74 14 Z" fill="#FFFFFF"/>
+              <circle cx="74" cy="19.5" r="1.4" fill="#E6FFFA"/>
+            </g>
           </svg>
         </div>
         <div class="card-title">Standard Section State</div>
@@ -182,10 +184,17 @@
       <div class="card">
         <button class="mock-btn" style="margin-top: 10px; margin-bottom: 10px;">
           <div class="smart-gateway-loader" style="width: 22px; height: 22px;">
-            <svg class="loader-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path class="gateway-arch" d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path class="gateway-check" d="M17 26l5 5 11-12" stroke="#F59E0B" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle class="loader-orbital-arc" cx="24" cy="24" r="21" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-dasharray="30 100"/>
+            <svg class="loader-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle class="loader-track" cx="50" cy="50" r="46" stroke="rgba(255, 255, 255, 0.2)" stroke-width="4"/>
+              <circle class="loader-orbital-arc" cx="50" cy="50" r="46" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="70 220"/>
+              <g transform="translate(20, 20) scale(0.6)">
+                <rect width="100" height="100" rx="22" fill="#2C7469"/>
+                <polygon points="43,21 49,21 26,79 17,79" fill="#0D1D2C"/>
+                <polygon points="43,21 49,21 58,47 52,47" fill="#0D1D2C"/>
+                <polygon points="56,61 61,61 68,79 59,79" fill="#0D1D2C"/>
+                <path d="M30 53 L44 67 C45 68 47 68 48 67 L81 27 C82 25.5 81 24 79 24.5 L46 61 L32 49 C30.5 47.5 29 49 29.5 51 Z" fill="#0D1D2C"/>
+                <path d="M74 14 C74 17.5 76 19.5 79.5 19.5 C76 19.5 74 21.5 74 25 C74 21.5 72 19.5 68.5 19.5 C72 19.5 74 17.5 74 14 Z" fill="#FFFFFF"/>
+              </g>
             </svg>
           </div>
           <span>Processing MoMo...</span>

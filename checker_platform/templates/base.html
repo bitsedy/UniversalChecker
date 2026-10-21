@@ -65,23 +65,40 @@
   <!-- Navbar -->
   <header class="app-header">
     <nav class="navbar" aria-label="Primary Platform Navigation">
-      <a href="/" class="brand-link" title="AggreGate Ghana Official Gateway" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
-        <svg width="168" height="36" viewBox="0 0 230 48" xmlns="http://www.w3.org/2000/svg" style="height: 36px; width: auto; display: block;" role="img" aria-label="AggreGate">
+      <a href="/" class="brand-link" title="AggreGate Official Gateway" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+        <svg width="175" height="38" viewBox="0 0 175 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="height: 38px; width: auto; display: block;" role="img" aria-label="AggreGate">
           <defs>
-            <linearGradient id="brandGoldGradNav" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#F59E0B" />
-              <stop offset="100%" stop-color="#10B981" />
+            <linearGradient id="brandSqBgNav" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#307C70" />
+              <stop offset="100%" stop-color="#276B60" />
             </linearGradient>
+            <filter id="navStarGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="0.8" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
           </defs>
-          <path d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <path d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <circle cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.15)" stroke-width="2.5" fill="none"/>
-          <circle cx="24" cy="24" r="21" stroke="url(#brandGoldGradNav)" stroke-width="3" stroke-linecap="round" stroke-dasharray="32 100" fill="none"/>
-          <text x="56" y="33" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="26" letter-spacing="-0.03em">
-            <tspan fill="#0A0F1D">Aggre</tspan><tspan fill="#0F766E">Gate</tspan>
+          
+          <!-- Official Square Favicon Emblem (38x38) -->
+          <g transform="translate(0, 0)">
+            <rect width="38" height="38" rx="8.5" fill="url(#brandSqBgNav)" />
+            <!-- Stylized 'A' (Dark Midnight Navy #0D1D2C) -->
+            <polygon points="16.3,8 18.6,8 9.9,30 6.5,30" fill="#0D1D2C" />
+            <polygon points="16.3,8 18.6,8 22,17.9 19.8,17.9" fill="#0D1D2C" />
+            <polygon points="21.3,23.2 23.2,23.2 25.8,30 22.4,30" fill="#0D1D2C" />
+            <!-- Dynamic Verified Checkmark -->
+            <path d="M11.4 20.1 L16.7 25.5 C17.1 25.8 17.9 25.8 18.2 25.5 L30.8 10.3 C31.2 9.7 30.8 9.1 30 9.3 L17.5 23.2 L12.2 18.6 C11.6 18.1 11 18.6 11.2 19.4 Z" fill="#0D1D2C" />
+            <!-- Star Sparkle at Tip of Checkmark -->
+            <g filter="url(#navStarGlow)">
+              <path d="M28.1 5.3 C28.1 6.6 28.9 7.4 30.2 7.4 C28.9 7.4 28.1 8.2 28.1 9.5 C28.1 8.2 27.3 7.4 26 7.4 C27.3 7.4 28.1 6.6 28.1 5.3 Z" fill="#FFFFFF" />
+              <circle cx="28.1" cy="7.4" r="0.6" fill="#E6FFFA" />
+            </g>
+          </g>
+
+          <!-- Wordmark Typography -->
+          <text x="48" y="27" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="24" letter-spacing="-0.03em">
+            <tspan fill="#0A0F1D">Aggre</tspan><tspan fill="#247867">Gate</tspan>
           </text>
         </svg>
-        <span class="brand-ghana-tag">Ghana</span>
       </a>
 
       <div class="nav-links" role="menubar">
@@ -123,23 +140,40 @@
         
         <!-- Column 1: Brand & Mission -->
         <div>
-          <div style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px;">
-            <svg width="168" height="36" viewBox="0 0 230 48" xmlns="http://www.w3.org/2000/svg" style="height: 32px; width: auto; display: block;" role="img" aria-label="AggreGate">
+          <div style="margin-bottom: 0.75rem; display: flex; align-items: center;">
+            <svg width="175" height="38" viewBox="0 0 175 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="height: 34px; width: auto; display: block;" role="img" aria-label="AggreGate">
               <defs>
-                <linearGradient id="brandGoldGradFoot" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#F59E0B" />
-                  <stop offset="100%" stop-color="#10B981" />
+                <linearGradient id="brandSqBgFoot" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#307C70" />
+                  <stop offset="100%" stop-color="#276B60" />
                 </linearGradient>
+                <filter id="footStarGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="0.8" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
               </defs>
-              <path d="M10 38V18a14 14 0 0 1 28 0v20" stroke="#0A0F1D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              <path d="M17 26l5 5 11-12" stroke="#0F766E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              <circle cx="24" cy="24" r="21" stroke="rgba(15, 118, 110, 0.15)" stroke-width="2.5" fill="none"/>
-              <circle cx="24" cy="24" r="21" stroke="url(#brandGoldGradFoot)" stroke-width="3" stroke-linecap="round" stroke-dasharray="32 100" fill="none"/>
-              <text x="56" y="33" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="26" letter-spacing="-0.03em">
-                <tspan fill="#0A0F1D">Aggre</tspan><tspan fill="#0F766E">Gate</tspan>
+              
+              <!-- Official Square Favicon Emblem (38x38) -->
+              <g transform="translate(0, 0)">
+                <rect width="38" height="38" rx="8.5" fill="url(#brandSqBgFoot)" />
+                <!-- Stylized 'A' (Dark Midnight Navy #0D1D2C) -->
+                <polygon points="16.3,8 18.6,8 9.9,30 6.5,30" fill="#0D1D2C" />
+                <polygon points="16.3,8 18.6,8 22,17.9 19.8,17.9" fill="#0D1D2C" />
+                <polygon points="21.3,23.2 23.2,23.2 25.8,30 22.4,30" fill="#0D1D2C" />
+                <!-- Dynamic Verified Checkmark -->
+                <path d="M11.4 20.1 L16.7 25.5 C17.1 25.8 17.9 25.8 18.2 25.5 L30.8 10.3 C31.2 9.7 30.8 9.1 30 9.3 L17.5 23.2 L12.2 18.6 C11.6 18.1 11 18.6 11.2 19.4 Z" fill="#0D1D2C" />
+                <!-- Star Sparkle at Tip of Checkmark -->
+                <g filter="url(#footStarGlow)">
+                  <path d="M28.1 5.3 C28.1 6.6 28.9 7.4 30.2 7.4 C28.9 7.4 28.1 8.2 28.1 9.5 C28.1 8.2 27.3 7.4 26 7.4 C27.3 7.4 28.1 6.6 28.1 5.3 Z" fill="#FFFFFF" />
+                  <circle cx="28.1" cy="7.4" r="0.6" fill="#E6FFFA" />
+                </g>
+              </g>
+
+              <!-- Wordmark Typography -->
+              <text x="48" y="27" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="24" letter-spacing="-0.03em">
+                <tspan fill="#0A0F1D">Aggre</tspan><tspan fill="#247867">Gate</tspan>
               </text>
             </svg>
-            <span class="brand-ghana-tag">Ghana</span>
           </div>
           <p style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.6; margin-bottom: 1rem;">
             Buy real WAEC and CSSPS result cards online in Ghana. Get your code on your screen and in a text message right away. Safe and trusted.

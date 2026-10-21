@@ -547,7 +547,6 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .brand-title,
-.brand-ghana-tag,
 .badge-pill,
 .trust-seal-title {
   font-family: var(--font-sans);
@@ -670,17 +669,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .brand-ghana-tag {
-  font-size: 0.65rem;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  background: var(--brand-emerald-tint);
-  border: 1px solid var(--border-emerald);
-  color: var(--brand-emerald-dark);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 800;
-  margin-left: 6px;
-  vertical-align: middle;
+  display: none !important;
 }
 
 .nav-links {
