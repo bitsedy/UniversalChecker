@@ -242,6 +242,32 @@ function stopPaymentPolling() {
   }
 }
 
+function updatePaymentStatusUI(state, title, desc, activity) {
+  const card = document.getElementById("payment_status_card");
+  const titleEl = document.getElementById("payment_status_title");
+  const descEl = document.getElementById("payment_status_desc");
+  const actEl = document.getElementById("payment_activity_text");
+  const iconEl = document.getElementById("payment_status_icon");
+  if (!card) return;
+
+  card.className = `payment-status-card status-${state}`;
+  if (titleEl && title) titleEl.textContent = title;
+  if (descEl && desc) descEl.textContent = desc;
+  if (actEl && activity) actEl.textContent = activity;
+
+  if (iconEl) {
+    if (state === "confirmed") {
+      iconEl.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    } else if (state === "failed") {
+      iconEl.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+    } else if (state === "verifying") {
+      iconEl.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+    } else {
+      iconEl.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+    }
+  }
+}
+
 function startPaymentPolling(orderRef) {
   stopPaymentPolling();
   let attempts = 0;
@@ -251,35 +277,264 @@ function startPaymentPolling(orderRef) {
     attempts++;
     if (attempts > maxAttempts) {
       stopPaymentPolling();
+      updatePaymentStatusUI(
+        "failed",
+        "Payment Window Timed Out",
+        "We did not receive confirmation before the reservation expired. You can retry or cancel.",
+        "Polling stopped."
+      );
       return;
     }
+
     try {
-      const res = await fetch("/api/orders/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          order_reference: orderRef,
-          provider: "PAYSTACK"
-        })
-      });
+      const res = await fetch(`/api/orders/${encodeURIComponent(orderRef)}/status`);
       const data = await res.json();
-      if (res.ok && data.success) {
+
+      if (res.ok && data.success && data.payment_status === "PAID") {
         stopPaymentPolling();
         if (momoCountdownInterval) {
           clearInterval(momoCountdownInterval);
           momoCountdownInterval = null;
         }
-        document.getElementById("checkout_step_payment").style.display = "none";
-        document.getElementById("checkout_step_success").style.display = "block";
-        showSuccessVouchers(data);
+        updatePaymentStatusUI(
+          "confirmed",
+          "Payment Confirmed!",
+          "Payment confirmed successfully. Revealing your voucher...",
+          "Payment verified."
+        );
+        setTimeout(() => {
+          document.getElementById("checkout_step_payment").style.display = "none";
+          document.getElementById("checkout_step_success").style.display = "block";
+          showSuccessVouchers(data);
+        }, 600);
+        return;
+      }
+
+      if (data.payment_status === "FAILED") {
+        stopPaymentPolling();
+        updatePaymentStatusUI(
+          "failed",
+          "Payment Was Not Approved",
+          data.message || "Your payment was declined or cancelled on your phone.",
+          "You can retry or cancel this order."
+        );
+        const checkBtn = document.getElementById("btn_check_payment_status");
+        if (checkBtn) {
+          checkBtn.innerHTML = `<span>Retry Confirmation Check &rarr;</span>`;
+          checkBtn.disabled = false;
+        }
+        return;
+      }
+
+      // If still pending, update activity timestamp for visual peace of mind
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const actEl = document.getElementById("payment_activity_text");
+      if (actEl) {
+        actEl.textContent = `Listening for your phone approval... (checked ${timeStr})`;
       }
     } catch (e) {
-      // Polling quietly in background
+      // Quiet background polling
     }
   }, 3000);
 }
 
+async function manualCheckPaymentStatus() {
+  if (!currentOrder || !currentOrder.order_reference) return;
+  const btn = document.getElementById("btn_check_payment_status");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `${getSmartLoaderHtml("sm", "#FFFFFF", "#10B981")}<span>Checking Confirmation...</span>`;
+  }
+  updatePaymentStatusUI(
+    "verifying",
+    "Checking Payment Confirmation...",
+    "Querying the payment network for your transaction status...",
+    "Connecting to gateway..."
+  );
+
+  try {
+    const res = await fetch(`/api/orders/${encodeURIComponent(currentOrder.order_reference)}/status`);
+    const data = await res.json();
+
+    if (res.ok && data.success && data.payment_status === "PAID") {
+      stopPaymentPolling();
+      if (momoCountdownInterval) {
+        clearInterval(momoCountdownInterval);
+        momoCountdownInterval = null;
+      }
+      updatePaymentStatusUI(
+        "confirmed",
+        "Payment Confirmed!",
+        "Payment confirmed! Unlocking your result checker card...",
+        "Payment verified."
+      );
+      setTimeout(() => {
+        document.getElementById("checkout_step_payment").style.display = "none";
+        document.getElementById("checkout_step_success").style.display = "block";
+        showSuccessVouchers(data);
+      }, 500);
+      return;
+    }
+
+    if (data.payment_status === "FAILED") {
+      stopPaymentPolling();
+      updatePaymentStatusUI(
+        "failed",
+        "Payment Was Not Approved",
+        data.message || "Your payment was declined or cancelled on your phone.",
+        "You can retry or cancel."
+      );
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Retry Confirmation Check &rarr;</span>`;
+      }
+      return;
+    }
+
+    // Still pending
+    updatePaymentStatusUI(
+      "pending",
+      "Payment Still Pending",
+      data.message || "We have not received approval yet. Please enter your PIN on your phone.",
+      "Awaiting phone approval..."
+    );
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span id="btn_check_text">I Have Approved — Check Confirmation &rarr;</span>`;
+    }
+  } catch (err) {
+    updatePaymentStatusUI(
+      "pending",
+      "Connection Error",
+      "Could not reach status check. Please check your internet connection.",
+      "Retrying automatically..."
+    );
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span id="btn_check_text">I Have Approved — Check Confirmation &rarr;</span>`;
+    }
+  }
+}
+
+async function confirmCancelPayment() {
+  if (!currentOrder || !currentOrder.order_reference) {
+    cancelPaymentStep();
+    return;
+  }
+
+  const ok = confirm("Are you sure you want to cancel this payment? Your held result checker card will be released back to stock.");
+  if (!ok) return;
+
+  const btn = document.getElementById("btn_cancel_order");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span>Releasing Card Reservation...</span>`;
+  }
+
+  stopPaymentPolling();
+  if (momoCountdownInterval) {
+    clearInterval(momoCountdownInterval);
+    momoCountdownInterval = null;
+  }
+
+  try {
+    const res = await fetch("/api/orders/cancel", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        order_reference: currentOrder.order_reference
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      alert(data.message || "Failed to cancel order.");
+    }
+  } catch (err) {
+    console.error("Cancel order error:", err);
+  }
+
+  // Return to details step
+  currentOrder = null;
+  document.getElementById("checkout_step_payment").style.display = "none";
+  document.getElementById("checkout_step_details").style.display = "block";
+
+  const submitBtn = document.getElementById("btn_submit_order");
+  if (submitBtn) {
+    submitBtn.innerHTML = "Pay with Mobile Money &rarr;";
+    submitBtn.disabled = false;
+  }
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg><span>Cancel Payment &amp; Release Card</span>`;
+  }
+}
+
+async function openPaystackCardCheckout() {
+  if (!currentOrder || !currentOrder.order_reference) return;
+  const linkBtn = document.getElementById("btn_open_card_checkout");
+  if (linkBtn) linkBtn.textContent = "Opening Card Checkout...";
+
+  try {
+    const res = await fetch("/api/orders/paystack-checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        order_reference: currentOrder.order_reference
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      alert(data.message || "Could not open Paystack card checkout. Please approve on your phone instead.");
+      if (linkBtn) linkBtn.textContent = "Prefer to pay with Visa / Mastercard? Click here →";
+      return;
+    }
+
+    if (typeof PaystackPop !== "undefined" && data.paystack_public_key) {
+      const handler = PaystackPop.setup({
+        key: data.paystack_public_key,
+        email: currentOrder.customer_email || `buyer_${currentOrder.order_reference.toLowerCase().replace(/[^a-z0-9]/g, "")}@checkerpay.gh`,
+        amount: Math.round(currentOrder.total_amount * 100),
+        currency: "GHS",
+        ref: data.reference,
+        channels: ["card", "mobile_money"],
+        callback: function(response) {
+          manualCheckPaymentStatus();
+        },
+        onClose: function() {
+          if (linkBtn) linkBtn.textContent = "Prefer to pay with Visa / Mastercard? Click here →";
+          updatePaymentStatusUI(
+            "pending",
+            "Payment Window Closed",
+            "You closed the card checkout window. You can retry card checkout, approve on your phone, or cancel.",
+            "Waiting for payment..."
+          );
+        }
+      });
+      handler.openIframe();
+    } else if (data.authorization_url) {
+      window.location.href = data.authorization_url;
+    }
+  } catch (e) {
+    alert("Network error opening checkout: " + e.message);
+  } finally {
+    if (linkBtn) linkBtn.textContent = "Prefer to pay with Visa / Mastercard? Click here →";
+  }
+}
+
 function closeModal() {
+  const paymentStep = document.getElementById("checkout_step_payment");
+  const isPaymentActive = paymentStep && paymentStep.style.display !== "none";
+
+  if (isPaymentActive && currentOrder) {
+    const wantCancel = confirm("You have an active card reservation. Would you like to cancel it to release the voucher?");
+    if (wantCancel) {
+      confirmCancelPayment();
+      document.getElementById("checkout_modal").classList.remove("active");
+      return;
+    }
+  }
+
   if (redirectTimer) {
     clearInterval(redirectTimer);
     redirectTimer = null;
@@ -293,18 +548,7 @@ function closeModal() {
 }
 
 function cancelPaymentStep() {
-  if (momoCountdownInterval) {
-    clearInterval(momoCountdownInterval);
-    momoCountdownInterval = null;
-  }
-  stopPaymentPolling();
-  document.getElementById("checkout_step_payment").style.display = "none";
-  document.getElementById("checkout_step_details").style.display = "block";
-  const btn = document.getElementById("btn_submit_order");
-  if (btn) {
-    btn.innerText = "Pay with Mobile Money →";
-    btn.disabled = false;
-  }
+  confirmCancelPayment();
 }
 
 function startMomoHoldCountdown(durationSeconds = 600) {
@@ -693,13 +937,21 @@ function showPaymentPrompt(data) {
   document.getElementById("momo_display_amount").innerText = `GHS ${parseFloat(amountGhs).toFixed(2)}`;
   document.getElementById("momo_display_order_ref").innerText = data.order.order_reference;
 
-  const beaconEl = document.getElementById("momo_beacon_text");
-  if (beaconEl) {
-    if (data.is_live && data.charge_status) {
-      beaconEl.innerText = "Payment prompt sent to your phone! Enter your MoMo PIN to complete.";
-    } else {
-      beaconEl.innerText = "Awaiting your payment authorization on your phone...";
-    }
+  const initialDesc = (data.is_live && data.charge_status)
+    ? `A payment prompt was sent to your phone (${phoneFormatted}). Enter your MoMo PIN to complete.`
+    : `Please check your phone screen for the payment prompt, or follow the steps below.`;
+
+  updatePaymentStatusUI(
+    "pending",
+    "Waiting for Your Phone Approval",
+    initialDesc,
+    "Listening for payment confirmation..."
+  );
+
+  const checkBtn = document.getElementById("btn_check_payment_status");
+  if (checkBtn) {
+    checkBtn.disabled = false;
+    checkBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span id="btn_check_text">I Have Approved — Check Confirmation &rarr;</span>`;
   }
 
   // Render network specific USSD walkthrough
@@ -714,39 +966,9 @@ function showPaymentPrompt(data) {
   }
 }
 
-// Trigger Official Paystack Popup Modal (MoMo & Card)
+// Paystack Popup Modal Fallback
 function payWithPaystack() {
-  if (!currentOrder) return;
-  if (!currentPaystackKey) {
-    alert("Payment Gateway Notice:\nThe payment gateway is currently establishing a secure connection. Please refresh or contact support if this persists.");
-    return;
-  }
-  if (typeof PaystackPop === "undefined") {
-    alert("Paystack SDK is loading or unavailable. Please verify your internet connection.");
-    return;
-  }
-
-  const handler = PaystackPop.setup({
-    key: currentPaystackKey,
-    email: currentOrder.customer_email || `buyer_${currentOrder.order_reference.toLowerCase().replace(/[^a-z0-9]/g, "")}@checkerpay.gh`,
-    amount: Math.round(currentOrder.total_amount * 100),
-    currency: "GHS",
-    ref: currentOrder.order_reference,
-    channels: ["mobile_money", "card"],
-    metadata: {
-      custom_fields: [
-        { display_name: "Customer Phone", variable_name: "customer_phone", value: currentOrder.customer_phone },
-        { display_name: "Category", variable_name: "category", value: currentOrder.category }
-      ]
-    },
-    callback: function(response) {
-      verifyPaystackPayment(response.reference);
-    },
-    onClose: function() {
-      console.log("Paystack dialog closed.");
-    }
-  });
-  handler.openIframe();
+  openPaystackCardCheckout();
 }
 
 function renderVouchersSkeleton(qty = 1) {

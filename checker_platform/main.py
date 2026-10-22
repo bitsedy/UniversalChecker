@@ -49,6 +49,7 @@ from .database import (
     get_product_catalog,
     reserve_vouchers,
     complete_voucher_sale,
+    cancel_order,
     release_expired_reservations,
     create_order,
     get_order_details,
@@ -1020,6 +1021,12 @@ class OrderSubmitOtpRequest(BaseModel):
 class OrderResendOtpRequest(BaseModel):
     order_reference: str
 
+class OrderCancelRequest(BaseModel):
+    order_reference: str
+
+class OrderStatusCheckRequest(BaseModel):
+    order_reference: str
+
 class BulkImportRequest(BaseModel):
     category: str
     raw_data: str
@@ -1136,19 +1143,20 @@ async def api_create_order(req: OrderCreateRequest, request: Request):
             order_ref=order_ref,
             email=req.customer_email
         )
-        # Also initialize checkout session for optional card/popup fallback
-        try:
-            init_res = PaystackProvider.initialize_transaction(
-                email=req.customer_email or f"buyer_{order_ref.lower().replace('-', '_')}@checkerpay.gh",
-                amount_ghs=order["total_amount"],
-                order_ref=order_ref,
-                callback_url=str(request.base_url).rstrip("/") + f"/lookup?ref={order_ref}"
-            )
-            if init_res.get("status"):
-                authorization_url = init_res.get("data", {}).get("authorization_url")
-                access_code = init_res.get("data", {}).get("access_code")
-        except Exception as e:
-            logger.warning(f"Paystack transaction init fallback failed: {e}")
+        # If customer explicitly requested Card or popup channel, or as dedicated fallback
+        if req.payment_method == "CARD":
+            try:
+                init_res = PaystackProvider.initialize_transaction(
+                    email=req.customer_email or f"buyer_{order_ref.lower().replace('-', '_')}@checkerpay.gh",
+                    amount_ghs=order["total_amount"],
+                    order_ref=f"{order_ref}-POP",
+                    callback_url=str(request.base_url).rstrip("/") + f"/lookup?ref={order_ref}"
+                )
+                if init_res.get("status"):
+                    authorization_url = init_res.get("data", {}).get("authorization_url")
+                    access_code = init_res.get("data", {}).get("access_code")
+            except Exception as e:
+                logger.warning(f"Paystack card transaction init failed: {e}")
 
     # Telco step instructions
     prompt_info = GhanaMoMoSimulator.trigger_momo_prompt(
@@ -1374,6 +1382,194 @@ async def api_get_order(reference: str):
             
     return data
 
+@app.post("/api/orders/cancel")
+async def api_cancel_order(req: OrderCancelRequest):
+    """
+    Safely and atomically cancels an unfulfilled order and releases its reserved vouchers.
+    """
+    order = get_order_details(req.order_reference)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order reference not found")
+
+    success, msg, released_count = cancel_order(req.order_reference)
+    if not success:
+        return JSONResponse(status_code=400, content={"success": False, "message": msg})
+
+    try:
+        append_audit_block(
+            action="ORDER_CANCELLED",
+            actor=order.get("customer_phone", "CUSTOMER"),
+            payload_data={"order_reference": req.order_reference, "released_vouchers": released_count}
+        )
+    except Exception as e:
+        logger.warning(f"Audit block append failed: {e}")
+
+    return {
+        "success": True,
+        "message": "Payment cancelled successfully. Your held result checker voucher has been released.",
+        "released_vouchers": released_count
+    }
+
+@app.get("/api/orders/{reference}/status")
+@app.post("/api/orders/check-status")
+async def api_check_order_status(
+    reference: Optional[str] = None, 
+    req: Optional[OrderStatusCheckRequest] = None,
+    background_tasks: BackgroundTasks = BackgroundTasks()
+):
+    """
+    Provides real-time payment confirmation status.
+    If paid on phone or via Paystack, completes the voucher allocation atomically.
+    Returns clear status flags: PAID, PENDING, FAILED, or CANCELLED.
+    """
+    order_ref = reference or (req.order_reference if req else None)
+    if not order_ref:
+        raise HTTPException(status_code=400, detail="Missing order reference")
+
+    order = get_order_details(order_ref)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order reference not found")
+
+    payment_status = str(order.get("payment_status", "PENDING")).upper()
+
+    # 1. Already PAID
+    if payment_status == "PAID":
+        conn = get_db_connection()
+        try:
+            rows = conn.execute(
+                "SELECT serial_number, pin, category, sold_at FROM vouchers WHERE order_reference = ? AND status = 'SOLD'",
+                (order_ref,)
+            ).fetchall()
+            sold_vouchers = [dict(r) for r in rows]
+        finally:
+            conn.close()
+
+        fulfillment = DispatchManager.format_on_screen_delivery(order, sold_vouchers)
+        whatsapp_text = DispatchManager.generate_whatsapp_share_text(order_ref, order["category"], sold_vouchers)
+        return {
+            "success": True,
+            "payment_status": "PAID",
+            "message": "Payment confirmed! Your result checker is ready.",
+            "fulfillment": fulfillment,
+            "whatsapp_text": whatsapp_text
+        }
+
+    # 2. Already CANCELLED
+    if payment_status == "CANCELLED":
+        return {
+            "success": False,
+            "payment_status": "CANCELLED",
+            "message": "This order was cancelled and the voucher reservation was released."
+        }
+
+    # 3. PENDING - Check against Paystack in live mode
+    secret_key = get_setting("paystack_secret_key", "")
+    is_live = bool(secret_key and not secret_key.startswith("sk_test_sample") and not is_test_environment())
+
+    if is_live:
+        verify_res = PaystackProvider.verify_transaction(order_ref)
+        # Also check fallback pop ref if direct charge was not yet matched
+        if not verify_res.get("status"):
+            verify_pop = PaystackProvider.verify_transaction(f"{order_ref}-POP")
+            if verify_pop.get("status"):
+                verify_res = verify_pop
+
+        data = verify_res.get("data", {}) if isinstance(verify_res.get("data"), dict) else {}
+        gateway_status = (data.get("status") or "").lower()
+
+        if gateway_status == "success":
+            sold_vouchers = complete_voucher_sale(order_ref)
+            record_transaction(
+                order_ref=order_ref,
+                provider="PAYSTACK",
+                provider_ref=str(data.get("id", f"PAYSTACK_{order_ref}")),
+                amount=order["total_amount"],
+                status="SUCCESS",
+                payload={"order_reference": order_ref, "verified_at": time.time(), "paystack_data": data}
+            )
+
+            fulfillment = DispatchManager.format_on_screen_delivery(order, sold_vouchers)
+            sms_text = DispatchManager.generate_sms_text(order_ref, order["category"], sold_vouchers)
+            whatsapp_text = DispatchManager.generate_whatsapp_share_text(order_ref, order["category"], sold_vouchers)
+
+            if order.get("customer_phone"):
+                background_tasks.add_task(DispatchManager.dispatch_sms, order["customer_phone"], sms_text)
+
+            try:
+                append_audit_block(
+                    action="ORDER_FULFILLED",
+                    actor=order["customer_phone"],
+                    payload_data={"order_reference": order_ref, "vouchers_count": len(sold_vouchers), "provider": "PAYSTACK"}
+                )
+            except Exception as e:
+                logger.warning(f"Audit block append failed: {e}")
+
+            return {
+                "success": True,
+                "payment_status": "PAID",
+                "message": "Payment successfully confirmed!",
+                "fulfillment": fulfillment,
+                "whatsapp_text": whatsapp_text
+            }
+        elif gateway_status in ("failed", "abandoned", "reversed"):
+            gateway_msg = data.get("gateway_response") or verify_res.get("message") or "Payment was declined or timed out on your phone."
+            return {
+                "success": False,
+                "payment_status": "FAILED",
+                "gateway_status": gateway_status,
+                "message": gateway_msg
+            }
+        else:
+            return {
+                "success": True,
+                "payment_status": "PENDING",
+                "gateway_status": gateway_status or "pending",
+                "message": "Waiting for authorization on your phone..."
+            }
+    else:
+        # In test / sandbox mode
+        return {
+            "success": True,
+            "payment_status": "PENDING",
+            "message": "Awaiting payment confirmation..."
+        }
+
+@app.post("/api/orders/paystack-checkout")
+async def api_paystack_checkout(req: OrderStatusCheckRequest, request: Request):
+    """
+    Initializes a clean Paystack transaction session for Card payments or popup modal.
+    Uses a dedicated suffix reference to prevent collision with direct USSD charges.
+    """
+    order = get_order_details(req.order_reference)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order reference not found")
+
+    if order.get("payment_status") == "PAID":
+        raise HTTPException(status_code=400, detail="Order is already paid.")
+
+    pop_ref = f"{req.order_reference}-POP"
+    callback_url = str(request.base_url).rstrip("/") + f"/lookup?ref={req.order_reference}"
+
+    init_res = PaystackProvider.initialize_transaction(
+        email=order.get("customer_email") or f"buyer_{req.order_reference.lower().replace('-', '_')}@checkerpay.gh",
+        amount_ghs=order["total_amount"],
+        order_ref=pop_ref,
+        callback_url=callback_url,
+        channels=["card", "mobile_money"]
+    )
+
+    if not init_res.get("status"):
+        return JSONResponse(status_code=400, content={"success": False, "message": init_res.get("message", "Failed to initialize Paystack checkout.")})
+
+    data = init_res.get("data", {})
+    return {
+        "success": True,
+        "authorization_url": data.get("authorization_url"),
+        "access_code": data.get("access_code"),
+        "reference": pop_ref,
+        "paystack_public_key": get_setting("paystack_public_key")
+    }
+
 @app.post("/api/webhooks/paystack")
 async def paystack_webhook(
     request: Request,
@@ -1397,8 +1593,9 @@ async def paystack_webhook(
         event_type = payload.get("event")
         if event_type == "charge.success":
             data = payload.get("data", {})
-            order_ref = data.get("reference") or data.get("metadata", {}).get("order_reference")
-            if order_ref:
+            raw_ref = data.get("reference") or data.get("metadata", {}).get("order_reference")
+            if raw_ref:
+                order_ref = raw_ref[:-4] if str(raw_ref).endswith("-POP") else str(raw_ref)
                 order = get_order_details(order_ref)
                 if order:
                     # 1. Currency validation (reject foreign currency arbitrage)

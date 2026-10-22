@@ -547,6 +547,75 @@ def release_expired_reservations(timeout_minutes: int = 10) -> int:
     finally:
         conn.close()
 
+def cancel_order(order_ref: str) -> Tuple[bool, str, int]:
+    """
+    Safely and atomically cancels an unfulfilled order and immediately releases
+    its reserved vouchers back to UNSOLD stock.
+    
+    Guarantees:
+    - Atomicity: executes under BEGIN IMMEDIATE row-locking transaction.
+    - Consistency: Vouchers and order status are updated together.
+    - Safety: If order is already PAID, cancellation is rejected.
+    
+    Returns:
+    - (success: bool, message: str, released_count: int)
+    """
+    conn = get_db_connection()
+    try:
+        conn.execute("BEGIN IMMEDIATE;")
+        order = conn.execute(
+            "SELECT order_reference, payment_status FROM orders WHERE order_reference = ?",
+            (order_ref,)
+        ).fetchone()
+
+        if not order:
+            conn.execute("ROLLBACK;")
+            return False, f"Order {order_ref} not found", 0
+
+        current_status = str(order["payment_status"]).upper()
+        if current_status == "PAID":
+            conn.execute("ROLLBACK;")
+            return False, "Cannot cancel: order has already been paid and fulfilled.", 0
+
+        if current_status == "CANCELLED":
+            conn.execute("ROLLBACK;")
+            return True, "Order is already cancelled.", 0
+
+        # Release any vouchers reserved for this order back to UNSOLD stock
+        cursor = conn.execute(
+            """
+            UPDATE vouchers 
+            SET status = 'UNSOLD',
+                order_reference = NULL,
+                reserved_at = NULL
+            WHERE order_reference = ? AND status = 'RESERVED'
+            """,
+            (order_ref,)
+        )
+        released_count = cursor.rowcount
+
+        # Mark order as CANCELLED
+        conn.execute(
+            """
+            UPDATE orders 
+            SET payment_status = 'CANCELLED',
+                updated_at = datetime('now')
+            WHERE order_reference = ?
+            """,
+            (order_ref,)
+        )
+
+        conn.execute("COMMIT;")
+        return True, "Order cancelled successfully and held cards released.", released_count
+    except Exception as e:
+        try:
+            conn.execute("ROLLBACK;")
+        except Exception:
+            pass
+        raise e
+    finally:
+        conn.close()
+
 def create_order(
     order_ref: str, 
     category: str, 

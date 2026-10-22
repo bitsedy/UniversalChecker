@@ -439,5 +439,59 @@ class TestApiEndpoints(unittest.TestCase):
         self.assertTrue(is_returning_customer_phone(test_phone))
         self.assertTrue(is_returning_customer_phone("233551122334"))
 
+    def test_order_cancel_endpoint(self):
+        """Verifies cancellation endpoint releases reserved vouchers."""
+        create_res = self.client.post("/api/orders/create", json={
+            "category": "WASSCE",
+            "quantity": 1,
+            "customer_phone": "0249876543",
+            "payment_method": "MOMO_MTN"
+        })
+        self.assertEqual(create_res.status_code, 200)
+        ref = create_res.json()["order"]["order_reference"]
+
+        # Cancel order
+        cancel_res = self.client.post("/api/orders/cancel", json={"order_reference": ref})
+        self.assertEqual(cancel_res.status_code, 200)
+        data = cancel_res.json()
+        self.assertTrue(data["success"])
+        self.assertIn("released", data["message"].lower())
+
+        # Status check reflects cancellation
+        status_res = self.client.get(f"/api/orders/{ref}/status")
+        self.assertEqual(status_res.status_code, 200)
+        self.assertEqual(status_res.json()["payment_status"], "CANCELLED")
+
+    def test_order_status_lifecycle_endpoint(self):
+        """Verifies status endpoint handles PENDING, verification, and PAID fulfillment."""
+        create_res = self.client.post("/api/orders/create", json={
+            "category": "WASSCE",
+            "quantity": 1,
+            "customer_phone": "0245551234",
+            "payment_method": "MOMO_MTN"
+        })
+        ref = create_res.json()["order"]["order_reference"]
+
+        # 1. PENDING status check
+        status_res = self.client.get(f"/api/orders/{ref}/status")
+        self.assertEqual(status_res.status_code, 200)
+        self.assertEqual(status_res.json()["payment_status"], "PENDING")
+
+        # 2. Verify payment (simulation)
+        verify_res = self.client.post("/api/orders/verify", json={
+            "order_reference": ref,
+            "provider": "MOMO_SIMULATOR"
+        })
+        self.assertEqual(verify_res.status_code, 200)
+        self.assertTrue(verify_res.json()["success"])
+
+        # 3. Status check now reflects PAID with fulfillment
+        status_paid = self.client.get(f"/api/orders/{ref}/status")
+        self.assertEqual(status_paid.status_code, 200)
+        data = status_paid.json()
+        self.assertEqual(data["payment_status"], "PAID")
+        self.assertIn("fulfillment", data)
+        self.assertEqual(len(data["fulfillment"]["cards"]), 1)
+
 if __name__ == "__main__":
     unittest.main()
