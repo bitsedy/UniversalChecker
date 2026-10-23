@@ -669,7 +669,8 @@
 <!-- ========================================================================= -->
 <div id="checkout_modal" class="modal-overlay">
   <div class="modal-card">
-    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-drag-handle" aria-hidden="true"></div>
+    <button class="modal-close" onclick="closeModal()" aria-label="Close Checkout">&times;</button>
 
     <!-- STEP 1: DETAILS FORM -->
     <div id="checkout_step_details">
@@ -697,18 +698,33 @@
           <input 
             type="tel" 
             id="customer_phone" 
-            class="form-input" 
+            class="form-input phone-input-field" 
             placeholder="e.g. 024 123 4567 or 050 000 0000" 
             inputmode="numeric" 
             autocomplete="tel" 
-            required 
-            style="padding-right: 125px;"
+            required
           >
           <div id="telco_detected_badge" class="telco-detected-badge" style="display: none;" aria-live="polite">
             <span id="telco_detected_name">MTN</span>
           </div>
         </div>
-        <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
+
+        <!-- Inline Phone Validation Error (No Intrusive Window Alerts) -->
+        <div id="phone_validation_error" class="phone-validation-error" style="display: none;" role="alert">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span id="phone_error_text">Please enter a valid 10-digit Ghanaian mobile number.</span>
+        </div>
+
+        <!-- Reassuring Adaptive Telco Status Bar (Intentional Mobile Affirmation) -->
+        <div id="telco_detected_bar" class="telco-detected-bar" style="display: none;" aria-live="polite">
+          <div class="telco-bar-pill" id="telco_bar_pill">
+            <span class="telco-bar-dot"></span>
+            <strong id="telco_bar_network">MTN MoMo</strong>
+          </div>
+          <span class="telco-bar-text">Direct prompt will be sent to your phone</span>
+        </div>
+
+        <span id="telco_default_hint" style="font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; display: block;">
           Carrier detected automatically (MTN, Telecel, or AT).
         </span>
       </div>
@@ -744,7 +760,7 @@
         <input type="email" id="customer_email" class="form-input" placeholder="candidate@example.com">
       </div>
 
-      <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem;">
+      <div style="background: #f8fafc; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem;">
         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">
           <span>Price per card:</span>
           <span id="modal_unit_price" data-price="22.00">GHS 22.00</span>
@@ -753,6 +769,12 @@
           <span>Total to Pay:</span>
           <span id="modal_total_price" style="color: var(--ghana-gold);">GHS 22.00</span>
         </div>
+      </div>
+
+      <!-- Inline Checkout Error Banner (Replaces Intrusive Alert Popups) -->
+      <div id="checkout_error_banner" class="checkout-error-banner" style="display: none;" role="alert">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span id="checkout_error_text"></span>
       </div>
 
       <button id="btn_submit_order" class="btn-buy" onclick="submitOrder()">

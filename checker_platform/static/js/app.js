@@ -105,34 +105,100 @@ function setupModalAccessibility() {
   }
 }
 
-// Auto-detect Ghanaian network from phone number & update carrier badge
+function clearCheckoutErrors() {
+  const phoneErr = document.getElementById("phone_validation_error");
+  const checkoutErr = document.getElementById("checkout_error_banner");
+  const phoneInput = document.getElementById("customer_phone");
+  if (phoneErr) phoneErr.style.display = "none";
+  if (checkoutErr) checkoutErr.style.display = "none";
+  if (phoneInput) phoneInput.classList.remove("phone-input-error");
+}
+
+function showCheckoutError(message, isPhone = false) {
+  clearCheckoutErrors();
+  if (isPhone) {
+    const phoneErr = document.getElementById("phone_validation_error");
+    const phoneErrText = document.getElementById("phone_error_text");
+    const phoneInput = document.getElementById("customer_phone");
+    if (phoneErr && phoneErrText) {
+      phoneErrText.textContent = message;
+      phoneErr.style.display = "flex";
+    }
+    if (phoneInput) {
+      phoneInput.classList.add("phone-input-error");
+      phoneInput.focus();
+    }
+    if (navigator.vibrate) {
+      try { navigator.vibrate(50); } catch (_) {}
+    }
+  } else {
+    const checkoutErr = document.getElementById("checkout_error_banner");
+    const checkoutErrText = document.getElementById("checkout_error_text");
+    if (checkoutErr && checkoutErrText) {
+      checkoutErrText.textContent = message;
+      checkoutErr.style.display = "flex";
+      checkoutErr.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+}
+
+// Auto-detect Ghanaian network from phone number & update carrier badge & status bar
 function setupTelcoAutoDetect() {
   const phoneInput = document.getElementById("customer_phone");
   const badge = document.getElementById("telco_detected_badge");
   const badgeName = document.getElementById("telco_detected_name");
+  const telcoBar = document.getElementById("telco_detected_bar");
+  const telcoBarPill = document.getElementById("telco_bar_pill");
+  const telcoBarNetwork = document.getElementById("telco_bar_network");
+  const defaultHint = document.getElementById("telco_default_hint");
   if (!phoneInput) return;
 
   function setBadge(telcoKey) {
-    if (!badge || !badgeName) return;
-    badge.className = "telco-detected-badge";
-    if (telcoKey === "mtn") {
-      badge.classList.add("telco-badge-mtn");
-      badgeName.textContent = "MTN MoMo";
-      badge.style.display = "flex";
-    } else if (telcoKey === "telecel") {
-      badge.classList.add("telco-badge-telecel");
-      badgeName.textContent = "Telecel Cash";
-      badge.style.display = "flex";
-    } else if (telcoKey === "at") {
-      badge.classList.add("telco-badge-at");
-      badgeName.textContent = "AT Money";
-      badge.style.display = "flex";
-    } else {
-      badge.style.display = "none";
+    if (badge && badgeName) {
+      badge.className = "telco-detected-badge";
+      if (telcoKey === "mtn") {
+        badge.classList.add("telco-badge-mtn");
+        badgeName.textContent = "MTN MoMo";
+        badge.style.display = "flex";
+      } else if (telcoKey === "telecel") {
+        badge.classList.add("telco-badge-telecel");
+        badgeName.textContent = "Telecel Cash";
+        badge.style.display = "flex";
+      } else if (telcoKey === "at") {
+        badge.classList.add("telco-badge-at");
+        badgeName.textContent = "AT Money";
+        badge.style.display = "flex";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    if (telcoBar && telcoBarNetwork && telcoBarPill) {
+      telcoBarPill.className = "telco-bar-pill";
+      if (telcoKey === "mtn") {
+        telcoBarPill.classList.add("telco-bar-mtn");
+        telcoBarNetwork.textContent = "MTN MoMo";
+        telcoBar.style.display = "flex";
+        if (defaultHint) defaultHint.style.display = "none";
+      } else if (telcoKey === "telecel") {
+        telcoBarPill.classList.add("telco-bar-telecel");
+        telcoBarNetwork.textContent = "Telecel Cash";
+        telcoBar.style.display = "flex";
+        if (defaultHint) defaultHint.style.display = "none";
+      } else if (telcoKey === "at") {
+        telcoBarPill.classList.add("telco-bar-at");
+        telcoBarNetwork.textContent = "AT Money";
+        telcoBar.style.display = "flex";
+        if (defaultHint) defaultHint.style.display = "none";
+      } else {
+        telcoBar.style.display = "none";
+        if (defaultHint) defaultHint.style.display = "block";
+      }
     }
   }
 
   phoneInput.addEventListener("input", (e) => {
+    clearCheckoutErrors();
     let val = e.target.value.replace(/\D/g, "");
     if (val.startsWith("233")) {
       val = "0" + val.substring(3);
@@ -678,6 +744,7 @@ function getSmartLoaderHtml(size = "sm", archColor = "#FFFFFF", checkColor = "#F
 
 // Submit Order and Trigger Reservation
 async function submitOrder() {
+  clearCheckoutErrors();
   const category = document.getElementById("modal_category").value;
   const quantity = parseInt(document.getElementById("order_quantity").value, 10);
   const phone = document.getElementById("customer_phone").value.trim();
@@ -687,7 +754,7 @@ async function submitOrder() {
   const paymentMethod = selectedPayment ? selectedPayment.value : "MOMO_MTN";
 
   if (!phone || phone.length < 9) {
-    alert("Please enter a valid Ghanaian mobile phone number.");
+    showCheckoutError("Please enter a valid 10-digit Ghanaian mobile money number (e.g. 024 123 4567).", true);
     return;
   }
 
@@ -711,7 +778,7 @@ async function submitOrder() {
 
     const data = await res.json();
     if (!res.ok || !data.success) {
-      alert(data.message || "Failed to reserve voucher. It may be temporarily out of stock.");
+      showCheckoutError(data.message || "Failed to reserve voucher. It may be temporarily out of stock.");
       btn.innerHTML = "Pay with Mobile Money &rarr;";
       btn.disabled = false;
       window.SystemLoader.done();
@@ -726,7 +793,7 @@ async function submitOrder() {
     }
     window.SystemLoader.done();
   } catch (err) {
-    alert("Network error: " + err.message);
+    showCheckoutError("Network error: Please check your internet connection and try again.");
     btn.innerHTML = "Pay with Mobile Money &rarr;";
     btn.disabled = false;
     window.SystemLoader.done();

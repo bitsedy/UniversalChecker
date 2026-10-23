@@ -1462,6 +1462,115 @@ h1, h2, h3, h4, h5, h6,
   border-color: #7dd3fc;
 }
 
+/* Phone Input Full Width & Mobile Ergonomics */
+.phone-input-field {
+  width: 100%;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0.85rem 1rem;
+  transition: all var(--duration-fast) var(--ease-spring);
+}
+
+.phone-input-error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22) !important;
+  background: #fef2f2 !important;
+}
+
+/* Inline Phone Validation Error (Polite & Accessible) */
+.phone-validation-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  font-size: 0.825rem;
+  font-weight: 600;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Reassuring Adaptive Telco Status Bar */
+.telco-detected-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: #f8fafc;
+  border: 1px solid var(--border-subtle);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.telco-bar-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.telco-bar-mtn {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fde047;
+}
+
+.telco-bar-telecel {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.telco-bar-at {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.telco-bar-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+}
+
+.telco-bar-text {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Inline Checkout Error Banner (Replaces alert popups) */
+.checkout-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: #fef2f2;
+  border: 1.5px solid #f87171;
+  color: #b91c1c;
+  font-size: 0.85rem;
+  font-weight: 700;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.modal-drag-handle {
+  display: none;
+}
+
 .reservation-countdown-pill {
   display: flex;
   justify-content: space-between;
@@ -2011,6 +2120,18 @@ footer {
 }
 
 /* Responsive adjustments & Anti-Deformity Breakpoints */
+.navbar-top-row {
+  display: contents;
+}
+
+.mobile-quick-lookup-btn {
+  display: none;
+}
+
+.nav-links-wrapper {
+  display: contents;
+}
+
 @media (max-width: 960px) {
   .navbar {
     padding: 0.75rem 1rem;
@@ -2018,8 +2139,36 @@ footer {
     align-items: stretch;
     gap: 0.75rem;
   }
-  .navbar > .brand-link {
-    align-self: flex-start;
+  .navbar-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  .mobile-quick-lookup-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--brand-emerald-tint);
+    border: 1.5px solid var(--border-emerald);
+    color: var(--brand-emerald);
+    font-size: 0.825rem;
+    font-weight: 700;
+    text-decoration: none;
+    min-height: 40px;
+    box-shadow: 0 1px 2px rgba(15, 118, 110, 0.08);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .mobile-quick-lookup-btn:active {
+    transform: scale(0.96);
+    background: #d1fae5;
+  }
+  .nav-links-wrapper {
+    display: block;
+    width: 100%;
+    position: relative;
   }
   .nav-links {
     width: 100%;
@@ -2054,6 +2203,71 @@ footer {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+}
+
+/* Smartphone Bottom Sheet & Thumb Ergonomics (<= 640px) */
+@media (max-width: 640px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal-card {
+    border-radius: 24px 24px 0 0;
+    max-height: 92dvh;
+    max-height: min(92dvh, 92vh);
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 1.25rem 1.25rem max(1.5rem, env(safe-area-inset-bottom)) 1.25rem;
+    overscroll-behavior: contain;
+    transform: translateY(100%);
+    transition: transform var(--duration-normal) var(--ease-spring);
+  }
+  .modal-overlay.active .modal-card {
+    transform: translateY(0);
+  }
+  .modal-drag-handle {
+    display: block;
+    width: 44px;
+    height: 5px;
+    background: #cbd5e1;
+    border-radius: 9999px;
+    margin: -0.25rem auto 1rem auto;
+  }
+  .modal-close {
+    top: 0.85rem;
+    right: 0.85rem;
+    width: 38px;
+    height: 38px;
+  }
+
+  /* Form & Action button mobile optimization */
+  .lookup-form {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  .lookup-form .lookup-input,
+  .lookup-form .lookup-submit-btn {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  /* Pathway Advisor Mobile Grid Ergonomics */
+  .advisor-presets-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+  .advisor-presets-grid .btn-copy {
+    width: 100% !important;
+    white-space: normal !important;
+    text-align: center !important;
+    font-size: 0.76rem !important;
+    padding: 0.45rem 0.5rem !important;
+    min-height: 44px !important;
+    line-height: 1.3 !important;
   }
 }
 

@@ -14,21 +14,21 @@
   </div>
 
   <!-- Search Card -->
-  <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem 2rem; box-shadow: var(--shadow-sm); margin-bottom: 2.5rem;">
-    <form method="GET" action="/lookup" style="display: flex; gap: 0.75rem; flex-wrap: wrap;" onsubmit="const sk = document.getElementById('lookup_skeleton_container'); if (sk) sk.style.display='block'; const res = document.getElementById('lookup_results_container'); if (res) res.style.display='none'; if (window.SystemLoader) window.SystemLoader.start();">
+  <div class="lookup-form-container" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.75rem 2rem; box-shadow: var(--shadow-sm); margin-bottom: 2.5rem;">
+    <form method="GET" action="/lookup" class="lookup-form" style="display: flex; gap: 0.75rem; flex-wrap: wrap;" onsubmit="const sk = document.getElementById('lookup_skeleton_container'); if (sk) sk.style.display='block'; const res = document.getElementById('lookup_results_container'); if (res) res.style.display='none'; if (window.SystemLoader) window.SystemLoader.start();">
       <input 
         type="text" 
         name="q" 
         value="{{ query or '' }}" 
         placeholder="Enter Phone Number (e.g. 024 123 4567) or Order Reference (ORD-...)" 
-        class="form-input" 
-        style="flex: 1; min-width: 260px; min-height: 48px; font-family: var(--font-mono); font-size: 0.92rem;" 
+        class="form-input lookup-input" 
+        style="flex: 1; min-width: 240px; min-height: 48px; font-family: var(--font-mono); font-size: 0.92rem;" 
         inputmode="text"
         autocomplete="tel"
         aria-label="Phone Number or Order Reference"
         required
       >
-      <button type="submit" class="btn-buy" style="width: auto; min-height: 48px; padding: 0.85rem 1.75rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+      <button type="submit" class="btn-buy lookup-submit-btn" style="width: auto; min-height: 48px; padding: 0.85rem 1.75rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         Retrieve My Voucher
       </button>
