@@ -2,13 +2,17 @@ FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=8000
+    PORT=8000 \
+    SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
 WORKDIR /app
 
-# Install minimal runtime dependencies and create an unprivileged user
+# Install minimal runtime dependencies, upgrade CA certificates (eMudhra remediation), and create unprivileged user
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    ca-certificates \
+    && apt-get install -y --only-upgrade ca-certificates \
+    && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd -g 10001 appgroup \
     && useradd -u 10001 -g appgroup -s /bin/false -M appuser

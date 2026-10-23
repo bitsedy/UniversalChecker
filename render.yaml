@@ -12,3 +12,5 @@ services:
         value: 3.11.9
       - key: CHECKER_DB_PATH
         value: checker.db
+      - key: SSL_CERT_FILE
+        value: /etc/ssl/certs/ca-certificates.crt
