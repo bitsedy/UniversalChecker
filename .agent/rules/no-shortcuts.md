@@ -17,3 +17,8 @@ activation: always-on
 - Never copy a template, component, or utility between the storefront and
   the advisor rather than sharing it properly — if both need the same
   thing, it goes in one shared location, used by both.
+- Always execute the Mandatory Dual-Tier Testing Protocol (documented in
+  [`TESTS.md`](file:///c:/Projects/UniversalChecker/TESTS.md): Tier 1 Systematic automated `pytest` suite + Tier 2
+  Physical verification by literally visiting and testing the live site
+  upfront on Desktop and Mobile). Never mark a task as complete without
+  reporting both tiers.

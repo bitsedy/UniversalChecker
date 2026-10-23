@@ -38,6 +38,11 @@ file only summarizes.
 - If a task would touch more than one of: inventory locking, payments,
   advisor privacy boundary, or admin — stop and propose splitting it first.
 - Commit after each accepted task, not batched across several.
+- **Mandatory Dual-Tier Testing (Strictly Required)**:
+  Before completing any task, execute BOTH testing tiers as documented in [`TESTS.md`](file:///c:/Projects/UniversalChecker/TESTS.md):
+  1. *Tier 1: Systematic Automated Tests* (`pytest` with 100% passes and 0 regressions).
+  2. *Tier 2: Physical Verification Testing* (literally visit `http://127.0.0.1:8000`, test every button, navigation link, modal, input field, and copy upfront across both Desktop and Mobile Smartphone views).
+  Report both tiers in your task summary.
 - Never describe a stub, shortcut, or simplification as "done" — describe
   it as what it is, and say so explicitly in your task summary.
 - **UI Simplicity & Cleanliness Rules**:
