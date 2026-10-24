@@ -258,7 +258,7 @@ class TestApiEndpoints(unittest.TestCase):
         # 4. Restore test suite password
         from checker_platform.main import hash_password
         from checker_platform.database import update_setting
-        update_setting("admin_password", "ghana2026")
+        update_setting("admin_password", hash_password("ghana2026"))
 
     def test_admin_rate_limiter_lockout(self):
         """Verifies that 5 failed login attempts trigger a 429 Too Many Requests lockout."""

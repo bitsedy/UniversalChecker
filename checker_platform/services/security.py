@@ -242,21 +242,22 @@ class SecurityHeadersGuard:
     @staticmethod
     def apply_security_headers(headers: Dict[str, str], is_admin: bool = False):
         """Injects enterprise defense headers into response."""
-        # Frame protection
+        # Frame protection & policies
         headers["X-Frame-Options"] = "DENY"
         headers["X-Content-Type-Options"] = "nosniff"
         headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()"
+        headers["Permissions-Policy"] = 'camera=(), microphone=(), geolocation=(), payment=(self "https://js.paystack.co")'
         headers["X-XSS-Protection"] = "1; mode=block"
 
-        # Content Security Policy (Level 3 compliant)
+        # Content Security Policy (Level 3 compliant with payment gateway iframe & popups)
         headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' https://js.paystack.co https://cdn.jsdelivr.net; "
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com; "
             "font-src 'self' https://fonts.gstatic.com data:; "
             "img-src 'self' data: https:; "
-            "connect-src 'self' https://api.paystack.co; "
+            "connect-src 'self' https://api.paystack.co https://checkout.paystack.com; "
+            "frame-src 'self' https://checkout.paystack.com https://standard.paystack.co; "
             "frame-ancestors 'none'; "
             "form-action 'self'; "
             "base-uri 'self';"
@@ -268,3 +269,41 @@ class SecurityHeadersGuard:
         if is_admin:
             headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
             headers["Pragma"] = "no-cache"
+
+
+# ============================================================================
+# 6. IN-MEMORY SLIDING-WINDOW RATE LIMITER & ANTI-ABUSE
+# ============================================================================
+
+class ClientRateLimiter:
+    """
+    Thread-safe, in-memory sliding-window rate limiter for high-traffic public endpoints.
+    Protects against credential stuffing, voucher exhaustion, inventory reservation DoS,
+    and automated scraping.
+    """
+    _requests: Dict[str, List[float]] = {}
+
+    @classmethod
+    def check_rate_limit(cls, key: str, max_requests: int, window_seconds: int = 60) -> Tuple[bool, int]:
+        """
+        Evaluates whether a client key (IP or identifier) has exceeded quota.
+        Returns:
+            (is_allowed: bool, retry_after_seconds: int)
+        """
+        now = time.time()
+        timestamps = cls._requests.get(key, [])
+        # Prune old timestamps outside the window
+        valid = [t for t in timestamps if now - t < window_seconds]
+        if len(valid) >= max_requests:
+            retry_after = int(window_seconds - (now - valid[0])) + 1
+            cls._requests[key] = valid
+            return False, max(1, retry_after)
+
+        valid.append(now)
+        cls._requests[key] = valid
+        return True, 0
+
+    @classmethod
+    def reset(cls) -> None:
+        """Resets all recorded rate limit windows (for test harness cleanliness)."""
+        cls._requests.clear()

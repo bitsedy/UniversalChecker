@@ -20,6 +20,10 @@ if __name__ == "__main__":
     # Ensure current directory is in PYTHONPATH
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     
+    if "--test" in sys.argv:
+        os.environ["CHECKER_ENV"] = "test"
+        print("[TEST MODE] Local simulation mode active (MoMo/Paystack sandbox)")
+    
     host = os.environ.get("HOST", "0.0.0.0")
     port = int(os.environ.get("PORT", 8000))
 
@@ -37,7 +41,9 @@ if __name__ == "__main__":
     gate_key = os.environ.get("ADMIN_GATE_KEY", "")
     gate_param = f"?gate={gate_key}" if gate_key else "?gate=<GATE_KEY>"
     print(f"Admin Operations:  http://{display_host}:{port}/admin{gate_param} (Stealth Gated)")
-    print(f"API Documentation: http://{display_host}:{port}/docs")
+    is_dbg = os.environ.get("DEBUG", "false").lower() in ("true", "1") or os.environ.get("CHECKER_ENV") == "test"
+    if is_dbg:
+        print(f"API Documentation: http://{display_host}:{port}/docs (Debug Mode)")
     print(f"Health Check:      http://{display_host}:{port}/health")
     print("=" * 60)
 

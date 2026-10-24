@@ -38,6 +38,7 @@ from contextlib import asynccontextmanager
 from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks, Header, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -96,7 +97,8 @@ from .services.security import (
     EphemeralMemoryVault,
     CryptographicAuditLedger,
     SessionFingerprinter,
-    SecurityHeadersGuard
+    SecurityHeadersGuard,
+    ClientRateLimiter
 )
 from .seed_data import run_seed
 
@@ -138,11 +140,47 @@ async def lifespan(app: FastAPI):
     # Shutdown
     cleaner_task.cancel()
 
+is_debug = os.environ.get("DEBUG", "false").lower() in ("true", "1")
 app = FastAPI(
     title="CheckerPay Ghana",
     description="High-concurrency digital voucher reseller gateway for WAEC and CSSPS.",
     version="1.0.0",
+    debug=is_debug,
+    docs_url="/docs" if (is_debug or is_test_environment()) else None,
+    redoc_url="/redoc" if (is_debug or is_test_environment()) else None,
+    openapi_url="/openapi.json" if (is_debug or is_test_environment()) else None,
     lifespan=lifespan
+)
+
+# Explicit CORS Configuration
+raw_origins = os.environ.get("ALLOWED_ORIGINS", "")
+allowed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+default_origins = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3000"
+]
+for orig in default_origins:
+    if orig not in allowed_origins:
+        allowed_origins.append(orig)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "X-Admin-Gate",
+        "Idempotency-Key",
+        "X-Idempotency-Key",
+        "Accept",
+        "Origin"
+    ],
+    max_age=600
 )
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -298,7 +336,24 @@ async def home(request: Request):
 
 @app.get("/lookup", response_class=HTMLResponse)
 async def lookup_page(request: Request, q: Optional[str] = None):
-    """Self-service voucher recovery page with anti-scraping credential masking."""
+    """Self-service voucher recovery page with anti-scraping credential masking and rate limiting."""
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    if not is_test_environment() and q and q.strip():
+        allowed, retry_after = ClientRateLimiter.check_rate_limit(f"lookup:{client_ip}", max_requests=25, window_seconds=60)
+        if not allowed:
+            return templates.TemplateResponse(
+                request=request,
+                name="lookup.html",
+                context={
+                    "active_page": "lookup",
+                    "query": q,
+                    "orders": [],
+                    "is_phone_query": False,
+                    "rate_limit_error": f"Too many search requests. Please wait {retry_after} seconds before searching again."
+                },
+                status_code=429
+            )
+
     orders = []
     is_phone_query = False
     if q and q.strip():
@@ -500,6 +555,8 @@ class AdminSecurityManager:
         cls._failed_attempts.clear()
         cls._lockouts.clear()
 
+DEFAULT_ADMIN_PASSWORD_HASH = "pbkdf2:sha256:100000$819e68795004da0b7d103dc1f7ea4bda$6d629dc72822847627fc5308b32ab1da9638b3b67cc13ef578a9f19e8b7c3d21"
+
 def hash_password(password: str) -> str:
     """Hashes a password using PBKDF2-HMAC-SHA256 with a random salt."""
     salt = secrets.token_hex(16)
@@ -507,7 +564,7 @@ def hash_password(password: str) -> str:
     return f"pbkdf2:sha256:100000${salt}${key.hex()}"
 
 def verify_password(plain_password: str, stored_hash_or_plain: str) -> bool:
-    """Verifies a plain password against a stored PBKDF2 hash or legacy plaintext."""
+    """Verifies a plain password against a stored PBKDF2 hash with automatic legacy migration."""
     if stored_hash_or_plain.startswith("pbkdf2:sha256:"):
         try:
             parts = stored_hash_or_plain.split("$")
@@ -518,8 +575,16 @@ def verify_password(plain_password: str, stored_hash_or_plain: str) -> bool:
             return secrets.compare_digest(key.hex(), expected_hex)
         except Exception:
             return False
-    # Legacy plaintext fallback (with constant-time comparison)
-    return secrets.compare_digest(plain_password, stored_hash_or_plain)
+    # If legacy plaintext detected, verify with constant-time comparison and auto-upgrade to PBKDF2
+    if secrets.compare_digest(plain_password, stored_hash_or_plain):
+        try:
+            new_hash = hash_password(plain_password)
+            update_setting("admin_password", new_hash)
+            logger.warning("[Security] Legacy plaintext password auto-migrated to PBKDF2 salted hash.")
+        except Exception:
+            pass
+        return True
+    return False
 
 def is_secure_connection(request: Request) -> bool:
     """Returns True if the connection is HTTPS or configured for secure cookies."""
@@ -727,7 +792,7 @@ def get_current_admin(
     if credentials:
         expected_username = os.environ.get("ADMIN_USERNAME", get_setting("admin_username", "admin")).strip()
         env_password = os.environ.get("ADMIN_PASSWORD")
-        db_password = get_setting("admin_password", "ghana2026").strip()
+        db_password = get_setting("admin_password", DEFAULT_ADMIN_PASSWORD_HASH).strip()
 
         is_user_ok = secrets.compare_digest(credentials.username.strip().lower(), expected_username.lower())
         is_pass_ok = False
@@ -837,7 +902,7 @@ async def admin_login_submit(request: Request):
 
     expected_username = os.environ.get("ADMIN_USERNAME", get_setting("admin_username", "admin")).strip()
     env_password = os.environ.get("ADMIN_PASSWORD")
-    db_password = get_setting("admin_password", "ghana2026").strip()
+    db_password = get_setting("admin_password", DEFAULT_ADMIN_PASSWORD_HASH).strip()
 
     is_user_ok = secrets.compare_digest(username.lower(), expected_username.lower())
     is_pass_ok = False
@@ -908,8 +973,8 @@ async def admin_page(request: Request, admin_user: str = Depends(get_current_adm
     metrics = get_admin_metrics()
 
     env_password = os.environ.get("ADMIN_PASSWORD")
-    db_password = get_setting("admin_password", "ghana2026").strip()
-    is_default_password = (not env_password) and (db_password == "ghana2026")
+    db_password = get_setting("admin_password", DEFAULT_ADMIN_PASSWORD_HASH).strip()
+    is_default_password = (not env_password) and (db_password == "ghana2026" or db_password == DEFAULT_ADMIN_PASSWORD_HASH or verify_password("ghana2026", db_password))
 
     raw_secret = get_setting("paystack_secret_key", "").strip()
     masked_secret = ""
@@ -1062,9 +1127,19 @@ async def api_create_order(req: OrderCreateRequest, request: Request):
     """
     Creates an order and atomically reserves vouchers.
     Returns payment authorization instructions (MoMo USSD prompt or Paystack link).
-    Enforces idempotency if Idempotency-Key is provided.
+    Enforces idempotency and rate limiting.
     """
     idem_key = request.headers.get("Idempotency-Key") or request.headers.get("X-Idempotency-Key")
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    if not is_test_environment():
+        allowed, retry_after = ClientRateLimiter.check_rate_limit(f"order_create:{client_ip}", max_requests=15, window_seconds=60)
+        if not allowed:
+            return JSONResponse(
+                status_code=429,
+                headers={"Retry-After": str(retry_after)},
+                content={"success": False, "message": f"Too many order creation requests. Please wait {retry_after} seconds before trying again."}
+            )
+
     if idem_key:
         req_digest = hashlib.sha256(f"{req.category}:{req.quantity}:{req.customer_phone}:{req.payment_method}".encode("utf-8")).hexdigest()
         lock_ok, existing = acquire_idempotency_lock(idem_key, "/api/orders/create", req_digest)
@@ -1099,8 +1174,8 @@ async def api_create_order(req: OrderCreateRequest, request: Request):
     product = catalog[clean_cat]
     unit_price = product["price"]
 
-    # Generate unique order reference
-    rand_suffix = random.randint(1000, 9999)
+    # Generate unique cryptographically strong order reference
+    rand_suffix = secrets.randbelow(900000) + 100000
     order_ref = f"ORD-{int(time.time())}-{rand_suffix}"
 
     # Atomic Reservation
@@ -1825,7 +1900,7 @@ async def advisor_page(request: Request):
     )
 
 @app.post("/api/advisor/analyze")
-async def api_advisor_analyze(req: AdvisoryRequest):
+async def api_advisor_analyze(req: AdvisoryRequest, request: Request):
     """
     Ghana Data Protection Act, 2012 (Act 843) Compliant Analysis:
     - Explicit consent verification (Section 20).
@@ -1833,6 +1908,16 @@ async def api_advisor_analyze(req: AdvisoryRequest):
     - Expert, realistic, non-bluffing school placement & tertiary pathway guidance.
     - Decoy effect tier enforcement (FREE teaser reveals 1 sample; PAID reveals all).
     """
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    if not is_test_environment():
+        allowed, retry_after = ClientRateLimiter.check_rate_limit(f"advisor_analyze:{client_ip}", max_requests=25, window_seconds=60)
+        if not allowed:
+            return JSONResponse(
+                status_code=429,
+                headers={"Retry-After": str(retry_after)},
+                content={"success": False, "message": f"Too many analysis requests. Please wait {retry_after} seconds before trying again."}
+            )
+
     if not req.consent_given:
         return JSONResponse(
             status_code=400,
@@ -1888,13 +1973,23 @@ async def api_advisor_analyze(req: AdvisoryRequest):
     }
 
 @app.post("/api/advisor/order")
-async def api_create_advisory_order(req: AdvisoryOrderRequest):
+async def api_create_advisory_order(req: AdvisoryOrderRequest, request: Request):
     """
     Creates a pending micro-order for educational advisory access:
     - TIER_BASIC: GH₵ 6.00
     - TIER_DECOY: GH₵ 12.00
     - TIER_HERO: GH₵ 15.00 (Master Placement Dossier)
     """
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    if not is_test_environment():
+        allowed, retry_after = ClientRateLimiter.check_rate_limit(f"advisor_order:{client_ip}", max_requests=15, window_seconds=60)
+        if not allowed:
+            return JSONResponse(
+                status_code=429,
+                headers={"Retry-After": str(retry_after)},
+                content={"success": False, "message": f"Too many order creation requests. Please wait {retry_after} seconds before trying again."}
+            )
+
     clean_phone = req.customer_phone.strip()
     tier = req.tier.strip().upper()
     if tier not in ["TIER_BASIC", "TIER_DECOY", "TIER_HERO"]:
@@ -1906,7 +2001,8 @@ async def api_create_advisory_order(req: AdvisoryOrderRequest):
         "TIER_HERO": float(get_setting("price_ADVISORY_HERO", "15.00")),
     }
     unit_price = tier_prices.get(tier, 15.00)
-    order_ref = f"ADV-{int(time.time())}-{random.randint(1000, 9999)}"
+    rand_suffix = secrets.randbelow(900000) + 100000
+    order_ref = f"ADV-{int(time.time())}-{rand_suffix}"
 
     order_data = create_order(
         order_ref=order_ref,
@@ -1955,10 +2051,20 @@ async def api_create_advisory_order(req: AdvisoryOrderRequest):
     }
 
 @app.post("/api/advisor/verify")
-async def api_verify_advisory_order(req: AdvisoryVerifyRequest):
+async def api_verify_advisory_order(req: AdvisoryVerifyRequest, request: Request):
     """
     Confirms payment for an advisory access tier and grants the unlock code.
     """
+    client_ip = AdminSecurityManager.get_client_ip(request)
+    if not is_test_environment():
+        allowed, retry_after = ClientRateLimiter.check_rate_limit(f"advisor_verify:{client_ip}", max_requests=25, window_seconds=60)
+        if not allowed:
+            return JSONResponse(
+                status_code=429,
+                headers={"Retry-After": str(retry_after)},
+                content={"success": False, "message": f"Too many verification requests. Please wait {retry_after} seconds before trying again."}
+            )
+
     order = get_order_details(req.order_reference)
     if not order:
         raise HTTPException(status_code=404, detail="Advisory order reference not found")

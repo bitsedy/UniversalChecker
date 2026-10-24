@@ -115,6 +115,11 @@
 
   <!-- Results Section -->
   <div id="lookup_results_container">
+  {% if rate_limit_error %}
+    <div style="background: rgba(220, 38, 38, 0.08); border: 1px solid rgba(220, 38, 38, 0.3); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem; text-align: center; color: var(--ghana-red); font-size: 0.95rem;">
+      <strong>Notice:</strong> {{ rate_limit_error }}
+    </div>
+  {% endif %}
   {% if query %}
     {% if orders and orders|length > 0 %}
       <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; margin-bottom: 1.25rem; color: var(--text-main);">
