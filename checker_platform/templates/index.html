@@ -40,21 +40,25 @@
 
 {% block content %}
 <div class="container">
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <h1 class="hero-title">
-      Buy Authentic Result Checkers &amp; Placement Vouchers in Seconds
+  <!-- 1. Hero Section -->
+  <section class="hero-section" style="padding: clamp(2rem, 5vw, 3.5rem) 0 2rem 0; text-align: center;">
+    <h1 class="hero-title" style="font-family: var(--font-heading); font-size: clamp(2rem, 5vw, 2.75rem); font-weight: 800; color: var(--text-main); letter-spacing: -0.03em; margin-bottom: 0.75rem;">
+      Buy Authentic Result Checkers in Seconds
     </h1>
     
-    <p class="hero-subtitle">
-      Get your code right on your screen and by SMS text message instantly. Pay safely with MTN MoMo, Telecel Cash, or AT Money. Every code is unique and never sold twice.
-      <span style="display: block; font-size: 0.875rem; color: var(--text-dim); margin-top: 0.65rem;">
-        Already have your results? Find out which schools and courses you can get into with <a href="/advisor" style="color: var(--brand-emerald); font-weight: 700; text-decoration: none;">Pathway Advisor &rarr;</a>
-      </span>
+    <p class="hero-subtitle" style="font-size: 1.05rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 1.5rem auto; line-height: 1.55;">
+      Get your official card and PIN instantly on your screen and by SMS. Pay safely with Mobile Money or Visa.
     </p>
 
-    <!-- Supported Payments Bar with Zero-CLS Dimension Attributes -->
-    <div class="telco-banner" role="region" aria-label="Supported Payment Methods">
+    <!-- Primary CTA visible above fold -->
+    <div style="margin-bottom: 2rem;">
+      <a href="#select-checker" class="btn-buy" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: auto; padding: 0.85rem 2rem; text-decoration: none; font-weight: 800; font-size: 1rem; border-radius: var(--radius-pill); box-shadow: var(--shadow-emerald);">
+        Select Result Checker &darr;
+      </a>
+    </div>
+
+    <!-- Supported Payments Bar -->
+    <div class="telco-banner" role="region" aria-label="Supported Payment Methods" style="margin-top: 0; justify-content: center;">
       <span class="telco-label">Supported Payments:</span>
       <div class="telco-item" title="MTN Mobile Money (*170#)">
         <img src="/static/img/payment_logos/mtn.png" alt="MTN MoMo" class="telco-logo-img" width="60" height="26" loading="eager">
@@ -69,210 +73,17 @@
         <img src="/static/img/payment_logos/visa.png" alt="Visa" class="telco-logo-img" width="60" height="26" loading="eager">
       </div>
     </div>
-
-    <!-- Telemetry Strip -->
-    <div class="telemetry-strip" role="region" aria-label="System Features">
-      <div class="telemetry-metric">
-        <span class="telemetry-label">Instant Delivery</span>
-        <div class="telemetry-value">
-          <span class="telemetry-indicator live"></span>
-          Under 3 Seconds by SMS
-        </div>
-      </div>
-      <div class="telemetry-metric">
-        <span class="telemetry-label">Privacy Guaranteed</span>
-        <div class="telemetry-value">
-          <span class="telemetry-indicator live"></span>
-          We Never Save Grades
-        </div>
-      </div>
-      <div class="telemetry-metric">
-        <span class="telemetry-label">Safe &amp; Unique</span>
-        <div class="telemetry-value">
-          <span class="telemetry-indicator live"></span>
-          Every Card Sold Once
-        </div>
-      </div>
-      <div class="telemetry-metric">
-        <span class="telemetry-label">MoMo Payments</span>
-        <div class="telemetry-value">
-          <span class="telemetry-indicator live"></span>
-          Active &amp; Protected
-        </div>
-      </div>
-    </div>
   </section>
 
-  <!-- Dual-Lane How It Works Section -->
-  <section class="how-it-works-section" style="margin-bottom: 3.5rem;">
-    <div style="text-align: center; margin-bottom: 2rem;">
-      <h2 style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
-        How It Works
-      </h2>
-      <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 580px; margin: 0 auto; line-height: 1.5;">
-        Want to check your exam results now, or find the right school for your grades? Pick an option below.
-      </p>
-    </div>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 1.75rem; align-items: stretch;">
-      <!-- Lane 1: Buy a Result Checker -->
-      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: clamp(1.25rem, 4vw, 2rem); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <span class="card-badge card-badge-popular">
-              Buy a Card
-            </span>
-            <span style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; color: var(--brand-emerald);">Step 1 &rarr; 3</span>
-          </div>
-
-          <h3 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem; letter-spacing: -0.01em;">
-            Buy a Result Checker
-          </h3>
-          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem;">
-            Get your official card and PIN right away to check your WAEC WASSCE, BECE, or CSSPS placement results.
-          </p>
-
-          <div style="display: flex; flex-direction: column; gap: 1.15rem; margin-bottom: 1.5rem;">
-            <!-- Step 1 -->
-            <div style="display: flex; gap: 0.9rem; align-items: flex-start;">
-              <div style="flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: rgba(15, 118, 110, 0.1); color: var(--brand-emerald); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; border: 1px solid rgba(15, 118, 110, 0.25);">
-                1
-              </div>
-              <div>
-                <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); margin-bottom: 2px;">Pick Your Exam</div>
-                <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">Choose the exam card you need from our list.</div>
-              </div>
-            </div>
-
-            <!-- Step 2 -->
-            <div style="display: flex; gap: 0.9rem; align-items: flex-start;">
-              <div style="flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: rgba(15, 118, 110, 0.1); color: var(--brand-emerald); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; border: 1px solid rgba(15, 118, 110, 0.25);">
-                2
-              </div>
-              <div>
-                <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); margin-bottom: 2px;">Pay with Mobile Money</div>
-                <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">Type your MoMo number and approve the payment prompt on your phone.</div>
-              </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div style="display: flex; gap: 0.9rem; align-items: flex-start;">
-              <div style="flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: rgba(15, 118, 110, 0.1); color: var(--brand-emerald); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; border: 1px solid rgba(15, 118, 110, 0.25);">
-                3
-              </div>
-              <div>
-                <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); margin-bottom: 2px;">Get Your PIN Right Away</div>
-                <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">Your Serial Number and PIN show up on your screen and arrive by SMS. Then we take you straight to the official website.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.75rem 0.9rem; font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; margin-bottom: 1.25rem;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--brand-emerald)" stroke-width="2.5" style="flex-shrink: 0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-            <span>Safe stock: No two people will ever get the same card.</span>
-          </div>
-
-          <a href="#select-checker" class="btn-buy" style="display: flex; align-items: center; justify-content: center; text-decoration: none; width: 100%; text-align: center; gap: 6px;">
-            Select a Result Checker &darr;
-          </a>
-        </div>
-      </div>
-
-      <!-- Lane 2: Pathway Advisor -->
-      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: clamp(1.25rem, 4vw, 2rem); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <span class="card-badge card-badge-demand">
-              Pathway Advisor &bull; Free
-            </span>
-            <span style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; color: var(--brand-emerald-light);">Step 1 &rarr; 3</span>
-          </div>
-
-          <h3 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem; letter-spacing: -0.01em;">
-            Get Placement Guidance
-          </h3>
-          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem;">
-            Enter your grades to see which universities, colleges, and courses you can get into.
-          </p>
-
-          <div style="display: flex; flex-direction: column; gap: 1.15rem; margin-bottom: 1.5rem;">
-            <!-- Step 1 -->
-            <div style="display: flex; gap: 0.9rem; align-items: flex-start;">
-              <div style="flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: rgba(15, 118, 110, 0.1); color: var(--brand-emerald); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; border: 1px solid rgba(15, 118, 110, 0.25);">
-                1
-              </div>
-              <div>
-                <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); margin-bottom: 2px;">Give Permission</div>
-                <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">Say yes under Act 843 to a quick, private check. We never save your grades.</div>
-              </div>
-            </div>
-
-            <!-- Step 2 -->
-            <div style="display: flex; gap: 0.9rem; align-items: flex-start;">
-              <div style="flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: rgba(15, 118, 110, 0.1); color: var(--brand-emerald); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; border: 1px solid rgba(15, 118, 110, 0.25);">
-                2
-              </div>
-              <div>
-                <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); margin-bottom: 2px;">Enter Your Grades</div>
-                <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">Type in your grades. Everything is checked in temporary memory and deleted.</div>
-              </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div style="display: flex; gap: 0.9rem; align-items: flex-start;">
-              <div style="flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: rgba(16, 185, 129, 0.1); color: var(--brand-emerald-light); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; border: 1px solid rgba(16, 185, 129, 0.25);">
-                3
-              </div>
-              <div>
-                <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); margin-bottom: 2px;">Get Honest Advice</div>
-                <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">See which courses you qualify for, scholarship options, and what to do next.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.75rem 0.9rem; font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; margin-bottom: 1.25rem;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--brand-emerald-light)" stroke-width="2.5" style="flex-shrink: 0;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>100% Private — We never save your grades or personal details.</span>
-          </div>
-
-          <a href="/advisor" class="btn-safety-guide" style="display: flex; align-items: center; justify-content: center; text-decoration: none; width: 100%; text-align: center; gap: 6px; font-weight: 700;">
-            Get Free Guidance &rarr;
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Trap Prevention Notice Banner -->
-  <div class="safety-banner">
-    <div class="safety-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--brand-emerald)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(15, 118, 110, 0.15)"/>
-        <path d="M9 12l2 2 4-4" stroke="var(--brand-emerald-light)" stroke-width="2.5"/>
-      </svg>
-    </div>
-    <div class="safety-content">
-      <h3>Avoid Portal Pitfalls &amp; Voucher Burn</h3>
-      <p>
-        Warning: WAEC only lets you check your results 3 times! Every time you open or refresh the page, you lose 1 check. Also, for CSSPS school placement, you must add your 2-digit year to your 10-digit index number (12 numbers total). Read our simple guide before you check.
-      </p>
-    </div>
-    <a href="/guides" class="btn-safety-guide">Read Portal Instructions &rarr;</a>
-  </div>
-
-  <!-- Products Section -->
-  <section id="select-checker" style="margin-bottom: 3.5rem;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+  <!-- 2. Services Section (Reachable in 1 scroll or fewer) -->
+  <section id="select-checker" style="margin-bottom: 4rem; padding-top: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
       <div>
         <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem; letter-spacing: -0.02em;">
-          Select Result Checker
+          Official Result Checkers
         </h2>
-        <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;">
-          All cards come directly from official sources and are delivered instantly to your screen and phone.
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+          Choose your exam card for instant on-screen and SMS delivery.
         </p>
       </div>
 
@@ -288,7 +99,7 @@
           BECE
         </button>
         <button type="button" class="filter-pill" onclick="filterCheckerCards('CSSPS', this)" role="tab" aria-selected="false">
-          CSSPS Placement
+          CSSPS
         </button>
         <button type="button" class="filter-pill" onclick="filterCheckerCards('CTVET', this)" role="tab" aria-selected="false">
           CTVET
@@ -321,20 +132,15 @@
           <h3 class="product-name" style="margin-bottom: 0;">{{ cat.name }}</h3>
           <a href="{{ cat.official_url }}" target="_blank" rel="noopener noreferrer" style="font-size: 0.78rem; color: var(--brand-emerald); text-decoration: none; font-weight: 700; white-space: nowrap; margin-left: 8px;">Portal ↗</a>
         </div>
-        <p class="product-desc">{{ cat.description }}</p>
+        <p class="product-desc" style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 0.75rem;">
+          {{ cat.description }}
+        </p>
 
-        <div class="rules-preview">
-          <div class="rule-item">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-emerald)" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            <span><strong>Check Quota:</strong> {% if cat.check_limit == 999 %}Unlimited checks for same candidate{% else %}Strictly {{ cat.check_limit }} checks{% endif %}</span>
-          </div>
-          <div class="rule-item">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-emerald)" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            <span><strong>Index:</strong> {{ cat.index_format }}</span>
-          </div>
+        <div class="rules-preview" style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 1rem;">
+          <span>{% if cat.check_limit == 999 %}Unlimited checks{% else %}3 checks{% endif %} &bull; {{ cat.index_format }}</span>
         </div>
 
-        <div class="price-row">
+        <div class="price-row" style="margin-bottom: 1rem;">
           <span class="price-currency">Price per Voucher</span>
           <span class="price-amount">GH₵ {{ "%.2f"|format(cat.price) }}</span>
         </div>
@@ -350,10 +156,6 @@
         </button>
         {% else %}
         <button class="btn-buy" style="background: var(--text-dim); cursor: not-allowed; box-shadow: none; opacity: 0.75;" disabled title="Currently out of stock">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
-          </svg>
           Out of Stock
         </button>
         {% endif %}
@@ -362,304 +164,58 @@
     </div>
   </section>
 
-  <!-- Value Propositions / Trust Grid -->
-  <section style="margin-bottom: 5rem; padding: 2.5rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);">
-    <h2 style="text-align: center; font-size: 1.6rem; font-weight: 800; margin-bottom: 2rem;">
-      Fast, Simple, and Reliable When Results Come Out
-    </h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 2rem;">
-      <div>
-        <div style="display: flex; align-items: center; margin-bottom: 0.85rem;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--ghana-gold)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
+  <!-- 3. Social Proof / Gallery Section -->
+  <section class="social-proof-section" style="margin-bottom: 4rem;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem; letter-spacing: -0.02em;">
+        Trusted by Ghanaian Students
+      </h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 580px; margin: 0 auto; line-height: 1.5;">
+        Real feedback from students and parents who received their cards instantly.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 1.5rem;">
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="color: #f59e0b; margin-bottom: 0.5rem; font-size: 0.85rem;" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">Instant Delivery</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0;">Received my WASSCE PIN on screen in two seconds. Worked perfectly.</p>
         </div>
-        <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Your Code Shows on Screen Right Away</h4>
-        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-          You do not have to wait for a text message. Your Serial Number and PIN show up on your screen the second you pay, and we send an SMS backup too.
-        </p>
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-dim); margin-top: 1rem;">Akua M. &bull; Kumasi</div>
       </div>
 
-      <div>
-        <div style="display: flex; align-items: center; margin-bottom: 0.85rem;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--ghana-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="color: #f59e0b; margin-bottom: 0.5rem; font-size: 0.85rem;" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">Safe MoMo Payment</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0;">Paid with MTN MoMo and my CSSPS placement checked right away.</p>
         </div>
-        <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Never Sold Twice</h4>
-        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-          Your card is held just for you. No two people will ever receive the same card or PIN.
-        </p>
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-dim); margin-top: 1rem;">Kwame A. &bull; Accra</div>
       </div>
 
-      <div>
-        <div style="display: flex; align-items: center; margin-bottom: 0.85rem;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(217, 119, 6, 0.12)"></path>
-            <path d="M9 12l2 2 4-4" stroke="#059669" stroke-width="2.5"></path>
-          </svg>
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="color: #f59e0b; margin-bottom: 0.5rem; font-size: 0.85rem;" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem;">Saved My Time</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0;">No more queues at internet cafes. Very fast and easy service.</p>
         </div>
-        <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">100% Real Official Cards</h4>
-        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-          All cards come directly from official sources and work on official government websites.
-        </p>
-      </div>
-
-      <div>
-        <div style="display: flex; align-items: center; margin-bottom: 0.85rem;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(5, 150, 105, 0.12)"></path>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-        </div>
-        <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Safe Mobile Money Payments</h4>
-        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-          Your payment is protected with top-level bank security. You approve the payment directly on your own phone.
-        </p>
-      </div>
-
-      <div>
-        <div style="display: flex; align-items: center; margin-bottom: 0.85rem;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-            <line x1="12" y1="18" x2="12.01" y2="18"></line>
-          </svg>
-        </div>
-        <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Easy to Save and Share</h4>
-        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-          Download your card to print it, or send it straight to your WhatsApp with the link to check your results.
-        </p>
-      </div>
-
-      <div>
-        <div style="display: flex; align-items: center; margin-bottom: 0.85rem;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--ghana-gold)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </div>
-        <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">Find a Lost Card Anytime</h4>
-        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-          Did you close the page or delete your text message? Just enter your phone number on our "Retrieve My Voucher" page to see your PIN again.
-        </p>
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-dim); margin-top: 1rem;">Daniel O. &bull; Takoradi</div>
       </div>
     </div>
   </section>
 
-  <style>
-    /* Zero-Cache Safety Reset for FAQ buttons */
-    .faq-question {
-      appearance: none !important;
-      -webkit-appearance: none !important;
-      background: transparent !important;
-      border: none !important;
-      outline: none !important;
-      color: var(--text-main) !important;
-      box-shadow: none !important;
-    }
-    .faq-question:focus, .faq-question:active {
-      outline: none !important;
-      background: transparent !important;
-    }
-  </style>
-
-  <!-- Frequently Asked Questions (Friction Eliminator & Candidate Guide) -->
-  <section class="faq-section" id="faq">
-    <div class="faq-header">
-      <div class="faq-badge">
-        24/7 Help for Students &amp; Parents
-      </div>
-      <h2>Frequently Asked Questions</h2>
-      <p>
-        Simple answers to help you buy, get, and use your exam result cards.
-      </p>
-      <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 0.5rem;">
-        Buying in bulk for a school or cyber café? Reach our <a href="https://wa.me/{{ support_whatsapp|default('233509512942') }}?text=Hello%20CheckerPay%20Merchant%20Desk,%20I%20am%20inquiring%20about%20bulk%20vouchers%20for%20my%20institution" target="_blank" rel="noopener" style="color: var(--ghana-gold); font-weight: 700; text-decoration: none;">WhatsApp Merchant Desk &rarr;</a>
-      </p>
-    </div>
-
-    <!-- Category Filter Tabs -->
-    <div class="faq-categories">
-      <button type="button" class="faq-category-btn active" onclick="filterFaq('all', this)">
-        All Questions
-      </button>
-      <button type="button" class="faq-category-btn" onclick="filterFaq('delivery', this)">
-        Instant Delivery &amp; Recovery
-      </button>
-      <button type="button" class="faq-category-btn" onclick="filterFaq('rules', this)">
-        Official Exam Rules
-      </button>
-      <button type="button" class="faq-category-btn" onclick="filterFaq('security', this)">
-        Security &amp; Bulk Orders
-      </button>
-    </div>
-
-    <div class="faq-grid">
-      <!-- Q1: Speed & Delivery -->
-      <div class="faq-item" data-category="delivery">
-        <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <div class="faq-q-left">
-            <div class="faq-q-icon gold">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div>
-            <span class="faq-q-text">How quickly do I receive my voucher Serial Number and PIN?</span>
-          </div>
-          <div class="faq-chevron">
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </div>
-        </button>
-        <div class="faq-answer">
-          <p>
-            <strong>Right on your screen in less than 3 seconds!</strong> As soon as you approve the payment on your phone (MTN MoMo, Telecel Cash, or AT Money), your Serial Number and PIN appear right on your screen.
-          </p>
-          <div class="faq-pro-tip">
-            <div><strong>Instant Access:</strong> You do not need to wait for a text message. Your code unlocks right on your screen with easy copy buttons, and we also send a backup copy to your phone by SMS.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Q2: Lost PIN / Browser Closed -->
-      <div class="faq-item" data-category="delivery">
-        <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <div class="faq-q-left">
-            <div class="faq-q-icon emerald">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </div>
-            <span class="faq-q-text">What should I do if I close my browser before copying my PIN?</span>
-          </div>
-          <div class="faq-chevron">
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </div>
-        </button>
-        <div class="faq-answer">
-          <p>
-            <strong>Do not worry!</strong> Every card you buy is tied to your phone number. Just go to our "Retrieve My Voucher" page, type in your phone number, and you will see all your Serial Numbers and PINs right away.
-          </p>
-          <a href="/lookup" class="faq-action-link">
-            Open Instant Voucher Lookup Tool &rarr;
-          </a>
-        </div>
-      </div>
-
-      <!-- Q3: Check Limit / WAEC 3-Check Rule -->
-      <div class="faq-item" data-category="rules">
-        <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <div class="faq-q-left">
-            <div class="faq-q-icon blue">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <span class="faq-q-text">How many times can I use a WAEC Result Checker voucher?</span>
-          </div>
-          <div class="faq-chevron">
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </div>
-        </button>
-        <div class="faq-answer">
-          <p>
-            WAEC rules allow you to check results up to <strong>3 times</strong> for one student index number. The first time you use your card, WAEC locks it to that student's index number.
-          </p>
-          <div class="faq-pro-tip">
-            <div><strong>Helpful Tip:</strong> Take a screenshot or print your result the very first time you check. That way, you do not waste your 3 checks just looking at it again.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Q4: 10-Digit vs 12-Digit Index -->
-      <div class="faq-item" data-category="rules">
-        <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <div class="faq-q-left">
-            <div class="faq-q-icon purple">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><line x1="15" y1="8" x2="17" y2="8"/><line x1="15" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="17" y2="16"/></svg>
-            </div>
-            <span class="faq-q-text">What is the difference between 10-digit and 12-digit Index Numbers?</span>
-          </div>
-          <div class="faq-chevron">
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </div>
-        </button>
-        <div class="faq-answer">
-          <p>
-            For <strong>WASSCE and BECE</strong>: Enter your 10-digit Index Number (like <code>0010123456</code>) and pick your exam year from the box.
-          </p>
-          <p style="margin-top: 0.5rem;">
-            For <strong>CSSPS High School Placement</strong>: You must use 12 numbers. Take your 10-digit index number and add your 2-digit exam year to the end (for example, index <code>0010123456</code> in year 2026 becomes <code>001012345626</code>).
-          </p>
-          <div class="faq-pro-tip emerald">
-            <div><strong>Simple Rule:</strong> Use 10 digits for WAEC. Use 12 digits for CSSPS School Placement.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Q5: Security & MoMo Safety -->
-      <div class="faq-item" data-category="security">
-        <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <div class="faq-q-left">
-            <div class="faq-q-icon emerald">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            </div>
-            <span class="faq-q-text">Is paying with Mobile Money secure on CheckerPay Ghana?</span>
-          </div>
-          <div class="faq-chevron">
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </div>
-        </button>
-        <div class="faq-answer">
-          <p>
-            <strong>Yes, 100% safe.</strong> Your payment is protected by bank-level security.
-          </p>
-          <p style="margin-top: 0.5rem;">
-            We never see or save your secret Mobile Money PIN. The payment prompt comes straight from MTN, Telecel, or AT directly to your phone.
-          </p>
-        </div>
-      </div>
-
-      <!-- Q6: Bulk Ordering -->
-      <div class="faq-item" data-category="security">
-        <button type="button" class="faq-question" onclick="toggleFaq(this)">
-          <div class="faq-q-left">
-            <div class="faq-q-icon gold">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-            </div>
-            <span class="faq-q-text">Can I purchase in bulk for my school, cyber café, or siblings?</span>
-          </div>
-          <div class="faq-chevron">
-            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </div>
-        </button>
-        <div class="faq-answer">
-          <p>
-            <strong>Yes!</strong> You can buy up to 10 cards at once on this website. You will get all your Serial Numbers and PINs together in a neat table with simple buttons to copy each one.
-          </p>
-          <div class="faq-pro-tip">
-            <div><strong>Schools &amp; Internet Cafés:</strong> If you need 50 to 500 or more cards at a discount, <a href="https://wa.me/{{ support_whatsapp|default('233509512942') }}?text=Hello%20CheckerPay%20Merchant%20Desk,%20I%20am%20inquiring%20about%20bulk%20vouchers%20for%20my%20institution" target="_blank" rel="noopener" style="color: inherit; font-weight: 700; text-decoration: underline;">message our team on WhatsApp &rarr;</a></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Still Have Questions? Support Reassurance Banner -->
-    <div class="faq-support-banner">
-      <div class="faq-support-left">
-        <div class="faq-support-avatar">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-          <div class="faq-support-status" title="Support Team Online"></div>
-        </div>
-        <div class="faq-support-text">
-          <h4>Still have a question?</h4>
-          <p>Our friendly support team in Accra is available 24/7 to help you with your card or payment.</p>
-        </div>
-      </div>
-
-      <div class="faq-support-actions">
-        <a href="https://wa.me/{{ support_whatsapp|default('233509512942') }}?text=Hello%20CheckerPay%20Support,%20I%20need%20help%20with%20my%20result%20checker" target="_blank" rel="noopener" class="faq-btn-whatsapp">
-          Chat on WhatsApp
-        </a>
-        <a href="/guides" class="faq-btn-guide">
-          Portal Safety Guide &rarr;
-        </a>
-      </div>
-    </div>
+  <!-- 4. One CTA Section -->
+  <section class="cta-section" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: clamp(2rem, 5vw, 3rem) 1.5rem; text-align: center; margin-bottom: 3.5rem; box-shadow: var(--shadow-sm);">
+    <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+      Ready to Check Your Results?
+    </h2>
+    <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 540px; margin: 0 auto 1.5rem auto; line-height: 1.5;">
+      Select your card now for instant on-screen and SMS delivery.
+    </p>
+    <a href="#select-checker" class="btn-buy" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: auto; padding: 0.85rem 2.25rem; font-weight: 800; font-size: 1rem; text-decoration: none; border-radius: var(--radius-pill); box-shadow: var(--shadow-emerald);">
+      Choose Your Card Now &rarr;
+    </a>
   </section>
 
 </div>

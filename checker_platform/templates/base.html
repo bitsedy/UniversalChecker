@@ -146,136 +146,44 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Footer -->
-  <footer style="background: #ffffff; border-top: 1px solid var(--border-subtle); padding: 3.5rem 0 2rem 0; margin-top: 4rem;">
-    <div class="container">
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 3rem; margin-bottom: 2.5rem;">
-        
-        <!-- Column 1: Brand & Mission -->
-        <div>
-          <div style="margin-bottom: 0.75rem; display: flex; align-items: center;">
-            <svg width="175" height="38" viewBox="0 0 175 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="height: 34px; width: auto; display: block;" role="img" aria-label="AggreGate">
-              <defs>
-                <linearGradient id="brandSqBgFoot" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#307C70" />
-                  <stop offset="100%" stop-color="#276B60" />
-                </linearGradient>
-                <filter id="footStarGlow" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="0.8" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
-              
-              <!-- Official Square Favicon Emblem (38x38) -->
-              <g transform="translate(0, 0)">
-                <rect width="38" height="38" rx="8.5" fill="url(#brandSqBgFoot)" />
-                <!-- Stylized 'A' (Dark Midnight Navy #0D1D2C) -->
-                <polygon points="16.3,8 18.6,8 9.9,30 6.5,30" fill="#0D1D2C" />
-                <polygon points="16.3,8 18.6,8 22,17.9 19.8,17.9" fill="#0D1D2C" />
-                <polygon points="21.3,23.2 23.2,23.2 25.8,30 22.4,30" fill="#0D1D2C" />
-                <!-- Dynamic Verified Checkmark -->
-                <path d="M11.4 20.1 L16.7 25.5 C17.1 25.8 17.9 25.8 18.2 25.5 L30.8 10.3 C31.2 9.7 30.8 9.1 30 9.3 L17.5 23.2 L12.2 18.6 C11.6 18.1 11 18.6 11.2 19.4 Z" fill="#0D1D2C" />
-                <!-- Star Sparkle at Tip of Checkmark -->
-                <g filter="url(#footStarGlow)">
-                  <path d="M28.1 5.3 C28.1 6.6 28.9 7.4 30.2 7.4 C28.9 7.4 28.1 8.2 28.1 9.5 C28.1 8.2 27.3 7.4 26 7.4 C27.3 7.4 28.1 6.6 28.1 5.3 Z" fill="#FFFFFF" />
-                  <circle cx="28.1" cy="7.4" r="0.6" fill="#E6FFFA" />
-                </g>
-              </g>
+  <!-- Footer (Max 1 row on desktop) -->
+  <footer style="background: #ffffff; border-top: 1px solid var(--border-subtle); padding: 1.25rem 0; margin-top: 3.5rem;">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <a href="/" class="brand-link" style="text-decoration: none; display: flex; align-items: center; gap: 8px;" title="AggreGate Home">
+        <svg width="135" height="30" viewBox="0 0 175 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="height: 26px; width: auto; display: block;" role="img" aria-label="AggreGate">
+          <defs>
+            <linearGradient id="brandSqBgFoot" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#307C70" />
+              <stop offset="100%" stop-color="#276B60" />
+            </linearGradient>
+          </defs>
+          <g transform="translate(0, 0)">
+            <rect width="38" height="38" rx="8.5" fill="url(#brandSqBgFoot)" />
+            <polygon points="16.3,8 18.6,8 9.9,30 6.5,30" fill="#0D1D2C" />
+            <polygon points="16.3,8 18.6,8 22,17.9 19.8,17.9" fill="#0D1D2C" />
+            <polygon points="21.3,23.2 23.2,23.2 25.8,30 22.4,30" fill="#0D1D2C" />
+            <path d="M11.4 20.1 L16.7 25.5 C17.1 25.8 17.9 25.8 18.2 25.5 L30.8 10.3 C31.2 9.7 30.8 9.1 30 9.3 L17.5 23.2 L12.2 18.6 C11.6 18.1 11 18.6 11.2 19.4 Z" fill="#0D1D2C" />
+          </g>
+          <text x="48" y="27" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="24" letter-spacing="-0.03em">
+            <tspan fill="#0A0F1D">Aggre</tspan><tspan fill="#247867">Gate</tspan>
+          </text>
+        </svg>
+      </a>
 
-              <!-- Wordmark Typography -->
-              <text x="48" y="27" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="24" letter-spacing="-0.03em">
-                <tspan fill="#0A0F1D">Aggre</tspan><tspan fill="#247867">Gate</tspan>
-              </text>
-            </svg>
-          </div>
-          <p style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.6; margin-bottom: 1rem;">
-            Buy real WAEC and CSSPS result cards online in Ghana. Get your code on your screen and in a text message right away. Safe and trusted.
-          </p>
-          <a href="/about" style="color: var(--ghana-green); font-size: 0.85rem; font-weight: 700; text-decoration: none;">
-            Read Our Story &rarr;
-          </a>
-        </div>
+      <nav style="display: flex; gap: 1.25rem; align-items: center; font-size: 0.85rem;" aria-label="Footer Navigation">
+        <a href="/terms" style="color: var(--text-muted); text-decoration: none;">Terms</a>
+        <a href="/privacy" style="color: var(--text-muted); text-decoration: none;">Privacy</a>
+        <a href="/delivery-returns" style="color: var(--text-muted); text-decoration: none;">Returns</a>
+        <a href="/feedback" style="color: var(--text-muted); text-decoration: none;">Feedback</a>
+      </nav>
 
-        <!-- Column 2: Customer Support & Tools -->
-        <div>
-          <div style="font-weight: 800; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Customer Support</div>
-          <ul style="list-style: none; font-size: 0.875rem; display: flex; flex-direction: column; gap: 8px;">
-            <li><a href="/lookup" style="color: var(--text-muted); text-decoration: none;">Retrieve Lost Voucher</a></li>
-            <li><a href="/advisor" style="color: var(--text-muted); text-decoration: none;">Pathway Advisor</a></li>
-            <li><a href="/faq" style="color: var(--text-muted); text-decoration: none;">Frequently Asked Questions</a></li>
-            <li><a href="/feedback" style="color: var(--text-muted); text-decoration: none;">Share Feedback / Review</a></li>
-            <li><a href="/guides" style="color: var(--text-muted); text-decoration: none;">How to Not Waste Your Card</a></li>
-          </ul>
-        </div>
-
-        <!-- Column 3: Legal & Regulatory -->
-        <div>
-          <div style="font-weight: 800; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Legal &amp; Compliance</div>
-          <ul style="list-style: none; font-size: 0.875rem; display: flex; flex-direction: column; gap: 8px;">
-            <li><a href="/terms" style="color: var(--text-muted); text-decoration: none;">Terms of Service (Act 772)</a></li>
-            <li><a href="/privacy" style="color: var(--text-muted); text-decoration: none;">Privacy Policy (Act 843)</a></li>
-            <li><a href="/delivery-returns" style="color: var(--text-muted); text-decoration: none;">Delivery &amp; Returns Policy</a></li>
-          </ul>
-        </div>
-
-        <!-- Column 4: Official Portals -->
-        <div>
-          <div style="font-weight: 800; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Official Portals</div>
-          <ul style="list-style: none; font-size: 0.875rem; display: flex; flex-direction: column; gap: 8px;">
-            <li><a href="https://ghana.waecdirect.org" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); text-decoration: none;">WAEC Direct Ghana (WASSCE) ↗</a></li>
-            <li><a href="https://eresults.waecgh.org" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); text-decoration: none;">WAEC eResults Ghana (BECE) ↗</a></li>
-            <li><a href="https://cssps.gov.gh" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); text-decoration: none;">CSSPS Placement Portal ↗</a></li>
-          </ul>
-        </div>
-
+      <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+        <span>Help:</span>
+        <a href="https://wa.me/{{ support_whatsapp|default('233509512942') }}" target="_blank" rel="noopener" style="color: var(--brand-emerald); text-decoration: none; font-weight: 600;">+233 50 951 2942</a>
       </div>
 
-      <!-- Institutional Trust Architecture Badges -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1rem; padding: 1.5rem; background: var(--bg-card-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); margin-bottom: 2.5rem;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--emerald-glow); color: var(--emerald-accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-          </div>
-          <div>
-            <div style="font-weight: 800; font-size: 0.825rem; color: var(--navy-primary);">Act 843 Privacy Guarantee</div>
-            <div style="font-size: 0.725rem; color: var(--text-dim);">100% ephemeral in-memory evaluation</div>
-          </div>
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--gold-glow); color: var(--gold-accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </div>
-          <div>
-            <div style="font-weight: 800; font-size: 0.825rem; color: var(--navy-primary);">Bank-Grade 256-Bit SSL</div>
-            <div style="font-size: 0.725rem; color: var(--text-dim);">Paystack-secured Mobile Money &amp; Visa</div>
-          </div>
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(2, 132, 199, 0.12); color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          </div>
-          <div>
-            <div style="font-weight: 800; font-size: 0.825rem; color: var(--navy-primary);">Sub-Second Delivery</div>
-            <div style="font-size: 0.725rem; color: var(--text-dim);">Instant on-screen PIN &amp; SMS receipt</div>
-          </div>
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(184, 113, 44, 0.12); color: var(--gold-accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M16 8l-8 8"/><path d="M12 16l4-4"/></svg>
-          </div>
-          <div>
-            <div style="font-weight: 800; font-size: 0.825rem; color: var(--navy-primary);">Atomic Inventory Locking</div>
-            <div style="font-size: 0.725rem; color: var(--text-dim);">No voucher is ever double-sold</div>
-          </div>
-        </div>
-      </div>
-
-      <div style="padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; color: var(--text-dim);">
-        <div>&copy; 2026 AggreGate / CheckerPay Ghana. All Rights Reserved. Fully compliant with Ghana Data Protection Act, 2012 (Act 843) &amp; Electronic Transactions Act, 2008 (Act 772).</div>
-        <div>Fast, Safe, and Trusted Card Delivery &bull; Republic of Ghana Sovereign Gateway</div>
+      <div style="font-size: 0.825rem; color: var(--text-dim);">
+        &copy; 2026 AggreGate
       </div>
     </div>
   </footer>

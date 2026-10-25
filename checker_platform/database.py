@@ -299,29 +299,29 @@ def get_product_catalog() -> Dict[str, Dict[str, Any]]:
             "WASSCE": {
                 "name": "WAEC WASSCE Result Checker",
                 "short_title": "WASSCE (May/June & Nov/Dec)",
-                "description": "Valid for May/June School Candidates & Private Nov/Dec Candidates. Official check limit: 3 times.",
+                "description": "Instant PIN for May/June and Nov/Dec examination results.",
                 "official_url": "https://ghana.waecdirect.org",
                 "badge": "Popular",
                 "check_limit": 3,
-                "index_format": "10-Digit Candidate Index (e.g. 0010101010)"
+                "index_format": "10-Digit Candidate Index"
             },
             "BECE": {
                 "name": "WAEC BECE Result Checker",
                 "short_title": "BECE (School & Private)",
-                "description": "Valid for Basic Education Certificate Examination graduates. Official check limit: 3 times.",
+                "description": "Instant voucher for Basic Education Certificate Examination results.",
                 "official_url": "https://eresults.waecgh.org",
                 "badge": "High Demand",
                 "check_limit": 3,
-                "index_format": "10-Digit Candidate Index (e.g. 1010101010)"
+                "index_format": "10-Digit Candidate Index"
             },
             "CSSPS": {
                 "name": "CSSPS School Placement Checker",
                 "short_title": "Senior High School Placement",
-                "description": "Valid for checking 2026/2027 SHS placement status and self-placement. Unlimited checks for same candidate.",
+                "description": "Check Senior High School placement status instantly online.",
                 "official_url": "https://cssps.gov.gh",
                 "badge": "Placement 2026",
                 "check_limit": 999,
-                "index_format": "12-Digit String (10-Digit Index + 2-Digit Year, e.g. 101010101026)"
+                "index_format": "12-Digit Candidate Index"
             }
         }
 

@@ -64,164 +64,68 @@
 
   <!-- Quick Navigation Buttons -->
   <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem;">
-    <a href="#vouchers" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">Cards &amp; How to Use</a>
-    <a href="#payments" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">MoMo &amp; Payments</a>
-    <a href="#recovery" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">Lost Cards &amp; SMS</a>
-    <a href="#advisor-faq" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">Pathway Advisor</a>
-    <a href="#feedback-section" style="background: var(--ghana-green); color: #ffffff; padding: 8px 16px; border-radius: 9999px; font-weight: 700; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-      Leave a Review &rarr;
+    <a href="/advisor" class="btn-safety-guide" style="font-size: 0.85rem; padding: 8px 16px;">Placement &amp; Pathway Advisor</a>
+    <a href="#feedback-section" style="background: var(--brand-emerald); color: #ffffff; padding: 8px 16px; border-radius: 9999px; font-weight: 700; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+      Rate Your Experience &amp; Share Feedback &rarr;
     </a>
   </div>
 
-  <!-- FAQ SECTION 1: VOUCHERS -->
-  <div id="vouchers" style="margin-bottom: 2.5rem;">
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-gold); display: block;"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
-      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Cards, Authenticity &amp; Usage</h2>
-    </div>
+  <!-- 5 Buyer Pre-Booking Questions (Price, Timing, Process, Location, Payment) -->
+  <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3.5rem;">
+    <!-- 1. Process / Authenticity -->
+    <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+      <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+        <span>Are CheckerPay vouchers authentic and accepted on official portals?</span>
+        <span style="color: var(--brand-emerald); font-size: 1.2rem;">+</span>
+      </summary>
+      <p style="color: var(--text-muted); font-size: 0.925rem; line-height: 1.5; margin-top: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-bottom: 0;">
+        Yes. Every voucher is officially issued and guaranteed authentic for checking official Ghanaian exam results.
+      </p>
+    </details>
 
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>Are CheckerPay vouchers authentic and accepted on official portals?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          <strong>Yes, absolutely 100%.</strong> All vouchers sold on CheckerPay are officially issued batches sourced directly through accredited educational distribution agreements. They are fully recognized and validated on <a href="https://ghana.waecdirect.org" target="_blank" style="color: var(--ghana-gold); font-weight: 600;">ghana.waecdirect.org</a> and <a href="https://cssps.gov.gh" target="_blank" style="color: var(--ghana-gold); font-weight: 600;">cssps.gov.gh</a>.
-        </p>
-      </details>
+    <!-- 2. Payment -->
+    <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+      <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+        <span>Which payment methods are supported?</span>
+        <span style="color: var(--brand-emerald); font-size: 1.2rem;">+</span>
+      </summary>
+      <p style="color: var(--text-muted); font-size: 0.925rem; line-height: 1.5; margin-top: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-bottom: 0;">
+        We accept MTN MoMo, Telecel Cash, AT Money, and Visa debit cards.
+      </p>
+    </details>
 
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>Can I purchase a CTVET / NABPTEX result checker card here?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          <strong>No.</strong> In Ghana, CTVET (incorporating NABPTEX and TEU) does not sell commercial scratch cards or online checker vouchers. Candidates who sat for technical and vocational examinations receive and check their results and certificates directly in person at their respective technical institutes and examination centers.
-        </p>
-      </details>
+    <!-- 3. Price -->
+    <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+      <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+        <span>How much does each result checker cost?</span>
+        <span style="color: var(--brand-emerald); font-size: 1.2rem;">+</span>
+      </summary>
+      <p style="color: var(--text-muted); font-size: 0.925rem; line-height: 1.5; margin-top: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-bottom: 0;">
+        Every result checker is strictly GH₵ 22.00 across all exam categories.
+      </p>
+    </details>
 
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>How many times can I use a WAEC Result Checker card?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          A WAEC voucher allows a strict maximum of <strong>3 successful lookups</strong> for one specific candidate. The moment you enter your Index Number and check your result, the card is permanently locked to your index number. It cannot be used for any other student.
-        </p>
-      </details>
+    <!-- 4. Timing -->
+    <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+      <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+        <span>How fast do I receive my PIN?</span>
+        <span style="color: var(--brand-emerald); font-size: 1.2rem;">+</span>
+      </summary>
+      <p style="color: var(--text-muted); font-size: 0.925rem; line-height: 1.5; margin-top: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-bottom: 0;">
+        Your Serial Number and PIN display on your screen in under three seconds.
+      </p>
+    </details>
 
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>What is the difference between WASSCE School and WASSCE Private?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          <strong>WASSCE (School)</strong> is for students who wrote their exam in a normal Senior High School (regular May/June exam).<br>
-          <strong>WASSCE (Private)</strong> is for students who registered independently (often called Nov/Dec). On the WAEC portal, make sure you choose the matching exam type in the dropdown list.
-        </p>
-      </details>
-    </div>
-  </div>
-
-  <!-- FAQ SECTION 2: PAYMENTS -->
-  <div id="payments" style="margin-bottom: 2.5rem;">
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-green); display: block;"><rect x="1" y="4" width="22" height="16" rx="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Mobile Money &amp; Payments</h2>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>Which payment methods are supported?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          We accept all Ghanaian Mobile Money wallets: <strong>MTN Mobile Money (*170#)</strong>, <strong>Telecel Cash (*110#)</strong>, and <strong>AT Money (*110#)</strong>. We also support debit/credit cards (Visa and Mastercard) through our secure Paystack checkout.
-        </p>
-      </details>
-
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>My MoMo was debited, but I closed the tab before copying my PIN. What do I do?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          Do not worry at all! Your card is completely safe. Simply go to our <a href="/lookup" style="color: var(--ghana-green); font-weight: 700;">Voucher Recovery Page</a>, type your Mobile Money phone number or Order Reference, and your complete Serial Number and PIN will show up immediately. We also sent it to your phone by text message.
-        </p>
-      </details>
-
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>How long does the payment approval prompt take to appear on my phone?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          Usually within 5 to 15 seconds. If you are using <strong>Telecel Cash</strong> or <strong>MTN MoMo</strong> and the prompt does not pop up automatically, dial <code>*170#</code> &rarr; Option 6 (My Wallet) &rarr; Option 3 (Approvals) to approve the payment yourself.
-        </p>
-      </details>
-    </div>
-  </div>
-
-  <!-- FAQ SECTION 3: RECOVERY & DELIVERY -->
-  <div id="recovery" style="margin-bottom: 2.5rem;">
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-blue); display: block;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Digital Delivery &amp; Voucher Recovery</h2>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>How quickly will I receive my Serial Number and PIN?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          <strong>Right away (under 3 seconds).</strong> As soon as your Mobile Money payment is confirmed, your Serial Number and PIN appear right on your screen with a 1-click copy button. An SMS text message with your details is also sent straight to your phone.
-        </p>
-      </details>
-
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>What should I do if a PIN shows "Card Already Used" on the WAEC portal?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          Because our system locks every card safely, cards are never sold twice. However, if this happens, message our support immediately with your Order Reference and a screenshot of the error. Once checked, an instant replacement voucher will be issued immediately under our <a href="/delivery-returns" style="color: var(--ghana-gold); font-weight: 600;">Delivery &amp; Returns SLA</a>.
-        </p>
-      </details>
-    </div>
-  </div>
-
-  <!-- FAQ SECTION 4: ADVISOR -->
-  <div id="advisor-faq" style="margin-bottom: 3.5rem;">
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ghana-gold); display: block;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
-      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Placement &amp; Pathway Advisor</h2>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>How does the Pathway Advisor compute school and university chances?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          The Pathway Advisor calculates your Best-6 aggregate using official Ghanaian rules (Core Math, English, Science/Social Studies + 3 best electives for WASSCE; 4 cores + 2 best electives for BECE). It then matches your scores against real cut-off points for UG Legon, KNUST, UCC, UPSA, and top SHS schools to show your realistic chances (High, Medium, or Reach).
-        </p>
-      </details>
-
-      <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
-        <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
-          <span>Is my student examination data recorded or stored?</span>
-          <span style="color: var(--ghana-gold); font-size: 1.2rem;">+</span>
-        </summary>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
-          <strong>No, never.</strong> In strict compliance with Section 20 of the Ghana Data Protection Act, 2012 (Act 843), all grades and subject entries are processed purely in temporary computer memory (RAM) and deleted right away once your advice is shown. We never save your grades.
-        </p>
-      </details>
-    </div>
+    <!-- 5. Location / Delivery -->
+    <details class="faq-item" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; cursor: pointer;">
+      <summary style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); list-style: none; display: flex; justify-content: space-between; align-items: center;">
+        <span>Where is my voucher delivered?</span>
+        <span style="color: var(--brand-emerald); font-size: 1.2rem;">+</span>
+      </summary>
+      <p style="color: var(--text-muted); font-size: 0.925rem; line-height: 1.5; margin-top: 0.75rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-bottom: 0;">
+        Your voucher appears on your screen and is delivered to your phone by SMS.
+      </p>
+    </details>
   </div>
 
   <!-- INTERACTIVE CUSTOMER FEEDBACK SECTION -->
