@@ -1130,6 +1130,53 @@ h1, h2, h3, h4, h5, h6,
   box-shadow: 0 2px 6px rgba(15, 118, 110, 0.2);
 }
 
+.btn-secondary {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 0.875rem 1.75rem;
+  background: var(--brand-emerald-tint);
+  color: var(--brand-emerald-dark);
+  border: 1.5px solid var(--border-emerald);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.08);
+  transition: all var(--duration-fast) var(--ease-spring);
+  touch-action: manipulation;
+}
+
+.btn-secondary:hover {
+  background: #D1FAE5;
+  color: #042F2E;
+  border-color: var(--brand-emerald);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 118, 110, 0.16);
+}
+
+.btn-secondary:hover .btn-arrow {
+  transform: translateX(3px);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.1);
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--brand-emerald);
+  outline-offset: 2px;
+}
+
+.btn-arrow {
+  display: inline-block;
+  transition: transform var(--duration-fast) var(--ease-spring);
+}
+
 /* Trap Prevention Callout Banner */
 .safety-banner {
   background: var(--bg-card);
