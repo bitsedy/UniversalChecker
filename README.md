@@ -1,6 +1,6 @@
 # 🇬🇭 UniversalChecker - Ghanaian Result Checker & eVoucher Reselling Platform
 
-A modern, high-concurrency digital voucher reselling platform tailored to the Ghanaian educational ecosystem (**WAEC WASSCE**, **WAEC BECE**, **CSSPS Placement**, and **CTVET / NABPTEX**).
+A modern, high-concurrency digital voucher reselling platform tailored to the Ghanaian educational ecosystem (**WAEC WASSCE**, **WAEC BECE**, and **CSSPS Placement**).
 
 ---
 
@@ -15,7 +15,6 @@ A modern, high-concurrency digital voucher reselling platform tailored to the Gh
    - **BECE** &rarr; Automatically launches [**`https://eresults.waecgh.org`**](https://eresults.waecgh.org)
    - **WASSCE** &rarr; Automatically launches [**`https://ghana.waecdirect.org`**](https://ghana.waecdirect.org)
    - **CSSPS** &rarr; Automatically launches [**`https://cssps.gov.gh`**](https://cssps.gov.gh)
-   - **CTVET** &rarr; Automatically launches [**`https://ctvet.gov.gh`**](https://ctvet.gov.gh)
    - Includes a visual progress bar, "Pause / Resume" controls, and instant "Go Now ↗" hyperlinks.
 
 3. **Ghanaian Payment Stack**:

@@ -57,7 +57,7 @@ Verify the server responds on `http://127.0.0.1:8000/health`.
 - [ ] **Header & Branding:** Verify logo SVG renders crisply. On mobile ($\le 960\text{px}$), verify the quick-action **"Retrieve Voucher"** button is pinned at top right.
 - [ ] **Navigation Track:** Scroll through `.nav-links`. Click every link (`Home`, `Pathway Advisor`, `Guides & Rules`, `FAQs & Support`, `About Us`, `Retrieve My Voucher`). Confirm correct active state highlighting.
 - [ ] **Hero Section:** Inspect heading, value proposition, and CTA buttons. Ensure text wrapping is natural with no orphan words or awkward line breaks.
-- [ ] **Voucher Cards (WASSCE, BECE, CSSPS, CTVET):**
+- [ ] **Voucher Cards (WASSCE, BECE, CSSPS):**
   - Verify official card names, prices in GH₵, and stock indicators (e.g. "In Stock • Instant Delivery").
   - Click **"Buy Voucher"** on each card to ensure the modal opens with the correct pre-selected category.
 

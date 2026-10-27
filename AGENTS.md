@@ -5,7 +5,7 @@ Two distinct products sharing one backend — treat them as having different
 risk profiles, not as one feature set:
 
 1. **Checker/Voucher Store** (storefront, `/lookup`, `/guides`, `/admin`) —
-   resells WAEC WASSCE, WAEC BECE, CSSPS, and CTVET/NABPTEX result-checker
+   resells WAEC WASSCE, WAEC BECE, and CSSPS result-checker
    vouchers. Paystack-based payment (MTN MoMo, Telecel Cash, AirtelTigo
    Money, Visa), atomic SQLite inventory locking, redirect-with-countdown to
    official portals.

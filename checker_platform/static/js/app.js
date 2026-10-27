@@ -1434,7 +1434,7 @@ const VERIFIED_ACTIVITY_FEED = [
   { exam: "BECE Checker", prefix: "055", suffix: "8821", city: "Kumasi", time: "42s ago" },
   { exam: "CSSPS Placement Voucher", prefix: "020", suffix: "1943", city: "Takoradi", time: "1m ago" },
   { exam: "WASSCE 3-Pack Checker", prefix: "059", suffix: "3012", city: "Tema", time: "2m ago" },
-  { exam: "CTVET Technical Voucher", prefix: "027", suffix: "6649", city: "Tamale", time: "3m ago" },
+  { exam: "CSSPS Placement Voucher", prefix: "027", suffix: "6649", city: "Tamale", time: "3m ago" },
   { exam: "BECE Placement Voucher", prefix: "054", suffix: "7201", city: "Cape Coast", time: "4m ago" },
   { exam: "WASSCE Checker", prefix: "050", suffix: "9315", city: "Sunyani", time: "5m ago" }
 ];
@@ -1564,7 +1564,7 @@ function initScrollEngine() {
 }
 
 /**
- * Filter product cards by exam category (WASSCE, BECE, CSSPS, CTVET, or ALL)
+ * Filter product cards by exam category (WASSCE, BECE, CSSPS, or ALL)
  */
 function filterCheckerCards(category, btn) {
   const buttons = document.querySelectorAll(".quick-filter-bar .filter-pill");
